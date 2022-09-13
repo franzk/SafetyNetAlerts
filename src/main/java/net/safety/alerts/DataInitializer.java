@@ -27,11 +27,14 @@ public class DataInitializer {
 
 	@Autowired
 	private PersonRepository personRepository;
+	
+	@Autowired
+	private CustomProperties props;
 
 	public void importJsonData() {
 		ObjectMapper objectMapper = new ObjectMapper();
-		String dataUrl = "https://s3-eu-west-1.amazonaws.com/course.oc-static.com/projects/DA+Java+EN/P5+/data.json";
-
+		String dataUrl = props.getDataUrl();				
+				
 		try {
 			JsonData sourceData = objectMapper.readValue(new URL(dataUrl), JsonData.class);
 
