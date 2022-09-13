@@ -9,8 +9,12 @@ public class Person {
 	
 	private String lastName;
 	
-	private String zip;
+	private String address;
 	
+	private String city;
+
+	private String zip;
+		
 	private String phone;
 	
 	private String email;
