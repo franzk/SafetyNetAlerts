@@ -1,4 +1,4 @@
-package net.safety.alerts.model;
+package net.safety.alerts.dto;
 
 import lombok.Data;
 

@@ -6,15 +6,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import net.safety.alerts.dto.PersonDto;
+import net.safety.alerts.dto.PersonNameDto;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
-import net.safety.alerts.model.PersonDto;
 
 @Repository
 public class PersonRepository {
 
+	@Autowired
+	ModelMapper mapper;
+	
 	private List<Person> listPersons = new ArrayList<>();
 
 	// import
@@ -34,7 +39,7 @@ public class PersonRepository {
 	}
 
 	public List<Person> getPersonsByName(String firstName, String lastName) {
-		return listPersons.stream().filter(person -> person.getFirstName().equals(firstName))
+		return listPersons.stream().filter(p-> p.getFirstName().equals(firstName))
 				.filter(person -> person.getLastName().equals(lastName)).collect(Collectors.toList());
 	}
 
@@ -43,32 +48,32 @@ public class PersonRepository {
 	}
 
 	// update
-	public Person updatePerson(Person p) throws PersonNotFoundException {
+	public Person updatePerson(Person person) throws PersonNotFoundException {
 
 		Optional<Person> personToUpdate = listPersons.stream()
-				.filter(person -> person.getFirstName().equals(p.getFirstName()))
-				.filter(person -> person.getLastName().equals(p.getLastName())).findFirst();
+				.filter(p -> p.getFirstName().equals(person.getFirstName()))
+				.filter(p-> p.getLastName().equals(person.getLastName())).findFirst();
 
 		if (personToUpdate.isPresent()) {
-			listPersons.set(listPersons.indexOf(personToUpdate.get()), p);
-			return p;
+			listPersons.set(listPersons.indexOf(personToUpdate.get()), person);
+			return person;
 		} else {
-			// generate ERROR
 			throw new PersonNotFoundException();
 		}
 	}
 
 	// delete
-	public void deletePerson(Person p) throws PersonNotFoundException {
-		if (!listPersons.remove(p)) {
+	public void deletePerson(Person person) throws PersonNotFoundException {
+		if (!listPersons.remove(person)) {
 			throw new PersonNotFoundException();
 		}
 	}
 
 	public void deleteByName(String firstName, String lastName) throws PersonNotFoundException {
 
-		Optional<Person> personToDelete = listPersons.stream().filter(person -> person.getFirstName().equals(firstName))
-				.filter(person -> person.getLastName().equals(lastName)).findFirst();
+		Optional<Person> personToDelete = listPersons.stream()
+				.filter(p -> p.getFirstName().equals(firstName))
+				.filter(p -> p.getLastName().equals(lastName)).findFirst();
 
 		if (personToDelete.isPresent()) {
 			deletePerson(personToDelete.get());
@@ -78,9 +83,14 @@ public class PersonRepository {
 	}
 
 	// Utils
-	public PersonDto convertPersonToDto(Person person) {
-		ModelMapper mapper = new ModelMapper();
+	public PersonDto convertPersonToPersonDto(Person person) {
 		return mapper.map(person, PersonDto.class);
+	}
+	
+
+	
+	public PersonNameDto convertPersonToPersonNameDto(Person person) {
+		return mapper.map(person, PersonNameDto.class);
 	}
 
 }

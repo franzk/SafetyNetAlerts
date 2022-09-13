@@ -24,34 +24,36 @@ public class MedicalRecordRepository {
 	}
 
 	// create
-	public MedicalRecord addMedicalRecord(MedicalRecord m) {
-		listMedicalRecords.add(m);
-		return m;
+	public MedicalRecord addMedicalRecord(MedicalRecord medicalRecord) {
+		listMedicalRecords.add(medicalRecord);
+		return medicalRecord;
 	}
 
 	// read
 	public Optional<MedicalRecord> getMedicalRecordByName(String firstName, String lastName) {
-		return listMedicalRecords.stream().filter(medicalRecord -> medicalRecord.getFirstName().equals(firstName))
-				.filter(medicalRecord -> medicalRecord.getLastName().equals(lastName)).findFirst();
+		return listMedicalRecords.stream()
+				.filter(m -> m.getFirstName().equals(firstName))
+				.filter(m -> m.getLastName().equals(lastName))
+				.findFirst();
 	}
 
 	// update
-	public MedicalRecord updateMedicalRecord(MedicalRecord m) throws MedicalRecordNotFoundException {
+	public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
 
-		Optional<MedicalRecord> medicalRecordToUpdate = getMedicalRecordByName(m.getFirstName(), m.getLastName());
+		Optional<MedicalRecord> medicalRecordToUpdate = getMedicalRecordByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
 		if (medicalRecordToUpdate.isPresent()) {
 			int medicalRecordToUpdateIndex = listMedicalRecords.indexOf(medicalRecordToUpdate.get());
 			if (medicalRecordToUpdateIndex >= 0) {
-				listMedicalRecords.set(medicalRecordToUpdateIndex, m);
-				return m;
+				listMedicalRecords.set(medicalRecordToUpdateIndex, medicalRecord);
+				return medicalRecord;
 			}
 		}
 		throw new MedicalRecordNotFoundException();
 	}
 
 	// delete
-	public void deleteMedicalRecord(MedicalRecord m) throws MedicalRecordNotFoundException {
-		if (!listMedicalRecords.remove(m)) {
+	public void deleteMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
+		if (!listMedicalRecords.remove(medicalRecord)) {
 			throw new MedicalRecordNotFoundException();
 		}
 	}

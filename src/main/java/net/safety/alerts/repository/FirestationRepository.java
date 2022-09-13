@@ -22,7 +22,7 @@ public class FirestationRepository {
 	// read
 	public String getFirestationAdress(Integer StationNumber) throws FirestationNotFoundException {
 		Optional<Firestation> firestation = listFirestations.stream()
-				.filter(fs -> fs.getStation().equals(StationNumber)).findFirst();
+				.filter(f -> f.getStation().equals(StationNumber)).findFirst();
 
 		if (firestation.isPresent()) {
 			return firestation.get().getAddress();
@@ -32,17 +32,17 @@ public class FirestationRepository {
 	}
 
 	// create
-	public Firestation addFirestation(Firestation f) {
-		listFirestations.add(f);
-		return f;
+	public Firestation addFirestation(Firestation firestation) {
+		listFirestations.add(firestation);
+		return firestation;
 	}
 
 	// update
-	public Firestation updateFirestation(Firestation f) throws FirestationNotFoundException {
-		int firestationToUpdateIndex = listFirestations.indexOf(f);
+	public Firestation updateFirestation(Firestation firestation) throws FirestationNotFoundException {
+		int firestationToUpdateIndex = listFirestations.indexOf(firestation);
 		if (firestationToUpdateIndex >= 0) {
-			listFirestations.set(firestationToUpdateIndex, f);
-			return f;
+			listFirestations.set(firestationToUpdateIndex, firestation);
+			return firestation;
 		} else {
 			throw new FirestationNotFoundException();
 		}

@@ -24,10 +24,6 @@ public class PersonService {
 		return personRepository.getPersonsByName(firstName, lastName);
 	}
 	
-	/*public List<Person> getByFirestationNumber(Integer firestationNumber) throws FirestationNotFoundException {
-		return personRepository.getPersonsByFirestationNumber(firestationNumber);
-	}*/
-	
 	
 	// create / update
 	public Person save(Person p) {
