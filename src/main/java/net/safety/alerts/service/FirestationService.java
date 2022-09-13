@@ -25,5 +25,9 @@ public class FirestationService {
 		}
 		return f;
 	}
+
+	//public StationNumberDto stationNumber(Integer stationNumber) throws FirestationNotFoundException {
+		//return rel.stationNumber(stationNumber);
+	//}
 	
 }

@@ -15,14 +15,21 @@ public class PersonService {
 	@Autowired
 	private PersonRepository personRepository;
 
+	//read
 	public List<Person> getAll() {
 		return personRepository.getAll();
 	}
 	
 	public List<Person> getByName(String firstName, String lastName) {
-		return personRepository.getPersonByName(firstName, lastName);
+		return personRepository.getPersonsByName(firstName, lastName);
 	}
 	
+	/*public List<Person> getByFirestationNumber(Integer firestationNumber) throws FirestationNotFoundException {
+		return personRepository.getPersonsByFirestationNumber(firestationNumber);
+	}*/
+	
+	
+	// create / update
 	public Person save(Person p) {
 		
 		try {
@@ -35,6 +42,7 @@ public class PersonService {
 		return p;
 	}
 	
+	// delete
 	public void delete(String firstName, String lastName) throws PersonNotFoundException {
 		personRepository.deleteByName(firstName, lastName);
 	}
