@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.safety.alerts.dto.ChildAlertDto;
+import net.safety.alerts.dto.FireDto;
 import net.safety.alerts.dto.StationNumberDto;
+import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.repository.JoinedDataRepository;
 
@@ -21,6 +23,10 @@ public class JoinedDataService {
 	
 	public ChildAlertDto getChildAlertResult(String address) {
 		return joinedDataRepository.childAlert(address);
+	}
+	
+	public FireDto getFireResult(String address) throws AddressNotFoundException {
+		return joinedDataRepository.fire(address);
 	}
 	
 }

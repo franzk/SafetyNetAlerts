@@ -5,20 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import net.safety.alerts.dto.PersonDto;
-import net.safety.alerts.dto.PersonNameDto;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 
 @Repository
 public class PersonRepository {
-
-	@Autowired
-	ModelMapper mapper;
 	
 	private List<Person> listPersons = new ArrayList<>();
 
@@ -80,17 +73,6 @@ public class PersonRepository {
 		} else {
 			throw new PersonNotFoundException();
 		}
-	}
-
-	// Utils
-	public PersonDto convertPersonToPersonDto(Person person) {
-		return mapper.map(person, PersonDto.class);
-	}
-	
-
-	
-	public PersonNameDto convertPersonToPersonNameDto(Person person) {
-		return mapper.map(person, PersonNameDto.class);
 	}
 
 }

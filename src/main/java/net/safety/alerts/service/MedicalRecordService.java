@@ -13,6 +13,7 @@ public class MedicalRecordService {
 	@Autowired
 	private MedicalRecordRepository medicalRecordRepository;
 
+	// create / update
 	public MedicalRecord save(MedicalRecord m) {
 
 		try {
@@ -25,9 +26,9 @@ public class MedicalRecordService {
 
 	}
 	
-	
+	// delete
 	public void deleteByName(String firstName, String lastName) throws MedicalRecordNotFoundException  {
 		medicalRecordRepository.deleteMedicalRecordByName(firstName, lastName);
-	}
+	}	
 
 }

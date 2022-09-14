@@ -1,6 +1,7 @@
 package net.safety.alerts.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,12 @@ public class PersonService {
 	// delete
 	public void delete(String firstName, String lastName) throws PersonNotFoundException {
 		personRepository.deleteByName(firstName, lastName);
+	}
+
+	//utils
+	public boolean isPhonePresentInPersonList(String phone, List<Person> listPerson) {
+		Optional<Person> person = listPerson.stream().filter(p -> p.getPhone().equals(phone)).findFirst();
+		return person.isPresent();
 	}
 
 

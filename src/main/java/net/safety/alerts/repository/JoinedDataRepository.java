@@ -10,12 +10,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.safety.alerts.dto.ChildAlertDto;
 import net.safety.alerts.dto.ChildDto;
+import net.safety.alerts.dto.FireDto;
 import net.safety.alerts.dto.PersonDto;
+import net.safety.alerts.dto.PersonFireDto;
 import net.safety.alerts.dto.PersonNameDto;
 import net.safety.alerts.dto.StationNumberDto;
+import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
+import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
+import net.safety.alerts.service.DtoService;
+import net.safety.alerts.service.PersonService;
 
 @Repository
 public class JoinedDataRepository {
@@ -29,12 +35,18 @@ public class JoinedDataRepository {
 	@Autowired
 	MedicalRecordRepository medicalRecordRepository;
 
+	@Autowired
+	DtoService dtoService;
+
+	@Autowired
+	PersonService personService;
+
 	public StationNumberDto stationNumber(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
 
 		String address = firestationRepository.getFirestationAdress(stationNumber);
 		List<Person> personsCovered = personRepository.getPersonsByAddress(address);
 		List<PersonDto> personsCoveredDto = personsCovered.stream()
-				.map(person -> personRepository.convertPersonToPersonDto(person)).collect(Collectors.toList());
+				.map(person -> dtoService.convertPersonToPersonDto(person)).collect(Collectors.toList());
 
 		long adultsCount = personsCovered.stream().filter(p -> {
 			try {
@@ -60,8 +72,7 @@ public class JoinedDataRepository {
 		return stationNumberDto;
 
 	}
-	
-	
+
 	public ChildAlertDto childAlert(String address) {
 
 		List<Person> personsAtThisAddress = personRepository.getPersonsByAddress(address);
@@ -74,50 +85,64 @@ public class JoinedDataRepository {
 		}).toList();
 
 		List<Person> otherHouseholdMembers = personsAtThisAddress.stream()
-				.filter(p -> isPhonePresentInPersonList(p.getPhone(), childrenAtThisAddress))
+				.filter(p -> personService.isPhonePresentInPersonList(p.getPhone(), childrenAtThisAddress))
 				.filter(p -> {
 					try {
 						return medicalRecordRepository.getPersonAge(p) > 18;
 					} catch (MedicalRecordNotFoundException e) {
 						return true;
 					}
-				})
-				.collect(Collectors.toList());
-
+				}).collect(Collectors.toList());
 
 		ChildAlertDto childAlertDto = new ChildAlertDto();
-		
-		List<ChildDto> childrenDto = childrenAtThisAddress.stream()
-				.map(p -> convertPersonToChildDto(p))
-				.collect(Collectors.toList());
-		
+
+		List<ChildDto> childrenDto = childrenAtThisAddress.stream().map(p -> {
+			try {
+				return dtoService.convertPersonToChildDto(p, medicalRecordRepository.getPersonAge(p));
+			} catch (MedicalRecordNotFoundException e) {
+				return dtoService.convertPersonToChildDto(p, null);
+			}
+		}).collect(Collectors.toList());
+
 		List<PersonNameDto> otherHouseholdMembersDto = otherHouseholdMembers.stream()
-				.map(p -> personRepository.convertPersonToPersonNameDto(p))
-				.collect(Collectors.toList());
-		
+				.map(p -> dtoService.convertPersonToPersonNameDto(p)).collect(Collectors.toList());
+
 		childAlertDto.setChildren(childrenDto.toArray(new ChildDto[0]));
 		childAlertDto.setOtherHouseHoldMembers(otherHouseholdMembersDto.toArray(new PersonNameDto[0]));
-	
+
 		return childAlertDto;
-	
+
 	}
 
-	
-	private boolean isPhonePresentInPersonList(String phone, List<Person> listPerson) {
-		Optional<Person> person = listPerson.stream().filter(p -> p.getPhone().equals(phone)).findFirst();
-		return person.isPresent();
-	}
-	
-	public ChildDto convertPersonToChildDto(Person person) {
-		ChildDto childDto = new ChildDto();
-		childDto.setFirstName(person.getFirstName());
-		childDto.setLastName(person.getLastName());
-		try {
-			childDto.setAge(medicalRecordRepository.getPersonAge(person));
-		} catch (MedicalRecordNotFoundException e) {
-			childDto.setAge(null);
+	public FireDto fire(String address) throws AddressNotFoundException {
+		List<Person> persons = personRepository.getPersonsByAddress(address);
+		
+		if (persons.size() == 0) {
+			throw new AddressNotFoundException();
 		}
-		return childDto;
+		
+		List<PersonFireDto> personsFireDto = persons.stream()
+				.map(p -> { 
+					Optional<MedicalRecord> medicalRecord = medicalRecordRepository.getMedicalRecordByName(p.getFirstName(), p.getLastName());
+					if (medicalRecord.isPresent()) {
+						return dtoService.convertPersonToFireDto(p, medicalRecordRepository.calculateAge(medicalRecord.get().getBirthdate()), medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
+					}
+					else {
+						return dtoService.convertPersonToFireDto(p, null, null, null);						
+					}
+				})
+				.collect(Collectors.toList());
+	
+		FireDto fireDto = new FireDto();
+		fireDto.setPersons(personsFireDto.toArray(new PersonFireDto[0]));
+		try {
+			fireDto.setFirestationNumber(firestationRepository.getFirestationNumber(address));
+		} catch (FirestationNotFoundException e) {
+			fireDto.setFirestationNumber(null);
+		}
+		
+		return fireDto;
+		
 	}
-
+	
 }
