@@ -22,6 +22,7 @@ import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.service.DtoService;
 import net.safety.alerts.service.PersonService;
+import net.safety.alerts.service.Utils;
 
 @Repository
 public class JoinedDataRepository {
@@ -125,7 +126,7 @@ public class JoinedDataRepository {
 				.map(p -> { 
 					Optional<MedicalRecord> medicalRecord = medicalRecordRepository.getMedicalRecordByName(p.getFirstName(), p.getLastName());
 					if (medicalRecord.isPresent()) {
-						return dtoService.convertPersonToFireDto(p, medicalRecordRepository.calculateAge(medicalRecord.get().getBirthdate()), medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
+						return dtoService.convertPersonToFireDto(p, Utils.calculateAge(medicalRecord.get().getBirthdate()), medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
 					}
 					else {
 						return dtoService.convertPersonToFireDto(p, null, null, null);						

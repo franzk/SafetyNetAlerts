@@ -1,10 +1,6 @@
 package net.safety.alerts.repository;
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
+import net.safety.alerts.service.Utils;
 
 @Repository
 public class MedicalRecordRepository {
@@ -75,19 +72,13 @@ public class MedicalRecordRepository {
 				.filter(m -> m.getLastName().equals(person.getLastName())).findFirst();
 
 		if (personMedicalRecord.isPresent()) {
-			return calculateAge(personMedicalRecord.get().getBirthdate());
+			return Utils.calculateAge(personMedicalRecord.get().getBirthdate());
 		} else {
 			throw new MedicalRecordNotFoundException();
 		}
 	}
 	
-	public int calculateAge(Date birthday) {
-		Period duration = Period.between(
-				birthday.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
-				LocalDate.now());
-		return duration.getYears();
 
-	}
 
 
 }
