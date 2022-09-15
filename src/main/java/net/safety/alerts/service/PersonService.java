@@ -17,10 +17,6 @@ public class PersonService {
 	private PersonRepository personRepository;
 
 	//read
-	public List<Person> getAll() {
-		return personRepository.getAll();
-	}
-	
 	public List<Person> getByName(String firstName, String lastName) {
 		return personRepository.getPersonsByName(firstName, lastName);
 	}
@@ -41,7 +37,7 @@ public class PersonService {
 	
 	// delete
 	public void delete(String firstName, String lastName) throws PersonNotFoundException {
-		personRepository.deleteByName(firstName, lastName);
+		personRepository.deletePersonByName(firstName, lastName);
 	}
 
 	//utils

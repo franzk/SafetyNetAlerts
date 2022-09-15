@@ -27,10 +27,6 @@ public class PersonRepository {
 	}
 
 	// read
-	public List<Person> getAll() {
-		return listPersons;
-	}
-
 	public List<Person> getPersonsByName(String firstName, String lastName) {
 		return listPersons.stream().filter(p-> p.getFirstName().equals(firstName))
 				.filter(person -> person.getLastName().equals(lastName)).collect(Collectors.toList());
@@ -62,7 +58,7 @@ public class PersonRepository {
 		}
 	}
 
-	public void deleteByName(String firstName, String lastName) throws PersonNotFoundException {
+	public void deletePersonByName(String firstName, String lastName) throws PersonNotFoundException {
 
 		Optional<Person> personToDelete = listPersons.stream()
 				.filter(p -> p.getFirstName().equals(firstName))

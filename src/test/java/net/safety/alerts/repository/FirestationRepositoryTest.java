@@ -10,14 +10,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.model.Firestation;
-import net.safety.alerts.repository.FirestationRepository;
 
-@ExtendWith(OutputCaptureExtension.class)
 public class FirestationRepositoryTest {
 
 	private static FirestationRepository firestationRepositoryUnderTest;
@@ -54,8 +50,6 @@ public class FirestationRepositoryTest {
 		try {
 			assertThat(firestationRepositoryUnderTest.getFirestationAddress(testNumber)).isEqualTo(testAddress);
 		} catch (FirestationNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			fail("addFirestation Test failed : getFirestationAdress threw an exception !");
 		}
 	}
@@ -75,8 +69,6 @@ public class FirestationRepositoryTest {
 		try {
 			assertThat(firestationRepositoryUnderTest.getFirestationNumber(testAddress)).isEqualTo(testNumber);
 		} catch (FirestationNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			fail("setListFirestations Test failed : getFirestationNumber threw an exception !");
 		}
 	}
@@ -92,8 +84,6 @@ public class FirestationRepositoryTest {
 		try {
 			firestationRepositoryUnderTest.updateFirestation(updatedFirestation);
 		} catch (FirestationNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			fail("updateFirestation Test failed : updateFirestation threw an exception !");
 		}
 
@@ -101,8 +91,6 @@ public class FirestationRepositoryTest {
 		try {
 			assertThat(firestationRepositoryUnderTest.getFirestationNumber(testAddress)).isEqualTo(testNumber + 1);
 		} catch (FirestationNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 			fail("updateFirestation Test failed : getFirestationNumber threw an exception !");
 		}
 	}
@@ -133,7 +121,7 @@ public class FirestationRepositoryTest {
 	public void updateFirestationExceptionTest() {
 		// Arrange
 		Firestation firestation = buildFirestation(testAddress, testNumber);
-		firestationRepositoryUnderTest.addFirestation(firestation);		
+		firestationRepositoryUnderTest.addFirestation(firestation);
 		Firestation updatedFirestation = buildFirestation(testAddress + "1", testNumber + 1);
 
 		// Act + Assert
