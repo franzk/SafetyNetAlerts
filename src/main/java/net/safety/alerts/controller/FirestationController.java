@@ -1,6 +1,8 @@
 package net.safety.alerts.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,13 +20,13 @@ public class FirestationController {
 	private JoinedDataRepository joinedDataRepository;
 
 	@GetMapping("/firestation")
-	public StationNumberDto stationNumber(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
-		return joinedDataRepository.stationNumber(stationNumber);
+	public ResponseEntity<StationNumberDto> stationNumber(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
+		return new ResponseEntity<>(joinedDataRepository.stationNumber(stationNumber), HttpStatus.OK);
 	}
 
 	@GetMapping("/fire")
-	public FireDto fire(@RequestParam String address) throws AddressNotFoundException {
-		return joinedDataRepository.fire(address);
+	public ResponseEntity<FireDto> fire(@RequestParam String address) throws AddressNotFoundException {
+		return new ResponseEntity<>(joinedDataRepository.fire(address), HttpStatus.OK);
 	}
 
 }
