@@ -43,7 +43,7 @@ public class JoinedDataRepository {
 
 	public StationNumberDto stationNumber(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
 
-		String address = firestationRepository.getFirestationAdress(stationNumber);
+		String address = firestationRepository.getFirestationAddress(stationNumber);
 		List<Person> personsCovered = personRepository.getPersonsByAddress(address);
 		List<PersonDto> personsCoveredDto = personsCovered.stream()
 				.map(person -> dtoService.convertPersonToPersonDto(person)).collect(Collectors.toList());

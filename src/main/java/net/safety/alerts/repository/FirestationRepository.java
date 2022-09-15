@@ -27,19 +27,23 @@ public class FirestationRepository {
 
 	// update
 	public Firestation updateFirestation(Firestation firestation) throws FirestationNotFoundException {
-		int firestationToUpdateIndex = listFirestations.indexOf(firestation);
-		if (firestationToUpdateIndex >= 0) {
-			listFirestations.set(firestationToUpdateIndex, firestation);
-			return firestation;
-		} else {
-			throw new FirestationNotFoundException();
+		Optional<Firestation> firestationToUpdate = listFirestations.stream()
+				.filter(f -> f.getAddress().equals(firestation.getAddress())).findFirst();
+
+		if (firestationToUpdate.isPresent()) {
+			int firestationToUpdateIndex = listFirestations.indexOf(firestationToUpdate.get());
+			if (firestationToUpdateIndex >= 0) {
+				listFirestations.set(firestationToUpdateIndex, firestation);
+				return firestation;
+			}
 		}
+		throw new FirestationNotFoundException();
 	}
 
 	// read
-	public String getFirestationAdress(Integer StationNumber) throws FirestationNotFoundException {
-		Optional<Firestation> firestation = listFirestations.stream()
-				.filter(f -> f.getStation().equals(StationNumber)).findFirst();
+	public String getFirestationAddress(Integer StationNumber) throws FirestationNotFoundException {
+		Optional<Firestation> firestation = listFirestations.stream().filter(f -> f.getStation().equals(StationNumber))
+				.findFirst();
 
 		if (firestation.isPresent()) {
 			return firestation.get().getAddress();
@@ -49,8 +53,8 @@ public class FirestationRepository {
 	}
 
 	public Integer getFirestationNumber(String address) throws FirestationNotFoundException {
-		Optional<Firestation> firestation = listFirestations.stream()
-				.filter(f -> f.getAddress().equals(address)).findFirst();
+		Optional<Firestation> firestation = listFirestations.stream().filter(f -> f.getAddress().equals(address))
+				.findFirst();
 
 		if (firestation.isPresent()) {
 			return firestation.get().getStation();
