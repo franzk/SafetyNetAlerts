@@ -1,12 +1,14 @@
 package net.safety.alerts.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
 public class ChildAlertDto {
 	
-	ChildDto[] children;
+	List<ChildDto> children;
 	
-	PersonNameDto[] otherHouseHoldMembers;
+	List<PersonNameDto> otherHouseHoldMembers;
 	
 }

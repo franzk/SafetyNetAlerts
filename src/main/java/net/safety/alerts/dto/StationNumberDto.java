@@ -1,11 +1,13 @@
 package net.safety.alerts.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
 public class StationNumberDto {
 
-	PersonDto[] persons;
+	List<PersonDto> persons;
 	Integer adultsCount;
 	Integer childrenCount;
 	

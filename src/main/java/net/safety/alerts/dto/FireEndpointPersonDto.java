@@ -1,9 +1,11 @@
 package net.safety.alerts.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
-public class PersonFireDto {
+public class FireEndpointPersonDto {
 	
 	String firstName;
 	
@@ -13,8 +15,8 @@ public class PersonFireDto {
 	
 	Integer age;
 	
-	String[] medications;
+	List<String> medications;
 	
-	String[] allergies;
+	List<String> allergies;
 	
 }

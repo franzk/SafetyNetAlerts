@@ -1,10 +1,8 @@
 package net.safety.alerts.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
@@ -15,8 +13,7 @@ public class MedicalRecord {
 	
 	private String lastName;
 	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/mm/yyyy")
-	private Date birthdate;
+	private LocalDate birthdate;
 	
 	private List<String> medications = new ArrayList<>();
 	

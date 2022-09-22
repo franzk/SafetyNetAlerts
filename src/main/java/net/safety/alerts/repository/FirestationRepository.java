@@ -39,6 +39,13 @@ public class FirestationRepository {
 		}
 		throw new FirestationNotFoundException();
 	}
+	
+	// delete
+	public void deleteFirestation(Firestation firestation) throws FirestationNotFoundException {
+		if (!listFirestations.remove(firestation)) {
+			throw new FirestationNotFoundException();
+		}
+	}
 
 	// read
 	public String getFirestationAddress(Integer StationNumber) throws FirestationNotFoundException {

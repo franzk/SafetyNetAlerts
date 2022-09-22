@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import net.safety.alerts.dto.ChildDto;
 import net.safety.alerts.dto.PersonDto;
-import net.safety.alerts.dto.PersonFireDto;
+import net.safety.alerts.dto.FireEndpointPersonDto;
 import net.safety.alerts.dto.PersonNameDto;
 import net.safety.alerts.model.Person;
 
@@ -34,14 +34,14 @@ public class DtoService {
 		return mapper.map(person, PersonNameDto.class);
 	}
 
-	public PersonFireDto convertPersonToFireDto(Person person, Integer age, List<String> medications, List<String> allergies) {
-		PersonFireDto personFireDto = new PersonFireDto();
+	public FireEndpointPersonDto convertPersonToFireDto(Person person, Integer age, List<String> medications, List<String> allergies) {
+		FireEndpointPersonDto personFireDto = new FireEndpointPersonDto();
 		personFireDto.setFirstName(person.getFirstName());
 		personFireDto.setLastName(person.getLastName());
 		personFireDto.setPhone(person.getPhone());
 		personFireDto.setAge(age);
-		personFireDto.setMedications(medications.toArray(new String[0]));
-		personFireDto.setAllergies(allergies.toArray(new String[0]));
+		personFireDto.setMedications(medications);
+		personFireDto.setAllergies(allergies);
 		return personFireDto;
 	}
 

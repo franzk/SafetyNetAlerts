@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
-import net.safety.alerts.service.Utils;
+import net.safety.alerts.utils.Utils;
 
 @Repository
 public class MedicalRecordRepository {
@@ -41,7 +41,7 @@ public class MedicalRecordRepository {
 		Optional<MedicalRecord> medicalRecordToUpdate = getMedicalRecordByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
 		if (medicalRecordToUpdate.isPresent()) {
 			int medicalRecordToUpdateIndex = listMedicalRecords.indexOf(medicalRecordToUpdate.get());
-			if (medicalRecordToUpdateIndex >= 0) {
+			if (medicalRecordToUpdateIndex >= 0) { // si c'est intestable, on enlève le if
 				listMedicalRecords.set(medicalRecordToUpdateIndex, medicalRecord);
 				return medicalRecord;
 			}
@@ -78,7 +78,4 @@ public class MedicalRecordRepository {
 		}
 	}
 	
-
-
-
 }

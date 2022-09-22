@@ -1,11 +1,13 @@
 package net.safety.alerts.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
-public class FireDto {
+public class FireEndpointDto {
 	
-	PersonFireDto[] persons;
+	List<FireEndpointPersonDto> persons; 
 	
 	Integer firestationNumber;
 

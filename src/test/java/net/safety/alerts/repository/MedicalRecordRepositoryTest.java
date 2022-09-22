@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
-import net.safety.alerts.service.Utils;
+import net.safety.alerts.utils.Utils;
 
 public class MedicalRecordRepositoryTest {
 
@@ -24,7 +24,7 @@ public class MedicalRecordRepositoryTest {
 
 	private final String testFirstName = "Angus";
 	private final String testLastName = "Young";
-	private final String testBirthday = "1979-09-20";
+	private final String testBirthdate = "09/20/1979";
 	private final String testMedication = "Doliprane";
 	private final String testAllergie = "Pollen";
 
@@ -66,7 +66,7 @@ public class MedicalRecordRepositoryTest {
 		try {
 			medicalRecordToUpdate = buildMedicalRecord("");
 			medicalRecordUpdated = buildMedicalRecord("");
-			medicalRecordUpdated.setBirthdate(Utils.StringToDate("2021-12-14"));
+			medicalRecordUpdated.setBirthdate(Utils.StringToDate("12/14/2021"));
 		} catch (ParseException e) {
 			fail("setListMedicalRecordsTest threw an exception !");
 		}
@@ -235,7 +235,7 @@ public class MedicalRecordRepositoryTest {
 		MedicalRecord medicalRecord = new MedicalRecord();
 		medicalRecord.setFirstName(testFirstName + modifier);
 		medicalRecord.setLastName(testLastName + modifier);
-		medicalRecord.setBirthdate(Utils.StringToDate(testBirthday));
+		medicalRecord.setBirthdate(Utils.StringToDate(testBirthdate));
 		medicalRecord.setMedications(buildStringList(testMedication + modifier));
 		medicalRecord.setAllergies(buildStringList(testAllergie + modifier));
 		return medicalRecord;
