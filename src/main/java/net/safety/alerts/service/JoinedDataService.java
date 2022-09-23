@@ -1,7 +1,10 @@
 package net.safety.alerts.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import net.safety.alerts.dto.ChildAlertDto;
 import net.safety.alerts.dto.ChildDto;
 import net.safety.alerts.dto.FireEndpointDto;
-import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.dto.FireEndpointPersonDto;
+import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.dto.PersonNameDto;
 import net.safety.alerts.dto.StationNumberDto;
+import net.safety.alerts.dto.UrlFirestationDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
@@ -26,7 +30,7 @@ import net.safety.alerts.repository.PersonRepository;
 import net.safety.alerts.utils.Utils;
 
 @Service
-public class JoinedDataService { 
+public class JoinedDataService {
 
 	@Autowired
 	PersonRepository personRepository;
@@ -37,13 +41,9 @@ public class JoinedDataService {
 	@Autowired
 	MedicalRecordRepository medicalRecordRepository;
 
-	@Autowired
-	DtoService dtoService;
-
-	//@Autowired
-	//PersonService personService;
-
 	public StationNumberDto stationNumber(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
+
+		DtoService dtoService = new DtoService();
 
 		String address = firestationRepository.getFirestationAddress(stationNumber);
 		List<Person> personsCovered = personRepository.getPersonsByAddress(address);
@@ -98,6 +98,8 @@ public class JoinedDataService {
 
 		ChildAlertDto childAlertDto = new ChildAlertDto();
 
+		DtoService dtoService = new DtoService();
+
 		List<ChildDto> childrenDto = childrenAtThisAddress.stream().map(p -> {
 			try {
 				return dtoService.convertPersonToChildDto(p, medicalRecordRepository.getPersonAge(p));
@@ -118,23 +120,24 @@ public class JoinedDataService {
 
 	public FireEndpointDto fire(String address) throws AddressNotFoundException {
 		List<Person> persons = personRepository.getPersonsByAddress(address);
-		
+
 		if (persons.size() == 0) {
 			throw new AddressNotFoundException();
 		}
+
+		DtoService dtoService = new DtoService();
 		
-		List<FireEndpointPersonDto> personsFireDto = persons.stream()
-				.map(p -> { 
-					Optional<MedicalRecord> medicalRecord = medicalRecordRepository.getMedicalRecordByName(p.getFirstName(), p.getLastName());
-					if (medicalRecord.isPresent()) {
-						return dtoService.convertPersonToFireDto(p, Utils.calculateAge(medicalRecord.get().getBirthdate()), medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
-					}
-					else {
-						return dtoService.convertPersonToFireDto(p, null, null, null);						
-					}
-				})
-				.collect(Collectors.toList());
-	
+		List<FireEndpointPersonDto> personsFireDto = persons.stream().map(p -> {
+			Optional<MedicalRecord> medicalRecord = medicalRecordRepository.getMedicalRecordByName(p.getFirstName(),
+					p.getLastName());
+			if (medicalRecord.isPresent()) {
+				return dtoService.convertPersonToFireDto(p, Utils.calculateAge(medicalRecord.get().getBirthdate()),
+						medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
+			} else {
+				return dtoService.convertPersonToFireDto(p, null, null, null);
+			}
+		}).collect(Collectors.toList());
+
 		FireEndpointDto fireDto = new FireEndpointDto();
 		fireDto.setPersons(personsFireDto);
 		try {
@@ -142,9 +145,28 @@ public class JoinedDataService {
 		} catch (FirestationNotFoundException e) {
 			fireDto.setFirestationNumber(null);
 		}
-		
+
 		return fireDto;
-		
+
 	}
-	
+
+	public UrlFirestationDto urlFirestation(Integer firestationNumber) throws FirestationNotFoundException {
+		String address = firestationRepository.getFirestationAddress(firestationNumber);
+		List<Person> persons = new ArrayList<>();
+
+		persons = personRepository.getPersonsByAddress(address);
+
+		Set<String> phoneNumbers = new HashSet<String>();
+
+		for (Person p : persons) {
+			phoneNumbers.add(p.getPhone());
+		}
+
+		// utiliser Set pour éviter les doublons
+		UrlFirestationDto urlFirestationDto = new UrlFirestationDto();
+		urlFirestationDto.setPhoneNumbers(phoneNumbers);
+
+		return urlFirestationDto;
+	}
+
 }

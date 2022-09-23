@@ -13,22 +13,19 @@ public class MedicalRecordService {
 	@Autowired
 	private MedicalRecordRepository medicalRecordRepository;
 
-	// create / update
-	public MedicalRecord save(MedicalRecord m) {
-
-		try {
-			medicalRecordRepository.updateMedicalRecord(m);
-		} catch (MedicalRecordNotFoundException e) {
-			medicalRecordRepository.addMedicalRecord(m);
-		}
-
-		return m;
-
+	// create
+	public MedicalRecord add(MedicalRecord m) {
+		return medicalRecordRepository.addMedicalRecord(m);
+	}
+	
+	// update
+	public MedicalRecord update(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
+		return medicalRecordRepository.updateMedicalRecord(medicalRecord);
 	}
 	
 	// delete
-	public void deleteByName(String firstName, String lastName) throws MedicalRecordNotFoundException  {
+	public void deleteByName(String firstName, String lastName) throws MedicalRecordNotFoundException {
 		medicalRecordRepository.deleteMedicalRecordByName(firstName, lastName);
-	}	
+	}
 
 }

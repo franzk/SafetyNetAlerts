@@ -13,49 +13,42 @@ import net.safety.alerts.repository.PersonRepository;
 
 @Service
 public class PersonService {
-	
+
 	@Autowired
 	private PersonRepository personRepository;
-	
+
 	@Autowired
 	private JoinedDataService joinedDataService;
 
-	//read
+	// read
 	public List<Person> getByName(String firstName, String lastName) {
 		return personRepository.getPersonsByName(firstName, lastName);
 	}
-	
-	
-	// create / update
-	public Person save(Person p) {
-		
-		try {
-			personRepository.updatePerson(p);
-		}
-		catch (PersonNotFoundException e) {
-			personRepository.addPerson(p);
-		}
-	
-		return p;
+
+	// create
+	public Person add(Person p) {
+		return personRepository.addPerson(p);
 	}
-	
+
+	// update
+	public Person update(Person p) throws PersonNotFoundException {
+		return personRepository.updatePerson(p);
+	}
+
 	// delete
 	public void delete(String firstName, String lastName) throws PersonNotFoundException {
 		personRepository.deletePersonByName(firstName, lastName);
 	}
 
 	// endpoints
-	
 	public ChildAlertDto childAlert(String address) {
 		return joinedDataService.childAlert(address, this);
 	}
-	
-	
-	//utils
+
+	// utils
 	public boolean isLastNamePresentInPersonList(String lastName, List<Person> listPerson) {
 		Optional<Person> person = listPerson.stream().filter(p -> p.getLastName().equals(lastName)).findFirst();
 		return person.isPresent();
 	}
-
 
 }
