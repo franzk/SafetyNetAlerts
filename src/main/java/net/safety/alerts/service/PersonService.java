@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.safety.alerts.dto.UrlChildAlertDto;
+import net.safety.alerts.dto.UrlCommunityEmailDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
+import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.PersonRepository;
@@ -51,12 +53,16 @@ public class PersonService {
 		return joinedDataService.childAlert(address, this);
 	}
 
+	public UrlCommunityEmailDto communityEmail(String city) throws CityNotFoundException {
+		UrlCommunityEmailDto communityDto = new UrlCommunityEmailDto();
+		communityDto.setEmails(personRepository.getEmailsByCity(city));
+		return communityDto;
+	}
+
 	// utils
 	public boolean isLastNamePresentInPersonList(String lastName, List<Person> listPerson) {
 		Optional<Person> person = listPerson.stream().filter(p -> p.getLastName().equals(lastName)).findFirst();
 		return person.isPresent();
 	}
-
-
 
 }

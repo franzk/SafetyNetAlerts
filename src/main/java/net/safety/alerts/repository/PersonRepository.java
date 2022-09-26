@@ -7,12 +7,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
-import net.safety.alerts.dto.UrlPersonInfoDto;
-import net.safety.alerts.dto.UrlPersonInfoPersonDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
+import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
-import net.safety.alerts.service.DtoService;
 
 @Repository
 public class PersonRepository {
@@ -36,8 +34,7 @@ public class PersonRepository {
 				.filter(person -> person.getLastName().equals(lastName)).collect(Collectors.toList());
 		if (persons.size() <= 0) {
 			throw new PersonNotFoundException();
-		}
-		else {
+		} else {
 			return persons;
 		}
 	}
@@ -54,22 +51,29 @@ public class PersonRepository {
 	}
 
 	public List<Person> getPersonsByAddress(String address) throws AddressNotFoundException {
-		List<Person> persons = listPersons.stream().filter(person -> person.getAddress().equals(address)).collect(Collectors.toList());
+		List<Person> persons = listPersons.stream().filter(person -> person.getAddress().equals(address))
+				.collect(Collectors.toList());
 		if (persons.size() <= 0) {
 			throw new AddressNotFoundException();
-		}
-		else {
+		} else {
 			return persons;
 		}
 	}
 
 	public List<Person> getPersonsByAddresses(List<String> addresses) {
-		return listPersons.stream()
-				.filter(p -> addresses.stream()
-						.anyMatch(a -> a.equals(p.getAddress()))).collect(Collectors.toList());
+		return listPersons.stream().filter(p -> addresses.stream().anyMatch(a -> a.equals(p.getAddress())))
+				.collect(Collectors.toList());
 	}
-	
-	
+
+	public List<String> getEmailsByCity(String city) throws CityNotFoundException {
+		List<Person> cityInhabitants = listPersons.stream().filter(p -> city.equals(p.getCity()))
+				.collect(Collectors.toList());
+		if (cityInhabitants.size() <= 0) {
+			throw new CityNotFoundException();
+		}
+		return cityInhabitants.stream().map(p -> p.getEmail()).collect(Collectors.toList());
+	}
+
 	// update
 	public Person updatePerson(Person person) throws PersonNotFoundException {
 
@@ -103,7 +107,5 @@ public class PersonRepository {
 			throw new PersonNotFoundException();
 		}
 	}
-
-
 
 }

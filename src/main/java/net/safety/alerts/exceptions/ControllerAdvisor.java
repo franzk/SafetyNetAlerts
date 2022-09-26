@@ -39,7 +39,7 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(PersonNotFoundException.class)
-	protected ResponseEntity<Object> handleMedicalRecordNotFound(PersonNotFoundException ex, WebRequest request) {
+	protected ResponseEntity<Object> handlePersonNotFound(PersonNotFoundException ex, WebRequest request) {
 
 		String body = "Person not found";
 
@@ -53,6 +53,15 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 		String body = "Wrong parameters";
 
 		return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);		
+		
+	}
+	
+	@ExceptionHandler(CityNotFoundException.class)
+	protected ResponseEntity<Object> handleCityNotFound(CityNotFoundException ex, WebRequest request) {
+
+		String body = "City not found";
+
+		return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);		
 		
 	}
 	
