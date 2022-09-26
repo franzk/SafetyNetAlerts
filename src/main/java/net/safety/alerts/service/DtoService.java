@@ -1,12 +1,12 @@
 package net.safety.alerts.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 import net.safety.alerts.dto.PersonDto;
+import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.utils.DtoConstants.PersonField;
+import net.safety.alerts.utils.Utils;
 
 @Service
 public class DtoService {
@@ -45,25 +45,24 @@ public class DtoService {
 		return personDto;
 	}
 	
-	public PersonDto buildPersonDto(Person person, Integer age, PersonField[] fields) {
+	public PersonDto buildPersonDto(Person person, MedicalRecord medicalRecord, PersonField[] fields) {
 		PersonDto personDto = buildPersonDto(person, fields);
-		personDto.setAge(age);
+		for (PersonField field : fields) {
+			switch (field) {
+			case AGE:
+				personDto.setAge(Utils.calculateAge(medicalRecord.getBirthdate()));
+				break;
+			case MEDICATIONS:
+				personDto.setMedications(medicalRecord.getMedications());
+				break;
+			case ALLERGIES:
+				personDto.setAllergies(medicalRecord.getAllergies());
+				break;
+			default:
+				break;
+			}
+		}
 		return personDto;
 	}
 
-	public PersonDto buildPersonDto(Person person, List<String> medications, List<String> allergies, PersonField[] fields) {
-		PersonDto personDto = buildPersonDto(person, fields);
-		personDto.setMedications(medications);
-		personDto.setAllergies(allergies);
-		return personDto;
-	}	
-	
-	public PersonDto buildPersonDto(Person person, Integer age, List<String> medications, List<String> allergies, PersonField[] fields) {
-		PersonDto personDto = buildPersonDto(person, fields);
-		personDto.setAge(age);
-		personDto.setMedications(medications);
-		personDto.setAllergies(allergies);
-		return personDto;
-	}	
-	
 }

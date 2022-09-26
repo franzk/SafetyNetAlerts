@@ -29,6 +29,7 @@ public class MedicalRecordRepository {
 
 	// read
 
+	
 	public Optional<MedicalRecord> getOptionalMedicalRecordByName(String firstName, String lastName) {
 
 		return listMedicalRecords.stream().filter(m -> m.getFirstName().equals(firstName))
@@ -36,6 +37,7 @@ public class MedicalRecordRepository {
 
 	}
 
+	
 	public MedicalRecord getMedicalRecordByName(String firstName, String lastName)
 			throws MedicalRecordNotFoundException {
 
@@ -48,6 +50,11 @@ public class MedicalRecordRepository {
 		}
 	}
 
+	public MedicalRecord getMedicalRecord(Person person) throws MedicalRecordNotFoundException {
+		return this.getMedicalRecordByName(person.getFirstName(), person.getLastName());
+	}
+
+	
 	// update
 	public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
 

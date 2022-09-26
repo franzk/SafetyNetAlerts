@@ -2,7 +2,6 @@ package net.safety.alerts.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,13 +23,11 @@ import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
-import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.FirestationRepository;
 import net.safety.alerts.repository.MedicalRecordRepository;
 import net.safety.alerts.repository.PersonRepository;
 import net.safety.alerts.utils.DtoConstants;
-import net.safety.alerts.utils.Utils;
 
 @Service
 public class UrlService {
@@ -108,7 +105,7 @@ public class UrlService {
 
 		List<PersonDto> childrenDto = childrenAtThisAddress.stream().map(p -> {
 			try {
-				return dtoService.buildPersonDto(p, medicalRecordRepository.getPersonAge(p),
+				return dtoService.buildPersonDto(p, medicalRecordRepository.getMedicalRecord(p),
 						DtoConstants.UrlChildAlertChild);
 			} catch (MedicalRecordNotFoundException e) {
 				return dtoService.buildPersonDto(p, DtoConstants.UrlChildAlertChild);
@@ -208,25 +205,20 @@ public class UrlService {
 
 	// utils
 	private PersonDto convertPersonToUrlPersonInfoItemDTO(Person person) {
-		Optional<MedicalRecord> medicalRecord = medicalRecordRepository
-				.getOptionalMedicalRecordByName(person.getFirstName(), person.getLastName());
-		if (medicalRecord.isPresent()) {
-			return dtoService.buildPersonDto(person, medicalRecord.get().getMedications(),
-					medicalRecord.get().getAllergies(), DtoConstants.UrlPersonInfo);
-		} else {
-			return dtoService.buildPersonDto(person, null, null, DtoConstants.UrlPersonInfo);
+		try {
+			return dtoService.buildPersonDto(person, medicalRecordRepository.getMedicalRecord(person),
+					DtoConstants.UrlPersonInfo);
+		} catch (MedicalRecordNotFoundException e) {
+			return dtoService.buildPersonDto(person, DtoConstants.UrlPersonInfo);
 		}
 	}
 
 	private PersonDto convertPersonToUrlFireDto(Person person) {
-		Optional<MedicalRecord> medicalRecord = medicalRecordRepository
-				.getOptionalMedicalRecordByName(person.getFirstName(), person.getLastName());
-		if (medicalRecord.isPresent()) {
-			return dtoService.buildPersonDto(person, Utils.calculateAge(medicalRecord.get().getBirthdate()),
-					medicalRecord.get().getMedications(), medicalRecord.get().getAllergies(),
+		try {
+			return dtoService.buildPersonDto(person, medicalRecordRepository.getMedicalRecord(person),
 					DtoConstants.UrlFirePerson);
-		} else {
-			return dtoService.buildPersonDto(person, null, null, null, DtoConstants.UrlFirePerson);
+		} catch (MedicalRecordNotFoundException e) {
+			return dtoService.buildPersonDto(person, DtoConstants.UrlFirePerson);
 		}
 	}
 
