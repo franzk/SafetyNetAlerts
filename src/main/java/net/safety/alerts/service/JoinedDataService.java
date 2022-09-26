@@ -2,7 +2,6 @@ package net.safety.alerts.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,10 +19,13 @@ import net.safety.alerts.dto.UrlFirePersonDto;
 import net.safety.alerts.dto.UrlFirestationCoverageDto;
 import net.safety.alerts.dto.UrlFloodStationsAddress;
 import net.safety.alerts.dto.UrlFloodStationsDto;
+import net.safety.alerts.dto.UrlPersonInfoDto;
+import net.safety.alerts.dto.UrlPersonInfoPersonDto;
 import net.safety.alerts.dto.UrlPhoneAlertDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
+import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.FirestationRepository;
@@ -184,6 +186,31 @@ public class JoinedDataService {
 
 		return floodDto;
 
+	}
+	
+	public UrlPersonInfoDto getPersonInfoByName(String firstName, String lastName) throws PersonNotFoundException {
+
+		List<Person> persons = personRepository.getPersonsByName(firstName, lastName);
+
+		List<UrlPersonInfoPersonDto> personsDto = persons.stream().map(p -> convertPersonToUrlPersonInfoItemDTO(p))
+				.collect(Collectors.toList());
+
+		UrlPersonInfoDto urlPersonInfoDto = new UrlPersonInfoDto();
+		urlPersonInfoDto.setPersons(personsDto);
+
+		return urlPersonInfoDto;
+	}
+	
+	
+	private UrlPersonInfoPersonDto convertPersonToUrlPersonInfoItemDTO(Person person) {
+		Optional<MedicalRecord> medicalRecord = medicalRecordRepository
+				.getOptionalMedicalRecordByName(person.getFirstName(), person.getLastName());
+		if (medicalRecord.isPresent()) {
+			return dtoService.buildUrlPersonInfoPersonDTO(person,
+					medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
+		} else {
+			return dtoService.buildUrlPersonInfoPersonDTO(person, null, null);
+		}
 	}
 
 	// utils

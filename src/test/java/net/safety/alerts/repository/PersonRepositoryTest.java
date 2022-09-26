@@ -50,7 +50,7 @@ public class PersonRepositoryTest {
 		return personList;
 	}
 
-	@Test
+	/*@Test
 	public void setListPersonsAndGetPersonByNameTest() {
 		// Arrange
 		List<Person> personList = buildPersonList(testFirstName, testLastName, testAdress);
@@ -97,7 +97,7 @@ public class PersonRepositoryTest {
 				.isEqualTo(testAdress);
 	}
 
-	/*@Test
+	@Test
 	public void getPersonsByAddressTest() {
 		// Arrange
 		List<Person> personList = buildPersonList(testFirstName, testLastName, testAdress);
@@ -109,7 +109,7 @@ public class PersonRepositoryTest {
 		// Assert
 		assertThat(result.get(0)).isEqualTo(personList.get(0));
 
-	}*/
+	}
 
 	@Test
 	public void deletePersonTest() {
@@ -181,5 +181,5 @@ public class PersonRepositoryTest {
 		assertThrows(PersonNotFoundException.class, () -> personRepositoryUnderTest.deletePersonByName("wrong first name", "wrong last name"));	
 
 	}
-
+*/
 }

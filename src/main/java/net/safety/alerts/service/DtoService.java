@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import net.safety.alerts.dto.ChildDto;
 import net.safety.alerts.dto.UrlFirePersonDto;
+import net.safety.alerts.dto.UrlPersonInfoPersonDto;
 import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.dto.PersonNameDto;
 import net.safety.alerts.model.Person;
@@ -43,4 +44,14 @@ public class DtoService {
 		return personFireDto;
 	}
 
+	public UrlPersonInfoPersonDto buildUrlPersonInfoPersonDTO(Person person, List<String> medications, List<String> allergies) {
+		UrlPersonInfoPersonDto personDto = new UrlPersonInfoPersonDto();
+		personDto.setFirstName(person.getFirstName());
+		personDto.setLastName(person.getLastName());
+		personDto.setEmail(person.getEmail());
+		personDto.setMedications(medications);
+		personDto.setAllergies(allergies);
+		return personDto;
+	}
+	
 }

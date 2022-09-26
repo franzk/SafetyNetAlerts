@@ -22,10 +22,10 @@ public class PersonService {
 	private JoinedDataService joinedDataService;
 
 	// read
-	public List<Person> getPersonsWithSameName(String firstName, String lastName) {
+	public List<Person> getPersonsWithSameName(String firstName, String lastName) throws PersonNotFoundException {
 		return personRepository.getPersonsByName(firstName, lastName);
 	}
-	
+
 	public Person getPersonByName(String firstName, String lastName) throws PersonNotFoundException {
 		return personRepository.getPersonByName(firstName, lastName);
 
@@ -56,5 +56,7 @@ public class PersonService {
 		Optional<Person> person = listPerson.stream().filter(p -> p.getLastName().equals(lastName)).findFirst();
 		return person.isPresent();
 	}
+
+
 
 }

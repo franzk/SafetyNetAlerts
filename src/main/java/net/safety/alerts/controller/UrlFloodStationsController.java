@@ -20,7 +20,7 @@ public class UrlFloodStationsController {
 	private JoinedDataService joinedDataService;
 	
 	@GetMapping("flood/stations")
-	public ResponseEntity<UrlFloodStationsDto> phoneAlert(@RequestParam List<Integer> stations) throws FirestationNotFoundException {
+	public ResponseEntity<UrlFloodStationsDto> floodStations(@RequestParam List<Integer> stations) throws FirestationNotFoundException {
 		return new ResponseEntity<>(joinedDataService.urlFloodStations(stations), HttpStatus.OK);
 	}
 	
