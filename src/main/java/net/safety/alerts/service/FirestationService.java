@@ -6,9 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.safety.alerts.dto.UrlFireDto;
-import net.safety.alerts.dto.UrlFirestationCoverageDto;
-import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.model.Firestation;
 import net.safety.alerts.repository.FirestationRepository;
@@ -18,9 +15,6 @@ public class FirestationService {
 
 	@Autowired
 	private FirestationRepository firestationRepository;
-
-	@Autowired
-	private JoinedDataService joinedDataService;
 
 	// create
 	public Firestation add(Firestation f) {
@@ -54,15 +48,6 @@ public class FirestationService {
 
 	public void deleteByStationNumber(Integer stationNumber) throws FirestationNotFoundException {
 		firestationRepository.deleteByStationNumber(stationNumber);
-	}
-
-	// endpoints
-	public UrlFireDto fire(String address) throws AddressNotFoundException, FirestationNotFoundException {
-		return joinedDataService.fire(address);
-	}
-
-	public UrlFirestationCoverageDto firestationCoverage(Integer stationNumber) throws FirestationNotFoundException {
-		return joinedDataService.firestationCoverage(stationNumber);
 	}
 
 }

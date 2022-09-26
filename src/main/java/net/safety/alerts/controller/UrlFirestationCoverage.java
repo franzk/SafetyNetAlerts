@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.safety.alerts.dto.UrlFirestationCoverageDto;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
-import net.safety.alerts.service.FirestationService;
+import net.safety.alerts.service.UrlService;
 
 @RestController
 public class UrlFirestationCoverage {
 
 	@Autowired
-	private FirestationService firestationService;
+	private UrlService urlService;
 	
 	@GetMapping("/firestationCoverage")
 	public ResponseEntity<UrlFirestationCoverageDto> firestationCoverage(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
-		return new ResponseEntity<>(firestationService.firestationCoverage(stationNumber), HttpStatus.OK);
+		return new ResponseEntity<>(urlService.urlFirestationCoverage(stationNumber), HttpStatus.OK);
 	}
 }

@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.safety.alerts.dto.UrlFloodStationsDto;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
-import net.safety.alerts.service.JoinedDataService;
+import net.safety.alerts.service.UrlService;
 
 @RestController
 public class UrlFloodStationsController {
 
 	@Autowired
-	private JoinedDataService joinedDataService;
+	private UrlService urlService;
 	
 	@GetMapping("flood/stations")
 	public ResponseEntity<UrlFloodStationsDto> floodStations(@RequestParam List<Integer> stations) throws FirestationNotFoundException {
-		return new ResponseEntity<>(joinedDataService.urlFloodStations(stations), HttpStatus.OK);
+		return new ResponseEntity<>(urlService.urlFloodStations(stations), HttpStatus.OK);
 	}
 	
 }

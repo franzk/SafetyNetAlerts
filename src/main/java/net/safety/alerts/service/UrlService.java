@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.dto.UrlChildAlertDto;
+import net.safety.alerts.dto.UrlCommunityEmailDto;
 import net.safety.alerts.dto.UrlFireDto;
 import net.safety.alerts.dto.UrlFirestationCoverageDto;
 import net.safety.alerts.dto.UrlFloodStationsAddress;
@@ -19,6 +20,7 @@ import net.safety.alerts.dto.UrlFloodStationsDto;
 import net.safety.alerts.dto.UrlPersonInfoDto;
 import net.safety.alerts.dto.UrlPhoneAlertDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
+import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
@@ -31,7 +33,7 @@ import net.safety.alerts.utils.DtoConstants;
 import net.safety.alerts.utils.Utils;
 
 @Service
-public class JoinedDataService {
+public class UrlService {
 
 	@Autowired
 	PersonRepository personRepository;
@@ -45,7 +47,7 @@ public class JoinedDataService {
 	@Autowired
 	DtoService dtoService;
 
-	public UrlFirestationCoverageDto firestationCoverage(@RequestParam Integer stationNumber)
+	public UrlFirestationCoverageDto urlFirestationCoverage(@RequestParam Integer stationNumber)
 			throws FirestationNotFoundException {
 
 		DtoService dtoService = new DtoService();
@@ -53,7 +55,8 @@ public class JoinedDataService {
 		List<String> addresses = firestationRepository.getFirestationAddresses(stationNumber);
 		List<Person> personsCovered = personRepository.getPersonsByAddresses(addresses);
 		List<PersonDto> personsCoveredDto = personsCovered.stream()
-				.map(person -> dtoService.buildPersonDto(person, DtoConstants.UrlFirestationCoveragePerson)).collect(Collectors.toList());
+				.map(person -> dtoService.buildPersonDto(person, DtoConstants.UrlFirestationCoveragePerson))
+				.collect(Collectors.toList());
 
 		long adultsCount = personsCovered.stream().filter(p -> {
 			try {
@@ -80,7 +83,7 @@ public class JoinedDataService {
 
 	}
 
-	public UrlChildAlertDto childAlert(String address, PersonService personService) throws AddressNotFoundException {
+	public UrlChildAlertDto urlChildAlert(String address) throws AddressNotFoundException {
 
 		List<Person> personsAtThisAddress = personRepository.getPersonsByAddress(address);
 		List<Person> childrenAtThisAddress = personsAtThisAddress.stream().filter(p -> {
@@ -92,7 +95,7 @@ public class JoinedDataService {
 		}).toList();
 
 		List<Person> otherHouseholdMembers = personsAtThisAddress.stream()
-				.filter(p -> personService.isLastNamePresentInPersonList(p.getLastName(), childrenAtThisAddress))
+				.filter(p -> childrenAtThisAddress.stream().anyMatch(c -> c.getLastName().equals(p.getLastName())))
 				.filter(p -> {
 					try {
 						return medicalRecordRepository.getPersonAge(p) > 18;
@@ -103,19 +106,17 @@ public class JoinedDataService {
 
 		UrlChildAlertDto childAlertDto = new UrlChildAlertDto();
 
-		DtoService dtoService = new DtoService();
-
 		List<PersonDto> childrenDto = childrenAtThisAddress.stream().map(p -> {
 			try {
-				return dtoService.buildPersonDto(p, medicalRecordRepository.getPersonAge(p), DtoConstants.UrlChildAlertChild);
+				return dtoService.buildPersonDto(p, medicalRecordRepository.getPersonAge(p),
+						DtoConstants.UrlChildAlertChild);
 			} catch (MedicalRecordNotFoundException e) {
 				return dtoService.buildPersonDto(p, DtoConstants.UrlChildAlertChild);
 			}
 		}).collect(Collectors.toList());
 
-		List<PersonDto> otherHouseholdMembersDto = otherHouseholdMembers.stream().map(
-				p -> dtoService.buildPersonDto(p, DtoConstants.UrlChildAlertAdult))
-				.collect(Collectors.toList());
+		List<PersonDto> otherHouseholdMembersDto = otherHouseholdMembers.stream()
+				.map(p -> dtoService.buildPersonDto(p, DtoConstants.UrlChildAlertAdult)).collect(Collectors.toList());
 
 		childAlertDto.setChildren(childrenDto);
 		childAlertDto.setOtherHouseHoldMembers(otherHouseholdMembersDto);
@@ -124,14 +125,14 @@ public class JoinedDataService {
 
 	}
 
-	public UrlFireDto fire(String address) throws FirestationNotFoundException, AddressNotFoundException {
+	public UrlFireDto urlFire(String address) throws FirestationNotFoundException, AddressNotFoundException {
 
 		Integer stationNumber = firestationRepository.getFirestationNumber(address);
 
 		List<Person> persons = personRepository.getPersonsByAddress(address);
-		
+
 		List<PersonDto> personsFireDto = persons.stream().map(p -> this.convertPersonToUrlFireDto(p))
-						.collect(Collectors.toList());
+				.collect(Collectors.toList());
 
 		UrlFireDto fireDto = new UrlFireDto();
 		fireDto.setFirestationNumber(stationNumber);
@@ -189,7 +190,7 @@ public class JoinedDataService {
 	public UrlPersonInfoDto getPersonInfoByName(String firstName, String lastName) throws PersonNotFoundException {
 
 		List<Person> persons = personRepository.getPersonsByName(firstName, lastName);
-	
+
 		List<PersonDto> personsDto = persons.stream().map(p -> convertPersonToUrlPersonInfoItemDTO(p))
 				.collect(Collectors.toList());
 
@@ -199,6 +200,13 @@ public class JoinedDataService {
 		return urlPersonInfoDto;
 	}
 
+	public UrlCommunityEmailDto urlCommunityEmail(String city) throws CityNotFoundException {
+		UrlCommunityEmailDto communityDto = new UrlCommunityEmailDto();
+		communityDto.setEmails(personRepository.getEmailsByCity(city));
+		return communityDto;
+	}
+
+	// utils
 	private PersonDto convertPersonToUrlPersonInfoItemDTO(Person person) {
 		Optional<MedicalRecord> medicalRecord = medicalRecordRepository
 				.getOptionalMedicalRecordByName(person.getFirstName(), person.getLastName());
@@ -210,13 +218,13 @@ public class JoinedDataService {
 		}
 	}
 
-	// utils
 	private PersonDto convertPersonToUrlFireDto(Person person) {
 		Optional<MedicalRecord> medicalRecord = medicalRecordRepository
 				.getOptionalMedicalRecordByName(person.getFirstName(), person.getLastName());
 		if (medicalRecord.isPresent()) {
 			return dtoService.buildPersonDto(person, Utils.calculateAge(medicalRecord.get().getBirthdate()),
-					medicalRecord.get().getMedications(), medicalRecord.get().getAllergies(), DtoConstants.UrlFirePerson);
+					medicalRecord.get().getMedications(), medicalRecord.get().getAllergies(),
+					DtoConstants.UrlFirePerson);
 		} else {
 			return dtoService.buildPersonDto(person, null, null, null, DtoConstants.UrlFirePerson);
 		}

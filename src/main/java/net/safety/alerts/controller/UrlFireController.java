@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 import net.safety.alerts.dto.UrlFireDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
-import net.safety.alerts.service.FirestationService;
+import net.safety.alerts.service.UrlService;
 
 @RestController
 public class UrlFireController {
 	
 	@Autowired
-	FirestationService firestationService;
+	UrlService urlService;
 	
 	@GetMapping("/fire")
 	public ResponseEntity<UrlFireDto> fire(@RequestParam String address) throws AddressNotFoundException, FirestationNotFoundException {
-		return new ResponseEntity<>(firestationService.fire(address), HttpStatus.OK);
+		return new ResponseEntity<>(urlService.urlFire(address), HttpStatus.OK);
 	}
 }

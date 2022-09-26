@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.safety.alerts.dto.UrlPhoneAlertDto;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
-import net.safety.alerts.service.JoinedDataService;
+import net.safety.alerts.service.UrlService;
 
 @RestController
 public class UrlPhoneAlert {
 
 	@Autowired
-	private JoinedDataService joinedDataService;
+	private UrlService urlService;
 	
 	@GetMapping("phoneAlert")
 	public ResponseEntity<UrlPhoneAlertDto> phoneAlert(@RequestParam Integer firestationNumber) throws FirestationNotFoundException {
-		return new ResponseEntity<>(joinedDataService.urlPhoneAlert(firestationNumber), HttpStatus.OK);
+		return new ResponseEntity<>(urlService.urlPhoneAlert(firestationNumber), HttpStatus.OK);
 	}
 	
 	

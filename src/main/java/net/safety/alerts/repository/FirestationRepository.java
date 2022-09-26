@@ -69,6 +69,17 @@ public class FirestationRepository {
 		else return firestations;
 	}
 
+	public Firestation getFirestationByAddress(String address) throws FirestationNotFoundException {
+		Optional<Firestation> firestation = listFirestations.stream().filter(f -> f.getAddress().equals(address))
+				.findFirst();
+
+		if (firestation.isPresent()) {
+			return firestation.get();
+		} else {
+			throw new FirestationNotFoundException();
+		}
+	}
+
 	public List<String> getFirestationAddresses(Integer StationNumber) throws FirestationNotFoundException {
 		List<Firestation> firestations = this.getFirestationsByStationNumber(StationNumber);
 		List<String> adresses = firestations.stream().map(Firestation::getAddress).collect(Collectors.toList());
@@ -86,15 +97,5 @@ public class FirestationRepository {
 		}
 	}
 
-	public Firestation getFirestationByAddress(String address) throws FirestationNotFoundException {
-		Optional<Firestation> firestation = listFirestations.stream().filter(f -> f.getAddress().equals(address))
-				.findFirst();
-
-		if (firestation.isPresent()) {
-			return firestation.get();
-		} else {
-			throw new FirestationNotFoundException();
-		}
-	}
 
 }

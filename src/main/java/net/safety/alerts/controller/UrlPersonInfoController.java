@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.safety.alerts.dto.UrlPersonInfoDto;
 import net.safety.alerts.exceptions.PersonNotFoundException;
-import net.safety.alerts.service.JoinedDataService;
+import net.safety.alerts.service.UrlService;
 
 @RestController
 public class UrlPersonInfoController {
 
 	@Autowired
-	private JoinedDataService joinedDataService;
+	private UrlService urlService;
 	
 	@GetMapping("personInfo")
 	public ResponseEntity<UrlPersonInfoDto> urlPersonInfo(@RequestParam String firstName, @RequestParam String lastName) throws PersonNotFoundException {
-		return new ResponseEntity<>(joinedDataService.getPersonInfoByName(firstName, lastName), HttpStatus.OK);
+		return new ResponseEntity<>(urlService.getPersonInfoByName(firstName, lastName), HttpStatus.OK);
 	}
 	
 }

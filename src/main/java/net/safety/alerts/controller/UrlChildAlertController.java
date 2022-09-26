@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.safety.alerts.dto.UrlChildAlertDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
-import net.safety.alerts.service.PersonService;
+import net.safety.alerts.service.UrlService;
 
 @RestController
 public class UrlChildAlertController {
 	
 	@Autowired
-	private PersonService personService;
+	private UrlService urlService;
 
 	@GetMapping("childAlert")
 	public ResponseEntity<UrlChildAlertDto> childAlert(@RequestParam String address) throws AddressNotFoundException {
-		return new ResponseEntity<>(personService.childAlert(address), HttpStatus.OK);
+		return new ResponseEntity<>(urlService.urlChildAlert(address), HttpStatus.OK);
 	}
 	
 }

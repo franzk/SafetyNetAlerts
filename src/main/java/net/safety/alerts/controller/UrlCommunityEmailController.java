@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.safety.alerts.dto.UrlCommunityEmailDto;
 import net.safety.alerts.exceptions.CityNotFoundException;
-import net.safety.alerts.service.PersonService;
+import net.safety.alerts.service.UrlService;
 
 @RestController
 public class UrlCommunityEmailController {
 
 	@Autowired
-	PersonService personService;
+	UrlService urlService;
 
 	@GetMapping("communityEmail")
 	public ResponseEntity<UrlCommunityEmailDto>  communityEmail(@RequestParam String city) throws CityNotFoundException {
-		return new ResponseEntity<>(personService.communityEmail(city), HttpStatus.OK);
+		return new ResponseEntity<>(urlService.urlCommunityEmail(city), HttpStatus.OK);
 	}
 	
 }
