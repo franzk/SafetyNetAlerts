@@ -19,7 +19,7 @@ public class FirestationRepositoryTest {
 	private static FirestationRepository firestationRepositoryUnderTest;
 
 	private final String testAddress = "test Address";
-	private final Integer testNumber = 10;
+	private final Integer testNumber = 1000;
 
 	@BeforeAll
 	public static void setUp() {
@@ -40,7 +40,7 @@ public class FirestationRepositoryTest {
 
 	@Test
 	public void addFirestationAndGetFirestationAddressTest() {
-		/* Arrange
+		// Arrange
 		Firestation firestation = buildFirestation(testAddress, testNumber);
 
 		// Act
@@ -48,10 +48,10 @@ public class FirestationRepositoryTest {
 
 		// Assert
 		try {
-			assertThat(firestationRepositoryUnderTest.getFirestationAddress(testNumber)).isEqualTo(testAddress);
+			assertThat(firestationRepositoryUnderTest.getFirestationAddresses(testNumber).get(0)).isEqualTo(testAddress);
 		} catch (FirestationNotFoundException e) {
 			fail("addFirestation Test failed : getFirestationAdress threw an exception !");
-		}*/
+		}
 	}
 
 	@Test
@@ -97,13 +97,13 @@ public class FirestationRepositoryTest {
 
 	@Test
 	public void getFirestationAddressExceptionTest() {
-		/* Arrange
+		// Arrange
 		Firestation firestation = buildFirestation(testAddress, testNumber);
 		firestationRepositoryUnderTest.addFirestation(firestation);
 
 		// Act + Assert
 		assertThrows(FirestationNotFoundException.class,
-				() -> firestationRepositoryUnderTest.getFirestationAddress(testNumber + 1));*/
+				() -> firestationRepositoryUnderTest.getFirestationAddresses(testNumber + 1));
 	}
 
 	@Test

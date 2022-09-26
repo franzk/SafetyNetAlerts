@@ -2,7 +2,6 @@ package net.safety.alerts;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +87,7 @@ public class DataInitializer {
 
 	}
 
-	private void loadMedicalRecords() throws DateTimeParseException {
+	private void loadMedicalRecords() {
 		JsonNode medicalrecords = root.path(JsonFileConstants.medicalrecords);
 
 		for (JsonNode m : medicalrecords) {

@@ -4,10 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,38 +36,34 @@ public class MedicalRecordRepositoryTest {
 		medicalRecordRepositoryUnderTest.setListMedicalRecords(new ArrayList<>());
 	}
 
-	/*@Test
+	@Test
 	public void setListMedicalRecordsgetAndMedicalRecordByNameTest() {
 		// Arrange
-		List<MedicalRecord> listMedicalRecords = new ArrayList<>();
-		try {
-			listMedicalRecords = buildListMedicalRecords();
-		} catch (ParseException e) {
-			fail("setListMedicalRecordsTest threw an exception !");
-		}
+		List<MedicalRecord> listMedicalRecords = buildListMedicalRecords();
 		MedicalRecord testMedicalRecord = listMedicalRecords.get(5);
 
 		// Act
 		medicalRecordRepositoryUnderTest.setListMedicalRecords(listMedicalRecords);
 
 		// Assert
-		Optional<MedicalRecord> result = medicalRecordRepositoryUnderTest
-				.getMedicalRecordByName(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName());
-		assertThat(result.get()).isEqualTo(testMedicalRecord);
-	}*/
+		MedicalRecord result;
+		try {
+			result = medicalRecordRepositoryUnderTest.getMedicalRecordByName(testMedicalRecord.getFirstName(),
+					testMedicalRecord.getLastName());
+			assertThat(result).isEqualTo(testMedicalRecord);
+		} catch (MedicalRecordNotFoundException e) {
+			fail("setListMedicalRecordsgetAndMedicalRecordByNameTest threw an exception");
+		}
+	}
 
-	/*@Test
+	@Test
 	public void updateMedicalRecord() {
 		// Arrange
 		MedicalRecord medicalRecordToUpdate = new MedicalRecord();
 		MedicalRecord medicalRecordUpdated = new MedicalRecord();
-		try {
-			medicalRecordToUpdate = buildMedicalRecord("");
-			medicalRecordUpdated = buildMedicalRecord("");
-			medicalRecordUpdated.setBirthdate(Utils.StringToDate("12/14/2021"));
-		} catch (ParseException e) {
-			fail("setListMedicalRecordsTest threw an exception !");
-		}
+		medicalRecordToUpdate = buildMedicalRecord("");
+		medicalRecordUpdated = buildMedicalRecord("");
+		medicalRecordUpdated.setBirthdate(Utils.StringToDate("12/14/2021"));
 
 		medicalRecordRepositoryUnderTest.addMedicalRecord(medicalRecordToUpdate);
 
@@ -77,26 +71,24 @@ public class MedicalRecordRepositoryTest {
 		try {
 			medicalRecordRepositoryUnderTest.updateMedicalRecord(medicalRecordUpdated);
 		} catch (MedicalRecordNotFoundException e) {
-			fail("setListMedicalRecordsTest threw an exception !");
+			fail("updateMedicalRecord (act) threw an exception !");
 		}
 
 		// Assert
-		Optional<MedicalRecord> result = medicalRecordRepositoryUnderTest
-				.getMedicalRecordByName(medicalRecordToUpdate.getFirstName(), medicalRecordToUpdate.getLastName());
-
-		assertThat(result.get().getBirthdate()).isEqualTo(medicalRecordUpdated.getBirthdate());
-
-	}*/
-
-	/*@Test
-	public void deleteMedicalRecordTest() {
-		// Arrange
-		List<MedicalRecord> listMedicalRecords = new ArrayList<>();
+		MedicalRecord result;
 		try {
-			listMedicalRecords = buildListMedicalRecords();
-		} catch (ParseException e) {
-			fail("deleteMedicalRecordTest threw an exception !");
+			result = medicalRecordRepositoryUnderTest.getMedicalRecordByName(medicalRecordToUpdate.getFirstName(),
+					medicalRecordToUpdate.getLastName());
+			assertThat(result.getBirthdate()).isEqualTo(medicalRecordUpdated.getBirthdate());
+		} catch (MedicalRecordNotFoundException e) {
+			fail("updateMedicalRecord (assert) threw an exception !");
 		}
+
+	}
+
+	@Test
+	public void deleteMedicalRecordTest() {
+		List<MedicalRecord> listMedicalRecords = buildListMedicalRecords();
 
 		medicalRecordRepositoryUnderTest.setListMedicalRecords(listMedicalRecords);
 		MedicalRecord testMedicalRecord = listMedicalRecords.get(5);
@@ -109,20 +101,14 @@ public class MedicalRecordRepositoryTest {
 		}
 
 		// Assert
-		Optional<MedicalRecord> result = medicalRecordRepositoryUnderTest
-				.getMedicalRecordByName(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName());
-		assertThat(result.isEmpty());
+		assertThrows(MedicalRecordNotFoundException.class, () -> medicalRecordRepositoryUnderTest
+				.getMedicalRecordByName(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName()));
 	}
 
 	@Test
 	public void deleteMedicalRecordByNameTest() {
 		// Arrange
-		List<MedicalRecord> listMedicalRecords = new ArrayList<>();
-		try {
-			listMedicalRecords = buildListMedicalRecords();
-		} catch (ParseException e) {
-			fail("deleteMedicalRecordByNameTest threw an exception !");
-		}
+		List<MedicalRecord> listMedicalRecords = buildListMedicalRecords();
 
 		medicalRecordRepositoryUnderTest.setListMedicalRecords(listMedicalRecords);
 		MedicalRecord testMedicalRecord = listMedicalRecords.get(5);
@@ -136,21 +122,15 @@ public class MedicalRecordRepositoryTest {
 		}
 
 		// Assert
-		Optional<MedicalRecord> result = medicalRecordRepositoryUnderTest
-				.getMedicalRecordByName(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName());
-		assertThat(result.isEmpty());
-	}*/
+		assertThrows(MedicalRecordNotFoundException.class, () -> medicalRecordRepositoryUnderTest
+				.getMedicalRecordByName(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName()));
+	}
 
 	@Test
 	public void getPersonAgeTest() {
 		// Arrange
-		MedicalRecord testMedicalRecord = new MedicalRecord();
-		try {
-			testMedicalRecord = buildMedicalRecord("");
-			medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
-		} catch (ParseException e) {
-			fail("getPersonAgeTest threw an exception !");
-		}
+		MedicalRecord testMedicalRecord = buildMedicalRecord("");
+		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
 
 		Person testPerson = new Person();
 		testPerson.setFirstName(testMedicalRecord.getFirstName());
@@ -171,46 +151,34 @@ public class MedicalRecordRepositoryTest {
 	@Test
 	public void updateMedicalRecordExceptionTest() {
 		// Arrange
-		MedicalRecord medicalRecordToUpdate = new MedicalRecord();
-		MedicalRecord medicalRecordUpdated = new MedicalRecord();
-		try {
-			medicalRecordToUpdate = buildMedicalRecord("");
-			medicalRecordUpdated = buildMedicalRecord("");
-		} catch (ParseException e) {
-			fail("setListMedicalRecordsTest threw an exception !");
-		}
+		MedicalRecord medicalRecordToUpdate = buildMedicalRecord("");
+		MedicalRecord medicalRecordUpdated = buildMedicalRecord("");
 
 		medicalRecordRepositoryUnderTest.addMedicalRecord(medicalRecordToUpdate);
 		medicalRecordUpdated.setFirstName("wrong first name");
 		final MedicalRecord medicalRecordUpdatedTest = medicalRecordUpdated;
 
 		// Act + Assert
-			assertThrows(MedicalRecordNotFoundException.class, 
-			() -> medicalRecordRepositoryUnderTest.updateMedicalRecord(medicalRecordUpdatedTest));
+		assertThrows(MedicalRecordNotFoundException.class,
+				() -> medicalRecordRepositoryUnderTest.updateMedicalRecord(medicalRecordUpdatedTest));
 	}
-	
+
 	@Test
 	public void deleteMedicalRecordExceptionTest() {
 		// Arrange
-		MedicalRecord medicalRecord = new MedicalRecord();
-		try {
-			medicalRecord = buildMedicalRecord("");
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		final MedicalRecord testMedicalRecord = medicalRecord;
-		
+		MedicalRecord medicalRecord = buildMedicalRecord("");
+		MedicalRecord testMedicalRecord = medicalRecord;
+
 		// Act + Assert
-		assertThrows(MedicalRecordNotFoundException.class, 
+		assertThrows(MedicalRecordNotFoundException.class,
 				() -> medicalRecordRepositoryUnderTest.deleteMedicalRecord(testMedicalRecord));
-		
+
 	}
-	
+
 	@Test
-	public void deleteMedicalRecordByNameExceptionTest() {		
-		assertThrows(MedicalRecordNotFoundException.class, 
-				() -> medicalRecordRepositoryUnderTest.deleteMedicalRecordByName(testFirstName, testLastName));		
+	public void deleteMedicalRecordByNameExceptionTest() {
+		assertThrows(MedicalRecordNotFoundException.class,
+				() -> medicalRecordRepositoryUnderTest.deleteMedicalRecordByName(testFirstName, testLastName));
 	}
 
 	@Test
@@ -220,9 +188,9 @@ public class MedicalRecordRepositoryTest {
 		person.setLastName(testLastName);
 		assertThrows(MedicalRecordNotFoundException.class, () -> medicalRecordRepositoryUnderTest.getPersonAge(person));
 	}
-	
+
 	// Utils
-	private List<MedicalRecord> buildListMedicalRecords() throws ParseException {
+	private List<MedicalRecord> buildListMedicalRecords() {
 		List<MedicalRecord> listMedicalRecords = new ArrayList<>();
 		listMedicalRecords.add(buildMedicalRecord(""));
 		for (int i = 0; i < 20; i++) {
@@ -231,7 +199,7 @@ public class MedicalRecordRepositoryTest {
 		return listMedicalRecords;
 	}
 
-	private MedicalRecord buildMedicalRecord(String modifier) throws ParseException {
+	private MedicalRecord buildMedicalRecord(String modifier) {
 		MedicalRecord medicalRecord = new MedicalRecord();
 		medicalRecord.setFirstName(testFirstName + modifier);
 		medicalRecord.setLastName(testLastName + modifier);

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 
@@ -50,7 +51,7 @@ public class PersonRepositoryTest {
 		return personList;
 	}
 
-	/*@Test
+	@Test
 	public void setListPersonsAndGetPersonByNameTest() {
 		// Arrange
 		List<Person> personList = buildPersonList(testFirstName, testLastName, testAdress);
@@ -58,10 +59,16 @@ public class PersonRepositoryTest {
 		// Act
 		personRepositoryUnderTest.setListPersons(personList);
 
-		List<Person> result = personRepositoryUnderTest.getPersonsByName(testFirstName, testLastName);
+		List<Person> result;
+		try {
+			result = personRepositoryUnderTest.getPersonsByName(testFirstName, testLastName);
 
-		// Assert
-		assertThat(result.get(0).getAddress()).isEqualTo(testAdress);
+			// Assert
+			assertThat(result.get(0).getAddress()).isEqualTo(testAdress);
+
+		} catch (PersonNotFoundException e) {
+			fail("setListPersonsAndGetPersonByNameTest threw an exception");
+		}
 
 	}
 
@@ -72,10 +79,16 @@ public class PersonRepositoryTest {
 
 		// Act
 		personRepositoryUnderTest.addPerson(person);
-		List<Person> result = personRepositoryUnderTest.getPersonsByName(testFirstName, testLastName);
+		List<Person> result;
+		try {
+			result = personRepositoryUnderTest.getPersonsByName(testFirstName, testLastName);
 
-		// Assert
-		assertThat(result.get(0).getAddress()).isEqualTo(testAdress);
+			// Assert
+			assertThat(result.get(0).getAddress()).isEqualTo(testAdress);
+		} catch (PersonNotFoundException e) {
+			fail("addPersonTest threw an exception");
+		}
+
 	}
 
 	@Test
@@ -89,12 +102,16 @@ public class PersonRepositoryTest {
 		try {
 			personRepositoryUnderTest.updatePerson(person2);
 		} catch (PersonNotFoundException e) {
-			fail("updatePersonTest threw an exception !");
+			fail("updatePersonTest (act) threw an exception !");
 		}
 
 		// Assert
-		assertThat(personRepositoryUnderTest.getPersonsByName(testFirstName, testLastName).get(0).getAddress())
-				.isEqualTo(testAdress);
+		try {
+			assertThat(personRepositoryUnderTest.getPersonsByName(testFirstName, testLastName).get(0).getAddress())
+					.isEqualTo(testAdress);
+		} catch (PersonNotFoundException e) {
+			fail("updatePersonTest (assert) threw an exception !");
+		}
 	}
 
 	@Test
@@ -104,10 +121,15 @@ public class PersonRepositoryTest {
 		personRepositoryUnderTest.setListPersons(personList);
 
 		// Act
-		List<Person> result = personRepositoryUnderTest.getPersonsByAddress(testAdress);
+		List<Person> result;
+		try {
+			result = personRepositoryUnderTest.getPersonsByAddress(testAdress);
 
-		// Assert
-		assertThat(result.get(0)).isEqualTo(personList.get(0));
+			// Assert
+			assertThat(result.get(0)).isEqualTo(personList.get(0));
+		} catch (AddressNotFoundException e) {
+			fail("getPersonsByAddressTest threw an exception !");
+		}
 
 	}
 
@@ -122,16 +144,18 @@ public class PersonRepositoryTest {
 		try {
 			personRepositoryUnderTest.deletePerson(personToDelete);
 		} catch (PersonNotFoundException e) {
-			fail("deletePersonTest threw an exception !");
+			fail("deletePersonTest (act) threw an exception !");
 		}
 
 		// Assert
-		assertThat(personRepositoryUnderTest
-				.getPersonsByName(personToDelete.getFirstName(), personToDelete.getLastName()).size()).isEqualTo(0);
+		assertThrows(PersonNotFoundException.class, () -> personRepositoryUnderTest
+				.getPersonsByName(personToDelete.getFirstName(), personToDelete.getLastName()));
 	}
 
 	@Test
-	public void deleteByNameTest() { // Arrange List<Person> personList =
+	public void deleteByNameTest() {
+
+		// Arrange
 		List<Person> personList = buildPersonList(testFirstName, testLastName, testAdress);
 		Person personToDelete = personList.get(5);
 		personRepositoryUnderTest.setListPersons(personList);
@@ -140,13 +164,12 @@ public class PersonRepositoryTest {
 		try {
 			personRepositoryUnderTest.deletePersonByName(personToDelete.getFirstName(), personToDelete.getLastName());
 		} catch (PersonNotFoundException e) {
-			fail("deletePersonTest threw an exception !");
+			fail("deleteByNameTest threw an exception !");
 		}
 
 		// Assert
-		assertThat(personRepositoryUnderTest
-				.getPersonsByName(personToDelete.getFirstName(), personToDelete.getLastName()).size()).isEqualTo(0);
-
+		assertThrows(PersonNotFoundException.class, () -> personRepositoryUnderTest
+				.getPersonsByName(personToDelete.getFirstName(), personToDelete.getLastName()));
 	}
 
 	@Test
@@ -178,8 +201,9 @@ public class PersonRepositoryTest {
 		personRepositoryUnderTest.setListPersons(personList);
 
 		// Act + Assert
-		assertThrows(PersonNotFoundException.class, () -> personRepositoryUnderTest.deletePersonByName("wrong first name", "wrong last name"));	
+		assertThrows(PersonNotFoundException.class,
+				() -> personRepositoryUnderTest.deletePersonByName("wrong first name", "wrong last name"));
 
 	}
-*/
+
 }

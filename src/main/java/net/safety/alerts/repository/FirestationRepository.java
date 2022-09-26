@@ -82,7 +82,7 @@ public class FirestationRepository {
 
 	public List<String> getFirestationAddresses(Integer StationNumber) throws FirestationNotFoundException {
 		List<Firestation> firestations = this.getFirestationsByStationNumber(StationNumber);
-		List<String> adresses = firestations.stream().map(Firestation::getAddress).collect(Collectors.toList());
+		List<String> adresses = firestations.stream().map(f -> f.getAddress()).collect(Collectors.toList());
 		return adresses;
 	}
 
