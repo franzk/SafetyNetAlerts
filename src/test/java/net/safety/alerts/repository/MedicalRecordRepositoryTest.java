@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +86,25 @@ public class MedicalRecordRepositoryTest {
 		}
 
 	}
+	
+	@Test
+	public void getMedicalRecordTest() {
+		// Arrange
+		MedicalRecord testMedicalRecord = buildMedicalRecord("");
+		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
+		
+		Person person = new Person();
+		person.setFirstName(testMedicalRecord.getFirstName());
+		person.setLastName(testMedicalRecord.getLastName());
+		
+		// Act
+		try {
+			MedicalRecord result = medicalRecordRepositoryUnderTest.getMedicalRecord(person);
+			assertThat(result.equals(testMedicalRecord));
+		} catch (MedicalRecordNotFoundException e) {
+			fail("getMedicalRecordTest threw an exception");
+		}
+	}
 
 	@Test
 	public void deleteMedicalRecordTest() {
@@ -126,28 +146,102 @@ public class MedicalRecordRepositoryTest {
 				.getMedicalRecordByName(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName()));
 	}
 
+	/*
+	 * @Test public void getPersonAgeTest() { // Arrange MedicalRecord
+	 * testMedicalRecord = buildMedicalRecord("");
+	 * medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
+	 * 
+	 * Person testPerson = new Person();
+	 * testPerson.setFirstName(testMedicalRecord.getFirstName());
+	 * testPerson.setLastName(testMedicalRecord.getLastName());
+	 * 
+	 * // Act int age = 0; try { age =
+	 * medicalRecordRepositoryUnderTest.getPersonAge(testPerson); } catch
+	 * (MedicalRecordNotFoundException e) {
+	 * fail("getPersonAgeTest threw an exception !"); }
+	 * 
+	 * // Assert
+	 * assertThat(age).isEqualTo(Utils.calculateAge(testMedicalRecord.getBirthdate()
+	 * )); }
+	 */
+
 	@Test
-	public void getPersonAgeTest() {
+	public void isAdultTest() {
 		// Arrange
 		MedicalRecord testMedicalRecord = buildMedicalRecord("");
+		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(20));
 		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
 
-		Person testPerson = new Person();
-		testPerson.setFirstName(testMedicalRecord.getFirstName());
-		testPerson.setLastName(testMedicalRecord.getLastName());
+		 Person testPerson = new Person();
+		 testPerson.setFirstName(testMedicalRecord.getFirstName());
+		 testPerson.setLastName(testMedicalRecord.getLastName());
 
-		// Act
-		int age = 0;
-		try {
-			age = medicalRecordRepositoryUnderTest.getPersonAge(testPerson);
-		} catch (MedicalRecordNotFoundException e) {
-			fail("getPersonAgeTest threw an exception !");
-		}
-
-		// Assert
-		assertThat(age).isEqualTo(Utils.calculateAge(testMedicalRecord.getBirthdate()));
+		 
+		// Act + Assert
+		assertThat(medicalRecordRepositoryUnderTest.isAdult(testPerson)).isTrue();
 	}
 
+	@Test
+	public void isAdultFailTest() {
+		// Arrange
+		MedicalRecord testMedicalRecord = buildMedicalRecord("");
+		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(1));
+		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
+
+		 Person testPerson = new Person();
+		 testPerson.setFirstName(testMedicalRecord.getFirstName());
+		 testPerson.setLastName(testMedicalRecord.getLastName());
+
+		 
+		// Act + Assert
+		assertThat(medicalRecordRepositoryUnderTest.isAdult(testPerson)).isFalse();
+	}
+
+	@Test
+	public void isAdultExceptionTest() {
+		Person testPerson = new Person();
+		assertThat(medicalRecordRepositoryUnderTest.isAdult(testPerson)).isFalse();
+	}
+	
+	@Test
+	public void isChildTest() {
+		// Arrange
+		MedicalRecord testMedicalRecord = buildMedicalRecord("");
+		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(1));
+		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
+
+		 Person testPerson = new Person();
+		 testPerson.setFirstName(testMedicalRecord.getFirstName());
+		 testPerson.setLastName(testMedicalRecord.getLastName());
+
+		 
+		// Act + Assert
+		assertThat(medicalRecordRepositoryUnderTest.isChild(testPerson)).isTrue();
+	}
+
+	@Test
+	public void isChildFailTest() {
+		// Arrange
+		MedicalRecord testMedicalRecord = buildMedicalRecord("");
+		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(20));
+		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
+
+		 Person testPerson = new Person();
+		 testPerson.setFirstName(testMedicalRecord.getFirstName());
+		 testPerson.setLastName(testMedicalRecord.getLastName());
+
+		 
+		// Act + Assert
+		assertThat(medicalRecordRepositoryUnderTest.isChild(testPerson)).isFalse();
+	}
+
+	@Test
+	public void isChildExceptionTest() {
+		Person testPerson = new Person();
+		assertThat(medicalRecordRepositoryUnderTest.isChild(testPerson)).isFalse();
+	}
+	
+	
 	@Test
 	public void updateMedicalRecordExceptionTest() {
 		// Arrange
@@ -179,14 +273,6 @@ public class MedicalRecordRepositoryTest {
 	public void deleteMedicalRecordByNameExceptionTest() {
 		assertThrows(MedicalRecordNotFoundException.class,
 				() -> medicalRecordRepositoryUnderTest.deleteMedicalRecordByName(testFirstName, testLastName));
-	}
-
-	@Test
-	public void getPersonAgeExceptionTest() {
-		Person person = new Person();
-		person.setFirstName(testFirstName);
-		person.setLastName(testLastName);
-		assertThrows(MedicalRecordNotFoundException.class, () -> medicalRecordRepositoryUnderTest.getPersonAge(person));
 	}
 
 	// Utils

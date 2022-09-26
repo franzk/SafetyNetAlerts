@@ -55,21 +55,17 @@ public class UrlService {
 				.map(person -> dtoService.buildPersonDto(person, DtoConstants.UrlFirestationCoveragePerson))
 				.collect(Collectors.toList());
 
-		long adultsCount = personsCovered.stream().filter(p -> {
-			try {
-				return (medicalRecordRepository.getPersonAge(p) > 18);
-			} catch (MedicalRecordNotFoundException e) {
-				return false;
-			}
-		}).count();
+		long adultsCount = personsCovered.stream().filter(p -> medicalRecordRepository
+				.isAdult(p)/*
+							 * { try { return (medicalRecordRepository.getPersonAge(p) > 18); } catch
+							 * (MedicalRecordNotFoundException e) { return false; } }
+							 */).count();
 
-		long childrenCount = personsCovered.stream().filter(p -> {
-			try {
-				return (medicalRecordRepository.getPersonAge(p) <= 18);
-			} catch (MedicalRecordNotFoundException e) {
-				return false;
-			}
-		}).count();
+		long childrenCount = personsCovered.stream().filter(p -> medicalRecordRepository
+				.isChild(p) /*
+							 * { try { return (medicalRecordRepository.getPersonAge(p) <= 18); } catch
+							 * (MedicalRecordNotFoundException e) { return false; } }
+							 */).count();
 
 		UrlFirestationCoverageDto firestationCoverageDto = new UrlFirestationCoverageDto();
 		firestationCoverageDto.setPersons(personsCoveredDto);
@@ -83,23 +79,12 @@ public class UrlService {
 	public UrlChildAlertDto urlChildAlert(String address) throws AddressNotFoundException {
 
 		List<Person> personsAtThisAddress = personRepository.getPersonsByAddress(address);
-		List<Person> childrenAtThisAddress = personsAtThisAddress.stream().filter(p -> {
-			try {
-				return (medicalRecordRepository.getPersonAge(p) <= 18);
-			} catch (MedicalRecordNotFoundException e) {
-				return false;
-			}
-		}).toList();
+		List<Person> childrenAtThisAddress = personsAtThisAddress.stream()
+				.filter(p -> medicalRecordRepository.isChild(p)).toList();
 
 		List<Person> otherHouseholdMembers = personsAtThisAddress.stream()
 				.filter(p -> childrenAtThisAddress.stream().anyMatch(c -> c.getLastName().equals(p.getLastName())))
-				.filter(p -> {
-					try {
-						return medicalRecordRepository.getPersonAge(p) > 18;
-					} catch (MedicalRecordNotFoundException e) {
-						return true;
-					}
-				}).collect(Collectors.toList());
+				.filter(p -> medicalRecordRepository.isAdult(p)).collect(Collectors.toList());
 
 		UrlChildAlertDto childAlertDto = new UrlChildAlertDto();
 

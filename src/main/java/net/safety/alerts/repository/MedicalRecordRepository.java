@@ -28,20 +28,12 @@ public class MedicalRecordRepository {
 	}
 
 	// read
-
-	
-	public Optional<MedicalRecord> getOptionalMedicalRecordByName(String firstName, String lastName) {
-
-		return listMedicalRecords.stream().filter(m -> m.getFirstName().equals(firstName))
-				.filter(m -> m.getLastName().equals(lastName)).findFirst();
-
-	}
-
 	
 	public MedicalRecord getMedicalRecordByName(String firstName, String lastName)
 			throws MedicalRecordNotFoundException {
 
-		Optional<MedicalRecord> medicalRecord = getOptionalMedicalRecordByName(firstName, lastName);
+		Optional<MedicalRecord> medicalRecord = listMedicalRecords.stream().filter(m -> m.getFirstName().equals(firstName))
+				.filter(m -> m.getLastName().equals(lastName)).findFirst();
 
 		if (medicalRecord.isPresent()) {
 			return medicalRecord.get();
@@ -84,7 +76,7 @@ public class MedicalRecordRepository {
 	}
 
 	// utils
-	public Integer getPersonAge(Person person) throws MedicalRecordNotFoundException {
+	private Integer getPersonAge(Person person) throws MedicalRecordNotFoundException {
 
 		Optional<MedicalRecord> personMedicalRecord = listMedicalRecords.stream()
 				.filter(m -> m.getFirstName().equals(person.getFirstName()))
@@ -95,6 +87,22 @@ public class MedicalRecordRepository {
 		} else {
 			throw new MedicalRecordNotFoundException();
 		}
+	}
+	
+	public boolean isAdult(Person person) {
+		try {
+			return (this.getPersonAge(person) > 18);
+		} catch (MedicalRecordNotFoundException e) {
+			return false;
+		} 
+	}
+
+	public boolean isChild(Person person) {
+		try {
+			return (this.getPersonAge(person) <= 18);
+		} catch (MedicalRecordNotFoundException e) {
+			return false;
+		} 
 	}
 
 }

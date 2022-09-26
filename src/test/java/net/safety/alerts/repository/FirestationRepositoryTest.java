@@ -48,7 +48,8 @@ public class FirestationRepositoryTest {
 
 		// Assert
 		try {
-			assertThat(firestationRepositoryUnderTest.getFirestationAddresses(testNumber).get(0)).isEqualTo(testAddress);
+			assertThat(firestationRepositoryUnderTest.getFirestationAddresses(testNumber).get(0))
+					.isEqualTo(testAddress);
 		} catch (FirestationNotFoundException e) {
 			fail("addFirestation Test failed : getFirestationAdress threw an exception !");
 		}
@@ -130,4 +131,75 @@ public class FirestationRepositoryTest {
 
 	}
 
+	@Test
+	public void deleteFirestationTest() {
+		// Arrange
+		Firestation firestation = buildFirestation(testAddress, testNumber);
+		firestationRepositoryUnderTest.addFirestation(firestation);
+
+		// Act
+		try {
+			firestationRepositoryUnderTest.deleteFirestation(firestation);
+		} catch (FirestationNotFoundException e) {
+			fail("deleteFirestationTest threw an exception");
+		}
+
+		// Assert
+		assertThrows(FirestationNotFoundException.class,
+				() -> firestationRepositoryUnderTest.getFirestationByAddress(testAddress));
+
+	}
+
+	@Test
+	public void deleteFirestationExceptionTest() {
+		// Arrange
+		Firestation firestation = buildFirestation(testAddress, testNumber);
+		firestationRepositoryUnderTest.addFirestation(firestation);
+		Firestation wrongFirestation = buildFirestation("wrong address", testNumber);
+
+		// Act + Assert
+		assertThrows(FirestationNotFoundException.class,
+				() -> firestationRepositoryUnderTest.deleteFirestation(wrongFirestation));
+
+	}
+	
+	@Test
+	public void deleteByAdressTest() {
+		// Arrange
+		Firestation firestation = buildFirestation(testAddress, testNumber);
+		firestationRepositoryUnderTest.addFirestation(firestation);
+
+		// Act
+		try {
+			firestationRepositoryUnderTest.deleteByAddress(testAddress);
+		} catch (FirestationNotFoundException e) {
+			fail("deleteFirestationByAdressTest threw an exception");
+		}
+
+		// Assert
+		assertThrows(FirestationNotFoundException.class,
+				() -> firestationRepositoryUnderTest.getFirestationByAddress(testAddress));
+
+	}
+	
+	@Test
+	public void deleteByStationNumberTest() {
+		// Arrange
+		Firestation firestation = buildFirestation(testAddress, testNumber);
+		firestationRepositoryUnderTest.addFirestation(firestation);
+
+		// Act
+		try {
+			firestationRepositoryUnderTest.deleteByStationNumber(testNumber);
+		} catch (FirestationNotFoundException e) {
+			fail("deleteByStationNumberTest threw an exception");
+		}
+
+		// Assert
+		assertThrows(FirestationNotFoundException.class,
+				() -> firestationRepositoryUnderTest.getFirestationByAddress(testAddress));
+
+	}
+	
+	
 }
