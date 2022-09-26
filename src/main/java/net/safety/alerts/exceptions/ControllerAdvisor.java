@@ -47,4 +47,13 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 		
 	}
 	
+	@ExceptionHandler(IllegalArgumentException.class)
+	protected ResponseEntity<Object> handleMedicalRecordNotFound(IllegalArgumentException ex, WebRequest request) {
+
+		String body = "Wrong parameters";
+
+		return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);		
+		
+	}
+	
 }

@@ -1,7 +1,5 @@
 package net.safety.alerts.service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -41,12 +39,12 @@ public class JoinedDataService {
 	@Autowired
 	MedicalRecordRepository medicalRecordRepository;
 
-	public StationNumberDto stationNumber(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
+	public StationNumberDto firestationPersonsCovered(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
 
 		DtoService dtoService = new DtoService();
 
-		String address = firestationRepository.getFirestationAddress(stationNumber);
-		List<Person> personsCovered = personRepository.getPersonsByAddress(address);
+		List<String> addresses = firestationRepository.getFirestationAddresses(stationNumber);
+		List<Person> personsCovered = personRepository.getPersonsByAddresses(addresses);
 		List<PersonDto> personsCoveredDto = personsCovered.stream()
 				.map(person -> dtoService.convertPersonToPersonDto(person)).collect(Collectors.toList());
 
@@ -126,7 +124,7 @@ public class JoinedDataService {
 		}
 
 		DtoService dtoService = new DtoService();
-		
+
 		List<FireEndpointPersonDto> personsFireDto = persons.stream().map(p -> {
 			Optional<MedicalRecord> medicalRecord = medicalRecordRepository.getMedicalRecordByName(p.getFirstName(),
 					p.getLastName());
@@ -150,19 +148,13 @@ public class JoinedDataService {
 
 	}
 
-	public UrlFirestationDto urlFirestation(Integer firestationNumber) throws FirestationNotFoundException {
-		String address = firestationRepository.getFirestationAddress(firestationNumber);
-		List<Person> persons = new ArrayList<>();
-
-		persons = personRepository.getPersonsByAddress(address);
-
-		Set<String> phoneNumbers = new HashSet<String>();
-
-		for (Person p : persons) {
-			phoneNumbers.add(p.getPhone());
-		}
+	public UrlFirestationDto urlPhoneAlert(Integer firestationNumber) throws FirestationNotFoundException {
+		List<String> addresses = firestationRepository.getFirestationAddresses(firestationNumber);
+		List<Person> persons = personRepository.getPersonsByAddresses(addresses);
 
 		// utiliser Set pour éviter les doublons
+		Set<String> phoneNumbers = persons.stream().map(Person::getPhone).collect(Collectors.toSet());
+
 		UrlFirestationDto urlFirestationDto = new UrlFirestationDto();
 		urlFirestationDto.setPhoneNumbers(phoneNumbers);
 

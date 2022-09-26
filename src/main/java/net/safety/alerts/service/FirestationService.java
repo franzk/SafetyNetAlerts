@@ -1,5 +1,8 @@
 package net.safety.alerts.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +26,18 @@ public class FirestationService {
 	public Firestation add(Firestation f) {
 		return firestationRepository.addFirestation(f);
 	}
-	
+
+	// read
+	public List<Firestation> getByAddress(String address) throws FirestationNotFoundException {
+		List<Firestation> firestations = new ArrayList<>();
+		firestations.add(firestationRepository.getFirestationByAddress(address));
+		return firestations;
+	}
+
+	public List<Firestation> getByStationNumber(Integer stationNumber) throws FirestationNotFoundException {
+		return firestationRepository.getFirestationByStationNumber(stationNumber);
+	}
+
 	// update
 	public Firestation update(Firestation f) throws FirestationNotFoundException {
 		return firestationRepository.updateFirestation(f);
@@ -33,15 +47,17 @@ public class FirestationService {
 	public void delete(Firestation f) throws FirestationNotFoundException {
 		firestationRepository.deleteFirestation(f);
 	}
-	
+
 	public void deleteByAddress(String address) throws FirestationNotFoundException {
 		Firestation firestation = firestationRepository.getFirestationByAddress(address);
 		firestationRepository.deleteFirestation(firestation);
 	}
 
-	public void deleteByStation(Integer station) throws FirestationNotFoundException {
-		Firestation firestation = firestationRepository.getFirestationByStation(station);
-		firestationRepository.deleteFirestation(firestation);
+	public void deleteByStationNumber(Integer stationNumber) throws FirestationNotFoundException {
+		List<Firestation> firestations = firestationRepository.getFirestationByStationNumber(stationNumber);
+		for(Firestation f : firestations) {
+			firestationRepository.deleteFirestation(f);
+		}
 	}
 
 	// endpoints
@@ -49,8 +65,8 @@ public class FirestationService {
 		return joinedDataService.fire(address);
 	}
 
-	public StationNumberDto stationNumber(Integer stationNumber) throws FirestationNotFoundException {
-		return joinedDataService.stationNumber(stationNumber);
+	public StationNumberDto firestationPersonsCovered(Integer stationNumber) throws FirestationNotFoundException {
+		return joinedDataService.firestationPersonsCovered(stationNumber);
 	}
 
 }

@@ -12,7 +12,7 @@ import net.safety.alerts.model.Person;
 
 @Repository
 public class PersonRepository {
-	
+
 	private List<Person> listPersons = new ArrayList<>();
 
 	// import
@@ -28,20 +28,39 @@ public class PersonRepository {
 
 	// read
 	public List<Person> getPersonsByName(String firstName, String lastName) {
-		return listPersons.stream().filter(p-> p.getFirstName().equals(firstName))
+		return listPersons.stream().filter(p -> p.getFirstName().equals(firstName))
 				.filter(person -> person.getLastName().equals(lastName)).collect(Collectors.toList());
+	}
+
+	public Person getPersonByName(String firstName, String lastName) throws PersonNotFoundException {
+		Optional<Person> person = listPersons.stream().filter(p -> p.getFirstName().equals(firstName))
+				.filter(p -> p.getLastName().equals(lastName)).findFirst();
+
+		if (person.isPresent()) {
+			return person.get();
+		} else {
+			throw new PersonNotFoundException();
+		}
 	}
 
 	public List<Person> getPersonsByAddress(String address) {
 		return listPersons.stream().filter(person -> person.getAddress().equals(address)).collect(Collectors.toList());
 	}
 
+	public List<Person> getPersonsByAddresses(List<String> addresses) {
+		return listPersons.stream()
+				.filter(p -> addresses.stream()
+						.anyMatch(a -> a.equals(p.getAddress()))).collect(Collectors.toList());
+				
+				//person.getAddress().equals(address)).collect(Collectors.toList());
+	}
+	
 	// update
 	public Person updatePerson(Person person) throws PersonNotFoundException {
 
 		Optional<Person> personToUpdate = listPersons.stream()
 				.filter(p -> p.getFirstName().equals(person.getFirstName()))
-				.filter(p-> p.getLastName().equals(person.getLastName())).findFirst();
+				.filter(p -> p.getLastName().equals(person.getLastName())).findFirst();
 
 		if (personToUpdate.isPresent()) {
 			listPersons.set(listPersons.indexOf(personToUpdate.get()), person);
@@ -60,8 +79,7 @@ public class PersonRepository {
 
 	public void deletePersonByName(String firstName, String lastName) throws PersonNotFoundException {
 
-		Optional<Person> personToDelete = listPersons.stream()
-				.filter(p -> p.getFirstName().equals(firstName))
+		Optional<Person> personToDelete = listPersons.stream().filter(p -> p.getFirstName().equals(firstName))
 				.filter(p -> p.getLastName().equals(lastName)).findFirst();
 
 		if (personToDelete.isPresent()) {

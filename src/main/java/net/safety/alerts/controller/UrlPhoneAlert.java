@@ -12,14 +12,14 @@ import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.JoinedDataService;
 
 @RestController
-public class UrlFirestation {
+public class UrlPhoneAlert {
 
 	@Autowired
 	private JoinedDataService joinedDataService;
 	
-	@GetMapping("firestation")
-	public ResponseEntity<UrlFirestationDto> firestation(@RequestParam Integer firestationNumber) throws FirestationNotFoundException {
-		return new ResponseEntity<>(joinedDataService.urlFirestation(firestationNumber), HttpStatus.OK);
+	@GetMapping("phoneAlert")
+	public ResponseEntity<UrlFirestationDto> phoneAlert(@RequestParam Integer firestationNumber) throws FirestationNotFoundException {
+		return new ResponseEntity<>(joinedDataService.urlPhoneAlert(firestationNumber), HttpStatus.OK);
 	}
 	
 	

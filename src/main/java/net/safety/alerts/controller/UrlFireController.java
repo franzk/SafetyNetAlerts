@@ -7,18 +7,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.safety.alerts.dto.StationNumberDto;
-import net.safety.alerts.exceptions.FirestationNotFoundException;
+import net.safety.alerts.dto.FireEndpointDto;
+import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.service.FirestationService;
 
 @RestController
-public class StationNumberController {
-
-	@Autowired
-	private FirestationService firestationService;
+public class UrlFireController {
 	
-	@GetMapping("/firestation")
-	public ResponseEntity<StationNumberDto> stationNumber(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
-		return new ResponseEntity<>(firestationService.stationNumber(stationNumber), HttpStatus.OK);
+	@Autowired
+	FirestationService firestationService;
+	
+	@GetMapping("/fire")
+	public ResponseEntity<FireEndpointDto> fire(@RequestParam String address) throws AddressNotFoundException {
+		return new ResponseEntity<>(firestationService.fire(address), HttpStatus.OK);
 	}
 }

@@ -11,7 +11,7 @@ import net.safety.alerts.dto.ChildAlertDto;
 import net.safety.alerts.service.PersonService;
 
 @RestController
-public class AlertController {
+public class UrlChildAlertController {
 	
 	@Autowired
 	private PersonService personService;

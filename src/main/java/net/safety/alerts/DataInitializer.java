@@ -36,19 +36,15 @@ public class DataInitializer {
 	@Autowired
 	private PersonRepository personRepository;
 
-	@Autowired
-	private CustomProperties props;
-
 	private JsonNode root;
 
 	@Value("${net.safety.alerts.dataUrl}")
-	private String TotoUrl;
+	private String dataUrl;
 	
 	@PostConstruct
 	public void importJsonData() {
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		String dataUrl = props.getDataUrl();
 
 		try {
 			root = objectMapper.readTree(new URL(dataUrl));

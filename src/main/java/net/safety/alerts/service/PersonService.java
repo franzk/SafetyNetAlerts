@@ -21,8 +21,13 @@ public class PersonService {
 	private JoinedDataService joinedDataService;
 
 	// read
-	public List<Person> getByName(String firstName, String lastName) {
+	public List<Person> getPersonsWithSameName(String firstName, String lastName) {
 		return personRepository.getPersonsByName(firstName, lastName);
+	}
+	
+	public Person getPersonByName(String firstName, String lastName) throws PersonNotFoundException {
+		return personRepository.getPersonByName(firstName, lastName);
+
 	}
 
 	// create

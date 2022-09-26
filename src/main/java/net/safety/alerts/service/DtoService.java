@@ -3,20 +3,18 @@ package net.safety.alerts.service;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.safety.alerts.dto.ChildDto;
-import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.dto.FireEndpointPersonDto;
+import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.dto.PersonNameDto;
 import net.safety.alerts.model.Person;
 
 @Service
 public class DtoService {
 
-	@Autowired
-	ModelMapper mapper;
+	private ModelMapper mapper = new ModelMapper();
 
 	public ChildDto convertPersonToChildDto(Person person, Integer age) {
 		ChildDto childDto = new ChildDto();
