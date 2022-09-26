@@ -2,56 +2,68 @@ package net.safety.alerts.service;
 
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import net.safety.alerts.dto.ChildDto;
-import net.safety.alerts.dto.UrlFirePersonDto;
-import net.safety.alerts.dto.UrlPersonInfoPersonDto;
 import net.safety.alerts.dto.PersonDto;
-import net.safety.alerts.dto.PersonNameDto;
 import net.safety.alerts.model.Person;
+import net.safety.alerts.utils.DtoConstants.PersonField;
 
 @Service
 public class DtoService {
 
-	private ModelMapper mapper = new ModelMapper();
+	// construction d'un DTO Person
+	public PersonDto buildPersonDto(Person person, PersonField[] fields) {
+		PersonDto personDto = new PersonDto();
+		for (PersonField field : fields) {
+			switch (field) {
+			case FIRST_NAME:
+				personDto.setFirstName(person.getFirstName());
+				break;
+			case LAST_NAME:
+				personDto.setLastName(person.getLastName());
+				break;
+			case ADDRESS:
+				personDto.setAddress(person.getAddress());
+				break;
+			case CITY:
+				personDto.setCity(person.getCity());
+				break;
+			case ZIP:
+				personDto.setZip(person.getZip());
+				break;
+			case PHONE:
+				personDto.setPhone(person.getPhone());
+				break;
+			case EMAIL:
+				personDto.setEmail(person.getEmail());
+				break;
+			default:
+				break;
 
-	public ChildDto convertPersonToChildDto(Person person, Integer age) {
-		ChildDto childDto = new ChildDto();
-		childDto.setFirstName(person.getFirstName());
-		childDto.setLastName(person.getLastName());
-		childDto.setAge(age);
-		return childDto;
+			}
+		}
+		return personDto;
+	}
+	
+	public PersonDto buildPersonDto(Person person, Integer age, PersonField[] fields) {
+		PersonDto personDto = buildPersonDto(person, fields);
+		personDto.setAge(age);
+		return personDto;
 	}
 
-	public PersonDto convertPersonToPersonDto(Person person) {
-		return mapper.map(person, PersonDto.class);
-	}
-
-	public PersonNameDto convertPersonToPersonNameDto(Person person) {
-		return mapper.map(person, PersonNameDto.class);
-	}
-
-	public UrlFirePersonDto buildUrlFirePersonDto(Person person, Integer age, List<String> medications, List<String> allergies) {
-		UrlFirePersonDto personFireDto = new UrlFirePersonDto();
-		personFireDto.setFirstName(person.getFirstName());
-		personFireDto.setLastName(person.getLastName());
-		personFireDto.setPhone(person.getPhone());
-		personFireDto.setAge(age);
-		personFireDto.setMedications(medications);
-		personFireDto.setAllergies(allergies);
-		return personFireDto;
-	}
-
-	public UrlPersonInfoPersonDto buildUrlPersonInfoPersonDTO(Person person, List<String> medications, List<String> allergies) {
-		UrlPersonInfoPersonDto personDto = new UrlPersonInfoPersonDto();
-		personDto.setFirstName(person.getFirstName());
-		personDto.setLastName(person.getLastName());
-		personDto.setEmail(person.getEmail());
+	public PersonDto buildPersonDto(Person person, List<String> medications, List<String> allergies, PersonField[] fields) {
+		PersonDto personDto = buildPersonDto(person, fields);
 		personDto.setMedications(medications);
 		personDto.setAllergies(allergies);
 		return personDto;
-	}
+	}	
+	
+	public PersonDto buildPersonDto(Person person, Integer age, List<String> medications, List<String> allergies, PersonField[] fields) {
+		PersonDto personDto = buildPersonDto(person, fields);
+		personDto.setAge(age);
+		personDto.setMedications(medications);
+		personDto.setAllergies(allergies);
+		return personDto;
+	}	
 	
 }

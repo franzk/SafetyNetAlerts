@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class UrlPersonInfoDto {
 
-	List<UrlPersonInfoPersonDto> persons;
+	List<PersonDto> persons;
 	
 }

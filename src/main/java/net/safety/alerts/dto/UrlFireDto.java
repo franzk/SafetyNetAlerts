@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class UrlFireDto {
 	
-	List<UrlFirePersonDto> persons; 
+	List<PersonDto> persons; 
 	
 	Integer firestationNumber;
 

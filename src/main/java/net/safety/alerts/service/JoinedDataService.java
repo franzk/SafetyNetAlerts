@@ -10,17 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import net.safety.alerts.dto.ChildDto;
 import net.safety.alerts.dto.PersonDto;
-import net.safety.alerts.dto.PersonNameDto;
 import net.safety.alerts.dto.UrlChildAlertDto;
 import net.safety.alerts.dto.UrlFireDto;
-import net.safety.alerts.dto.UrlFirePersonDto;
 import net.safety.alerts.dto.UrlFirestationCoverageDto;
 import net.safety.alerts.dto.UrlFloodStationsAddress;
 import net.safety.alerts.dto.UrlFloodStationsDto;
 import net.safety.alerts.dto.UrlPersonInfoDto;
-import net.safety.alerts.dto.UrlPersonInfoPersonDto;
 import net.safety.alerts.dto.UrlPhoneAlertDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
@@ -31,6 +27,7 @@ import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.FirestationRepository;
 import net.safety.alerts.repository.MedicalRecordRepository;
 import net.safety.alerts.repository.PersonRepository;
+import net.safety.alerts.utils.DtoConstants;
 import net.safety.alerts.utils.Utils;
 
 @Service
@@ -56,7 +53,7 @@ public class JoinedDataService {
 		List<String> addresses = firestationRepository.getFirestationAddresses(stationNumber);
 		List<Person> personsCovered = personRepository.getPersonsByAddresses(addresses);
 		List<PersonDto> personsCoveredDto = personsCovered.stream()
-				.map(person -> dtoService.convertPersonToPersonDto(person)).collect(Collectors.toList());
+				.map(person -> dtoService.buildPersonDto(person, DtoConstants.UrlFirestationCoveragePerson)).collect(Collectors.toList());
 
 		long adultsCount = personsCovered.stream().filter(p -> {
 			try {
@@ -108,16 +105,17 @@ public class JoinedDataService {
 
 		DtoService dtoService = new DtoService();
 
-		List<ChildDto> childrenDto = childrenAtThisAddress.stream().map(p -> {
+		List<PersonDto> childrenDto = childrenAtThisAddress.stream().map(p -> {
 			try {
-				return dtoService.convertPersonToChildDto(p, medicalRecordRepository.getPersonAge(p));
+				return dtoService.buildPersonDto(p, medicalRecordRepository.getPersonAge(p), DtoConstants.UrlChildAlertChild);
 			} catch (MedicalRecordNotFoundException e) {
-				return dtoService.convertPersonToChildDto(p, null);
+				return dtoService.buildPersonDto(p, DtoConstants.UrlChildAlertChild);
 			}
 		}).collect(Collectors.toList());
 
-		List<PersonNameDto> otherHouseholdMembersDto = otherHouseholdMembers.stream()
-				.map(p -> dtoService.convertPersonToPersonNameDto(p)).collect(Collectors.toList());
+		List<PersonDto> otherHouseholdMembersDto = otherHouseholdMembers.stream().map(
+				p -> dtoService.buildPersonDto(p, DtoConstants.UrlChildAlertAdult))
+				.collect(Collectors.toList());
 
 		childAlertDto.setChildren(childrenDto);
 		childAlertDto.setOtherHouseHoldMembers(otherHouseholdMembersDto);
@@ -131,9 +129,9 @@ public class JoinedDataService {
 		Integer stationNumber = firestationRepository.getFirestationNumber(address);
 
 		List<Person> persons = personRepository.getPersonsByAddress(address);
-
-		List<UrlFirePersonDto> personsFireDto = persons.stream().map(p -> this.convertPersonToUrlFireDto(p))
-				.collect(Collectors.toList());
+		
+		List<PersonDto> personsFireDto = persons.stream().map(p -> this.convertPersonToUrlFireDto(p))
+						.collect(Collectors.toList());
 
 		UrlFireDto fireDto = new UrlFireDto();
 		fireDto.setFirestationNumber(stationNumber);
@@ -175,7 +173,7 @@ public class JoinedDataService {
 			} catch (AddressNotFoundException e) {
 				e.printStackTrace();
 			}
-			List<UrlFirePersonDto> personsDto = inhabitants.stream().map(p -> this.convertPersonToUrlFireDto(p))
+			List<PersonDto> personsDto = inhabitants.stream().map(p -> this.convertPersonToUrlFireDto(p))
 					.collect(Collectors.toList());
 			addressDto.setInhabitants(personsDto);
 			return addressDto;
@@ -187,12 +185,12 @@ public class JoinedDataService {
 		return floodDto;
 
 	}
-	
+
 	public UrlPersonInfoDto getPersonInfoByName(String firstName, String lastName) throws PersonNotFoundException {
 
 		List<Person> persons = personRepository.getPersonsByName(firstName, lastName);
-
-		List<UrlPersonInfoPersonDto> personsDto = persons.stream().map(p -> convertPersonToUrlPersonInfoItemDTO(p))
+	
+		List<PersonDto> personsDto = persons.stream().map(p -> convertPersonToUrlPersonInfoItemDTO(p))
 				.collect(Collectors.toList());
 
 		UrlPersonInfoDto urlPersonInfoDto = new UrlPersonInfoDto();
@@ -200,28 +198,27 @@ public class JoinedDataService {
 
 		return urlPersonInfoDto;
 	}
-	
-	
-	private UrlPersonInfoPersonDto convertPersonToUrlPersonInfoItemDTO(Person person) {
+
+	private PersonDto convertPersonToUrlPersonInfoItemDTO(Person person) {
 		Optional<MedicalRecord> medicalRecord = medicalRecordRepository
 				.getOptionalMedicalRecordByName(person.getFirstName(), person.getLastName());
 		if (medicalRecord.isPresent()) {
-			return dtoService.buildUrlPersonInfoPersonDTO(person,
-					medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
+			return dtoService.buildPersonDto(person, medicalRecord.get().getMedications(),
+					medicalRecord.get().getAllergies(), DtoConstants.UrlPersonInfo);
 		} else {
-			return dtoService.buildUrlPersonInfoPersonDTO(person, null, null);
+			return dtoService.buildPersonDto(person, null, null, DtoConstants.UrlPersonInfo);
 		}
 	}
 
 	// utils
-	private UrlFirePersonDto convertPersonToUrlFireDto(Person person) {
+	private PersonDto convertPersonToUrlFireDto(Person person) {
 		Optional<MedicalRecord> medicalRecord = medicalRecordRepository
 				.getOptionalMedicalRecordByName(person.getFirstName(), person.getLastName());
 		if (medicalRecord.isPresent()) {
-			return dtoService.buildUrlFirePersonDto(person, Utils.calculateAge(medicalRecord.get().getBirthdate()),
-					medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
+			return dtoService.buildPersonDto(person, Utils.calculateAge(medicalRecord.get().getBirthdate()),
+					medicalRecord.get().getMedications(), medicalRecord.get().getAllergies(), DtoConstants.UrlFirePerson);
 		} else {
-			return dtoService.buildUrlFirePersonDto(person, null, null, null);
+			return dtoService.buildPersonDto(person, null, null, null, DtoConstants.UrlFirePerson);
 		}
 	}
 

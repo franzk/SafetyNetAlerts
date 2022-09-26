@@ -8,6 +8,6 @@ import lombok.Data;
 public class UrlFloodStationsAddress {
 
 	String address;
-	List<UrlFirePersonDto> inhabitants;
+	List<PersonDto> inhabitants;
 	
 }

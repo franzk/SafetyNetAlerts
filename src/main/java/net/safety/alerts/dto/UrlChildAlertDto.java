@@ -7,8 +7,7 @@ import lombok.Data;
 @Data
 public class UrlChildAlertDto {
 	
-	List<ChildDto> children;
+	List<PersonDto> children;
 	
-	List<PersonNameDto> otherHouseHoldMembers;
-	
+	List<PersonDto> otherHouseHoldMembers;
 }
