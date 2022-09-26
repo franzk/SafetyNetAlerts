@@ -38,7 +38,7 @@ public class MedicalRecordRepositoryTest {
 		medicalRecordRepositoryUnderTest.setListMedicalRecords(new ArrayList<>());
 	}
 
-	@Test
+	/*@Test
 	public void setListMedicalRecordsgetAndMedicalRecordByNameTest() {
 		// Arrange
 		List<MedicalRecord> listMedicalRecords = new ArrayList<>();
@@ -56,9 +56,9 @@ public class MedicalRecordRepositoryTest {
 		Optional<MedicalRecord> result = medicalRecordRepositoryUnderTest
 				.getMedicalRecordByName(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName());
 		assertThat(result.get()).isEqualTo(testMedicalRecord);
-	}
+	}*/
 
-	@Test
+	/*@Test
 	public void updateMedicalRecord() {
 		// Arrange
 		MedicalRecord medicalRecordToUpdate = new MedicalRecord();
@@ -86,9 +86,9 @@ public class MedicalRecordRepositoryTest {
 
 		assertThat(result.get().getBirthdate()).isEqualTo(medicalRecordUpdated.getBirthdate());
 
-	}
+	}*/
 
-	@Test
+	/*@Test
 	public void deleteMedicalRecordTest() {
 		// Arrange
 		List<MedicalRecord> listMedicalRecords = new ArrayList<>();
@@ -139,7 +139,7 @@ public class MedicalRecordRepositoryTest {
 		Optional<MedicalRecord> result = medicalRecordRepositoryUnderTest
 				.getMedicalRecordByName(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName());
 		assertThat(result.isEmpty());
-	}
+	}*/
 
 	@Test
 	public void getPersonAgeTest() {

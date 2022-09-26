@@ -1,6 +1,8 @@
 package net.safety.alerts.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,13 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import net.safety.alerts.dto.UrlChildAlertDto;
 import net.safety.alerts.dto.ChildDto;
-import net.safety.alerts.dto.UrlFireDto;
-import net.safety.alerts.dto.UrlFirePersonDto;
 import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.dto.PersonNameDto;
+import net.safety.alerts.dto.UrlChildAlertDto;
+import net.safety.alerts.dto.UrlFireDto;
+import net.safety.alerts.dto.UrlFirePersonDto;
 import net.safety.alerts.dto.UrlFirestationCoverageDto;
+import net.safety.alerts.dto.UrlFloodStationsAddress;
+import net.safety.alerts.dto.UrlFloodStationsDto;
 import net.safety.alerts.dto.UrlPhoneAlertDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
@@ -38,6 +42,9 @@ public class JoinedDataService {
 
 	@Autowired
 	MedicalRecordRepository medicalRecordRepository;
+
+	@Autowired
+	DtoService dtoService;
 
 	public UrlFirestationCoverageDto firestationCoverage(@RequestParam Integer stationNumber)
 			throws FirestationNotFoundException {
@@ -74,7 +81,7 @@ public class JoinedDataService {
 
 	}
 
-	public UrlChildAlertDto childAlert(String address, PersonService personService) {
+	public UrlChildAlertDto childAlert(String address, PersonService personService) throws AddressNotFoundException {
 
 		List<Person> personsAtThisAddress = personRepository.getPersonsByAddress(address);
 		List<Person> childrenAtThisAddress = personsAtThisAddress.stream().filter(p -> {
@@ -117,33 +124,18 @@ public class JoinedDataService {
 
 	}
 
-	public UrlFireDto fire(String address) throws AddressNotFoundException {
+	public UrlFireDto fire(String address) throws FirestationNotFoundException, AddressNotFoundException {
+
+		Integer stationNumber = firestationRepository.getFirestationNumber(address);
+
 		List<Person> persons = personRepository.getPersonsByAddress(address);
 
-		if (persons.size() == 0) {
-			throw new AddressNotFoundException();
-		}
-
-		DtoService dtoService = new DtoService();
-
-		List<UrlFirePersonDto> personsFireDto = persons.stream().map(p -> {
-			Optional<MedicalRecord> medicalRecord = medicalRecordRepository
-					.getOptionalMedicalRecordByName(p.getFirstName(), p.getLastName());
-			if (medicalRecord.isPresent()) {
-				return dtoService.convertPersonToUrlFireDto(p, Utils.calculateAge(medicalRecord.get().getBirthdate()),
-						medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
-			} else {
-				return dtoService.convertPersonToUrlFireDto(p, null, null, null);
-			}
-		}).collect(Collectors.toList());
+		List<UrlFirePersonDto> personsFireDto = persons.stream().map(p -> this.convertPersonToUrlFireDto(p))
+				.collect(Collectors.toList());
 
 		UrlFireDto fireDto = new UrlFireDto();
+		fireDto.setFirestationNumber(stationNumber);
 		fireDto.setPersons(personsFireDto);
-		try {
-			fireDto.setFirestationNumber(firestationRepository.getFirestationNumber(address));
-		} catch (FirestationNotFoundException e) {
-			fireDto.setFirestationNumber(null);
-		}
 
 		return fireDto;
 
@@ -160,6 +152,50 @@ public class JoinedDataService {
 		urlFirestationDto.setPhoneNumbers(phoneNumbers);
 
 		return urlFirestationDto;
+	}
+
+	public UrlFloodStationsDto urlFloodStations(List<Integer> stations) throws FirestationNotFoundException {
+
+		List<String> addresses = new ArrayList<>();
+
+		for (Integer station : stations) {
+			addresses.addAll(firestationRepository.getFirestationAddresses(station));
+		}
+
+		UrlFloodStationsDto floodDto = new UrlFloodStationsDto();
+
+		List<UrlFloodStationsAddress> addressesDto = addresses.stream().map(a -> {
+			UrlFloodStationsAddress addressDto = new UrlFloodStationsAddress();
+			addressDto.setAddress(a);
+			List<Person> inhabitants = new ArrayList<>();
+			try {
+				inhabitants = personRepository.getPersonsByAddress(a);
+			} catch (AddressNotFoundException e) {
+				e.printStackTrace();
+			}
+			List<UrlFirePersonDto> personsDto = inhabitants.stream().map(p -> this.convertPersonToUrlFireDto(p))
+					.collect(Collectors.toList());
+			addressDto.setInhabitants(personsDto);
+			return addressDto;
+
+		}).collect(Collectors.toList());
+
+		floodDto.setAddresses(addressesDto);
+
+		return floodDto;
+
+	}
+
+	// utils
+	private UrlFirePersonDto convertPersonToUrlFireDto(Person person) {
+		Optional<MedicalRecord> medicalRecord = medicalRecordRepository
+				.getOptionalMedicalRecordByName(person.getFirstName(), person.getLastName());
+		if (medicalRecord.isPresent()) {
+			return dtoService.buildUrlFirePersonDto(person, Utils.calculateAge(medicalRecord.get().getBirthdate()),
+					medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
+		} else {
+			return dtoService.buildUrlFirePersonDto(person, null, null, null);
+		}
 	}
 
 }

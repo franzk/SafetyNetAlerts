@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
+import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 
@@ -43,8 +44,14 @@ public class PersonRepository {
 		}
 	}
 
-	public List<Person> getPersonsByAddress(String address) {
-		return listPersons.stream().filter(person -> person.getAddress().equals(address)).collect(Collectors.toList());
+	public List<Person> getPersonsByAddress(String address) throws AddressNotFoundException {
+		List<Person> persons = listPersons.stream().filter(person -> person.getAddress().equals(address)).collect(Collectors.toList());
+		if (persons.size() <= 0) {
+			throw new AddressNotFoundException();
+		}
+		else {
+			return persons;
+		}
 	}
 
 	public List<Person> getPersonsByAddresses(List<String> addresses) {

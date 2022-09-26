@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import net.safety.alerts.dto.UrlChildAlertDto;
+import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.PersonRepository;
@@ -46,7 +47,7 @@ public class PersonService {
 	}
 
 	// Url
-	public UrlChildAlertDto childAlert(String address) {
+	public UrlChildAlertDto childAlert(String address) throws AddressNotFoundException {
 		return joinedDataService.childAlert(address, this);
 	}
 

@@ -35,7 +35,7 @@ public class FirestationService {
 	}
 
 	public List<Firestation> getByStationNumber(Integer stationNumber) throws FirestationNotFoundException {
-		return firestationRepository.getFirestationByStationNumber(stationNumber);
+		return firestationRepository.getFirestationsByStationNumber(stationNumber);
 	}
 
 	// update
@@ -57,7 +57,7 @@ public class FirestationService {
 	}
 
 	// endpoints
-	public UrlFireDto fire(String address) throws AddressNotFoundException {
+	public UrlFireDto fire(String address) throws AddressNotFoundException, FirestationNotFoundException {
 		return joinedDataService.fire(address);
 	}
 

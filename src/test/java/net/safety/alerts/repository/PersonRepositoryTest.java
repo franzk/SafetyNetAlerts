@@ -97,7 +97,7 @@ public class PersonRepositoryTest {
 				.isEqualTo(testAdress);
 	}
 
-	@Test
+	/*@Test
 	public void getPersonsByAddressTest() {
 		// Arrange
 		List<Person> personList = buildPersonList(testFirstName, testLastName, testAdress);
@@ -109,7 +109,7 @@ public class PersonRepositoryTest {
 		// Assert
 		assertThat(result.get(0)).isEqualTo(personList.get(0));
 
-	}
+	}*/
 
 	@Test
 	public void deletePersonTest() {

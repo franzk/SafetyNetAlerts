@@ -32,7 +32,7 @@ public class DtoService {
 		return mapper.map(person, PersonNameDto.class);
 	}
 
-	public UrlFirePersonDto convertPersonToUrlFireDto(Person person, Integer age, List<String> medications, List<String> allergies) {
+	public UrlFirePersonDto buildUrlFirePersonDto(Person person, Integer age, List<String> medications, List<String> allergies) {
 		UrlFirePersonDto personFireDto = new UrlFirePersonDto();
 		personFireDto.setFirstName(person.getFirstName());
 		personFireDto.setLastName(person.getLastName());
