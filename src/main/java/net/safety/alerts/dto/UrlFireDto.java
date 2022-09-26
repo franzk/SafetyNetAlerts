@@ -5,9 +5,9 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class FireEndpointDto {
+public class UrlFireDto {
 	
-	List<FireEndpointPersonDto> persons; 
+	List<UrlFirePersonDto> persons; 
 	
 	Integer firestationNumber;
 

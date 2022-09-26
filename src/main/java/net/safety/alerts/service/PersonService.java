@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.safety.alerts.dto.ChildAlertDto;
+import net.safety.alerts.dto.UrlChildAlertDto;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.PersonRepository;
@@ -45,8 +45,8 @@ public class PersonService {
 		personRepository.deletePersonByName(firstName, lastName);
 	}
 
-	// endpoints
-	public ChildAlertDto childAlert(String address) {
+	// Url
+	public UrlChildAlertDto childAlert(String address) {
 		return joinedDataService.childAlert(address, this);
 	}
 

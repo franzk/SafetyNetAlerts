@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class StationNumberDto {
+public class UrlFirestationCoverageDto {
 
 	List<PersonDto> persons;
 	Integer adultsCount;

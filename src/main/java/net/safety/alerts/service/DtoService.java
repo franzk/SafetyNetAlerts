@@ -6,7 +6,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import net.safety.alerts.dto.ChildDto;
-import net.safety.alerts.dto.FireEndpointPersonDto;
+import net.safety.alerts.dto.UrlFirePersonDto;
 import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.dto.PersonNameDto;
 import net.safety.alerts.model.Person;
@@ -32,8 +32,8 @@ public class DtoService {
 		return mapper.map(person, PersonNameDto.class);
 	}
 
-	public FireEndpointPersonDto convertPersonToFireDto(Person person, Integer age, List<String> medications, List<String> allergies) {
-		FireEndpointPersonDto personFireDto = new FireEndpointPersonDto();
+	public UrlFirePersonDto convertPersonToUrlFireDto(Person person, Integer age, List<String> medications, List<String> allergies) {
+		UrlFirePersonDto personFireDto = new UrlFirePersonDto();
 		personFireDto.setFirstName(person.getFirstName());
 		personFireDto.setLastName(person.getLastName());
 		personFireDto.setPhone(person.getPhone());

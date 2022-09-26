@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class ChildAlertDto {
+public class UrlChildAlertDto {
 	
 	List<ChildDto> children;
 	

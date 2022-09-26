@@ -28,25 +28,37 @@ public class MedicalRecordRepository {
 	}
 
 	// read
-	public Optional<MedicalRecord> getMedicalRecordByName(String firstName, String lastName) {
-		return listMedicalRecords.stream()
-				.filter(m -> m.getFirstName().equals(firstName))
-				.filter(m -> m.getLastName().equals(lastName))
-				.findFirst();
+
+	public Optional<MedicalRecord> getOptionalMedicalRecordByName(String firstName, String lastName) {
+
+		return listMedicalRecords.stream().filter(m -> m.getFirstName().equals(firstName))
+				.filter(m -> m.getLastName().equals(lastName)).findFirst();
+
+	}
+
+	public MedicalRecord getMedicalRecordByName(String firstName, String lastName)
+			throws MedicalRecordNotFoundException {
+
+		Optional<MedicalRecord> medicalRecord = getOptionalMedicalRecordByName(firstName, lastName);
+
+		if (medicalRecord.isPresent()) {
+			return medicalRecord.get();
+		} else {
+			throw new MedicalRecordNotFoundException();
+		}
 	}
 
 	// update
 	public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
 
-		Optional<MedicalRecord> medicalRecordToUpdate = getMedicalRecordByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
-		if (medicalRecordToUpdate.isPresent()) {
-			int medicalRecordToUpdateIndex = listMedicalRecords.indexOf(medicalRecordToUpdate.get());
-			if (medicalRecordToUpdateIndex >= 0) { // si c'est intestable, on enlève le if
-				listMedicalRecords.set(medicalRecordToUpdateIndex, medicalRecord);
-				return medicalRecord;
-			}
-		}
-		throw new MedicalRecordNotFoundException();
+		MedicalRecord medicalRecordToUpdate = getMedicalRecordByName(medicalRecord.getFirstName(),
+				medicalRecord.getLastName());
+
+		int medicalRecordToUpdateIndex = listMedicalRecords.indexOf(medicalRecordToUpdate);
+
+		listMedicalRecords.set(medicalRecordToUpdateIndex, medicalRecord);
+		return medicalRecord;
+
 	}
 
 	// delete
@@ -57,16 +69,16 @@ public class MedicalRecordRepository {
 	}
 
 	public void deleteMedicalRecordByName(String firstName, String lastName) throws MedicalRecordNotFoundException {
-		Optional<MedicalRecord> medicalRecordToDelete = getMedicalRecordByName(firstName, lastName);
-		if (medicalRecordToDelete.isPresent()) {
-			deleteMedicalRecord(medicalRecordToDelete.get());
-		} else {
-			throw new MedicalRecordNotFoundException();
-		}
+
+		MedicalRecord medicalRecordToDelete = getMedicalRecordByName(firstName, lastName);
+
+		deleteMedicalRecord(medicalRecordToDelete);
+
 	}
 
 	// utils
 	public Integer getPersonAge(Person person) throws MedicalRecordNotFoundException {
+
 		Optional<MedicalRecord> personMedicalRecord = listMedicalRecords.stream()
 				.filter(m -> m.getFirstName().equals(person.getFirstName()))
 				.filter(m -> m.getLastName().equals(person.getLastName())).findFirst();
@@ -77,5 +89,5 @@ public class MedicalRecordRepository {
 			throw new MedicalRecordNotFoundException();
 		}
 	}
-	
+
 }

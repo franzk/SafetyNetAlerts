@@ -7,18 +7,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.safety.alerts.dto.StationNumberDto;
+import net.safety.alerts.dto.UrlFirestationCoverageDto;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.FirestationService;
 
 @RestController
-public class UrlFirestationPersonsCovered {
+public class UrlFirestationCoverage {
 
 	@Autowired
 	private FirestationService firestationService;
 	
 	@GetMapping("/firestationPersonsCovered")
-	public ResponseEntity<StationNumberDto> firestationPersonsCovered(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
-		return new ResponseEntity<>(firestationService.firestationPersonsCovered(stationNumber), HttpStatus.OK);
+	public ResponseEntity<UrlFirestationCoverageDto> firestationCoverage(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
+		return new ResponseEntity<>(firestationService.firestationCoverage(stationNumber), HttpStatus.OK);
 	}
 }

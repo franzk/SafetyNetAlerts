@@ -5,7 +5,7 @@ import java.util.Set;
 import lombok.Data;
 
 @Data
-public class UrlFirestationDto {
+public class UrlPhoneAlertDto {
 
 	Set<String> phoneNumbers;
 	

@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import net.safety.alerts.dto.FireEndpointDto;
-import net.safety.alerts.dto.StationNumberDto;
+import net.safety.alerts.dto.UrlFireDto;
+import net.safety.alerts.dto.UrlFirestationCoverageDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.model.Firestation;
@@ -49,24 +49,20 @@ public class FirestationService {
 	}
 
 	public void deleteByAddress(String address) throws FirestationNotFoundException {
-		Firestation firestation = firestationRepository.getFirestationByAddress(address);
-		firestationRepository.deleteFirestation(firestation);
+		firestationRepository.deleteByAddress(address);
 	}
 
 	public void deleteByStationNumber(Integer stationNumber) throws FirestationNotFoundException {
-		List<Firestation> firestations = firestationRepository.getFirestationByStationNumber(stationNumber);
-		for(Firestation f : firestations) {
-			firestationRepository.deleteFirestation(f);
-		}
+		firestationRepository.deleteByStationNumber(stationNumber);
 	}
 
 	// endpoints
-	public FireEndpointDto fire(String address) throws AddressNotFoundException {
+	public UrlFireDto fire(String address) throws AddressNotFoundException {
 		return joinedDataService.fire(address);
 	}
 
-	public StationNumberDto firestationPersonsCovered(Integer stationNumber) throws FirestationNotFoundException {
-		return joinedDataService.firestationPersonsCovered(stationNumber);
+	public UrlFirestationCoverageDto firestationCoverage(Integer stationNumber) throws FirestationNotFoundException {
+		return joinedDataService.firestationCoverage(stationNumber);
 	}
 
 }

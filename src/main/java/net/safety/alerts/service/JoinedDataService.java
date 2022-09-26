@@ -9,14 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import net.safety.alerts.dto.ChildAlertDto;
+import net.safety.alerts.dto.UrlChildAlertDto;
 import net.safety.alerts.dto.ChildDto;
-import net.safety.alerts.dto.FireEndpointDto;
-import net.safety.alerts.dto.FireEndpointPersonDto;
+import net.safety.alerts.dto.UrlFireDto;
+import net.safety.alerts.dto.UrlFirePersonDto;
 import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.dto.PersonNameDto;
-import net.safety.alerts.dto.StationNumberDto;
-import net.safety.alerts.dto.UrlFirestationDto;
+import net.safety.alerts.dto.UrlFirestationCoverageDto;
+import net.safety.alerts.dto.UrlPhoneAlertDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
@@ -39,7 +39,8 @@ public class JoinedDataService {
 	@Autowired
 	MedicalRecordRepository medicalRecordRepository;
 
-	public StationNumberDto firestationPersonsCovered(@RequestParam Integer stationNumber) throws FirestationNotFoundException {
+	public UrlFirestationCoverageDto firestationCoverage(@RequestParam Integer stationNumber)
+			throws FirestationNotFoundException {
 
 		DtoService dtoService = new DtoService();
 
@@ -64,16 +65,16 @@ public class JoinedDataService {
 			}
 		}).count();
 
-		StationNumberDto stationNumberDto = new StationNumberDto();
-		stationNumberDto.setPersons(personsCoveredDto);
-		stationNumberDto.setAdultsCount((int) (adultsCount));
-		stationNumberDto.setChildrenCount((int) (childrenCount));
+		UrlFirestationCoverageDto firestationCoverageDto = new UrlFirestationCoverageDto();
+		firestationCoverageDto.setPersons(personsCoveredDto);
+		firestationCoverageDto.setAdultsCount((int) (adultsCount));
+		firestationCoverageDto.setChildrenCount((int) (childrenCount));
 
-		return stationNumberDto;
+		return firestationCoverageDto;
 
 	}
 
-	public ChildAlertDto childAlert(String address, PersonService personService) {
+	public UrlChildAlertDto childAlert(String address, PersonService personService) {
 
 		List<Person> personsAtThisAddress = personRepository.getPersonsByAddress(address);
 		List<Person> childrenAtThisAddress = personsAtThisAddress.stream().filter(p -> {
@@ -94,7 +95,7 @@ public class JoinedDataService {
 					}
 				}).collect(Collectors.toList());
 
-		ChildAlertDto childAlertDto = new ChildAlertDto();
+		UrlChildAlertDto childAlertDto = new UrlChildAlertDto();
 
 		DtoService dtoService = new DtoService();
 
@@ -116,7 +117,7 @@ public class JoinedDataService {
 
 	}
 
-	public FireEndpointDto fire(String address) throws AddressNotFoundException {
+	public UrlFireDto fire(String address) throws AddressNotFoundException {
 		List<Person> persons = personRepository.getPersonsByAddress(address);
 
 		if (persons.size() == 0) {
@@ -125,18 +126,18 @@ public class JoinedDataService {
 
 		DtoService dtoService = new DtoService();
 
-		List<FireEndpointPersonDto> personsFireDto = persons.stream().map(p -> {
-			Optional<MedicalRecord> medicalRecord = medicalRecordRepository.getMedicalRecordByName(p.getFirstName(),
-					p.getLastName());
+		List<UrlFirePersonDto> personsFireDto = persons.stream().map(p -> {
+			Optional<MedicalRecord> medicalRecord = medicalRecordRepository
+					.getOptionalMedicalRecordByName(p.getFirstName(), p.getLastName());
 			if (medicalRecord.isPresent()) {
-				return dtoService.convertPersonToFireDto(p, Utils.calculateAge(medicalRecord.get().getBirthdate()),
+				return dtoService.convertPersonToUrlFireDto(p, Utils.calculateAge(medicalRecord.get().getBirthdate()),
 						medicalRecord.get().getMedications(), medicalRecord.get().getAllergies());
 			} else {
-				return dtoService.convertPersonToFireDto(p, null, null, null);
+				return dtoService.convertPersonToUrlFireDto(p, null, null, null);
 			}
 		}).collect(Collectors.toList());
 
-		FireEndpointDto fireDto = new FireEndpointDto();
+		UrlFireDto fireDto = new UrlFireDto();
 		fireDto.setPersons(personsFireDto);
 		try {
 			fireDto.setFirestationNumber(firestationRepository.getFirestationNumber(address));
@@ -148,14 +149,14 @@ public class JoinedDataService {
 
 	}
 
-	public UrlFirestationDto urlPhoneAlert(Integer firestationNumber) throws FirestationNotFoundException {
+	public UrlPhoneAlertDto urlPhoneAlert(Integer firestationNumber) throws FirestationNotFoundException {
 		List<String> addresses = firestationRepository.getFirestationAddresses(firestationNumber);
 		List<Person> persons = personRepository.getPersonsByAddresses(addresses);
 
 		// utiliser Set pour éviter les doublons
 		Set<String> phoneNumbers = persons.stream().map(Person::getPhone).collect(Collectors.toSet());
 
-		UrlFirestationDto urlFirestationDto = new UrlFirestationDto();
+		UrlPhoneAlertDto urlFirestationDto = new UrlPhoneAlertDto();
 		urlFirestationDto.setPhoneNumbers(phoneNumbers);
 
 		return urlFirestationDto;

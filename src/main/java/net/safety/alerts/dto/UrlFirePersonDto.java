@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class FireEndpointPersonDto {
+public class UrlFirePersonDto {
 	
 	String firstName;
 	

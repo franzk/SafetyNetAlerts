@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.safety.alerts.dto.UrlFirestationDto;
+import net.safety.alerts.dto.UrlPhoneAlertDto;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.JoinedDataService;
 
@@ -18,7 +18,7 @@ public class UrlPhoneAlert {
 	private JoinedDataService joinedDataService;
 	
 	@GetMapping("phoneAlert")
-	public ResponseEntity<UrlFirestationDto> phoneAlert(@RequestParam Integer firestationNumber) throws FirestationNotFoundException {
+	public ResponseEntity<UrlPhoneAlertDto> phoneAlert(@RequestParam Integer firestationNumber) throws FirestationNotFoundException {
 		return new ResponseEntity<>(joinedDataService.urlPhoneAlert(firestationNumber), HttpStatus.OK);
 	}
 	
