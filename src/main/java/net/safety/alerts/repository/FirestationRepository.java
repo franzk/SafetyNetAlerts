@@ -33,10 +33,8 @@ public class FirestationRepository {
 
 		if (firestationToUpdate.isPresent()) {
 			int firestationToUpdateIndex = listFirestations.indexOf(firestationToUpdate.get());
-			if (firestationToUpdateIndex >= 0) {
-				listFirestations.set(firestationToUpdateIndex, firestation);
-				return firestation;
-			}
+			listFirestations.set(firestationToUpdateIndex, firestation);
+			return firestation;
 		}
 		throw new FirestationNotFoundException();
 	}
@@ -55,18 +53,19 @@ public class FirestationRepository {
 
 	public void deleteByStationNumber(Integer stationNumber) throws FirestationNotFoundException {
 		List<Firestation> firestations = this.getFirestationsByStationNumber(stationNumber);
-		for(Firestation f : firestations) {
+		for (Firestation f : firestations) {
 			this.deleteFirestation(f);
 		}
 	}
-	
+
 	// read
 	public List<Firestation> getFirestationsByStationNumber(Integer stationNumber) throws FirestationNotFoundException {
-		List<Firestation> firestations = listFirestations.stream().filter(f -> f.getStation().equals(stationNumber)).collect(Collectors.toList());
+		List<Firestation> firestations = listFirestations.stream().filter(f -> f.getStation().equals(stationNumber))
+				.collect(Collectors.toList());
 		if (firestations.size() <= 0) {
 			throw new FirestationNotFoundException();
-		}
-		else return firestations;
+		} else
+			return firestations;
 	}
 
 	public Firestation getFirestationByAddress(String address) throws FirestationNotFoundException {
@@ -96,6 +95,5 @@ public class FirestationRepository {
 			throw new FirestationNotFoundException();
 		}
 	}
-
 
 }

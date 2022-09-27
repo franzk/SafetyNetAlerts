@@ -8,29 +8,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
-import net.safety.alerts.utils.Utils;
+import net.safety.alerts.utils.TestConstants;
 
 public class MedicalRecordRepositoryTest {
 
-	private static MedicalRecordRepository medicalRecordRepositoryUnderTest;
-
-	private final String testFirstName = "Angus";
-	private final String testLastName = "Young";
-	private final String testBirthdate = "09/20/1979";
-	private final String testMedication = "Doliprane";
-	private final String testAllergie = "Pollen";
-
-	@BeforeAll
-	private static void setUp() {
-		medicalRecordRepositoryUnderTest = new MedicalRecordRepository();
-	}
+	private static MedicalRecordRepository medicalRecordRepositoryUnderTest = new MedicalRecordRepository();
 
 	@BeforeEach
 	private void reset() {
@@ -64,7 +52,7 @@ public class MedicalRecordRepositoryTest {
 		MedicalRecord medicalRecordUpdated = new MedicalRecord();
 		medicalRecordToUpdate = buildMedicalRecord("");
 		medicalRecordUpdated = buildMedicalRecord("");
-		medicalRecordUpdated.setBirthdate(Utils.StringToDate("12/14/2021"));
+		medicalRecordUpdated.setBirthdate(TestConstants.birthdate);
 
 		medicalRecordRepositoryUnderTest.addMedicalRecord(medicalRecordToUpdate);
 
@@ -86,17 +74,17 @@ public class MedicalRecordRepositoryTest {
 		}
 
 	}
-	
+
 	@Test
 	public void getMedicalRecordTest() {
 		// Arrange
 		MedicalRecord testMedicalRecord = buildMedicalRecord("");
 		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
-		
+
 		Person person = new Person();
 		person.setFirstName(testMedicalRecord.getFirstName());
 		person.setLastName(testMedicalRecord.getLastName());
-		
+
 		// Act
 		try {
 			MedicalRecord result = medicalRecordRepositoryUnderTest.getMedicalRecord(person);
@@ -172,11 +160,10 @@ public class MedicalRecordRepositoryTest {
 		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(20));
 		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
 
-		 Person testPerson = new Person();
-		 testPerson.setFirstName(testMedicalRecord.getFirstName());
-		 testPerson.setLastName(testMedicalRecord.getLastName());
+		Person testPerson = new Person();
+		testPerson.setFirstName(testMedicalRecord.getFirstName());
+		testPerson.setLastName(testMedicalRecord.getLastName());
 
-		 
 		// Act + Assert
 		assertThat(medicalRecordRepositoryUnderTest.isAdult(testPerson)).isTrue();
 	}
@@ -188,11 +175,10 @@ public class MedicalRecordRepositoryTest {
 		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(1));
 		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
 
-		 Person testPerson = new Person();
-		 testPerson.setFirstName(testMedicalRecord.getFirstName());
-		 testPerson.setLastName(testMedicalRecord.getLastName());
+		Person testPerson = new Person();
+		testPerson.setFirstName(testMedicalRecord.getFirstName());
+		testPerson.setLastName(testMedicalRecord.getLastName());
 
-		 
 		// Act + Assert
 		assertThat(medicalRecordRepositoryUnderTest.isAdult(testPerson)).isFalse();
 	}
@@ -202,7 +188,7 @@ public class MedicalRecordRepositoryTest {
 		Person testPerson = new Person();
 		assertThat(medicalRecordRepositoryUnderTest.isAdult(testPerson)).isFalse();
 	}
-	
+
 	@Test
 	public void isChildTest() {
 		// Arrange
@@ -210,11 +196,10 @@ public class MedicalRecordRepositoryTest {
 		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(1));
 		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
 
-		 Person testPerson = new Person();
-		 testPerson.setFirstName(testMedicalRecord.getFirstName());
-		 testPerson.setLastName(testMedicalRecord.getLastName());
+		Person testPerson = new Person();
+		testPerson.setFirstName(testMedicalRecord.getFirstName());
+		testPerson.setLastName(testMedicalRecord.getLastName());
 
-		 
 		// Act + Assert
 		assertThat(medicalRecordRepositoryUnderTest.isChild(testPerson)).isTrue();
 	}
@@ -226,11 +211,10 @@ public class MedicalRecordRepositoryTest {
 		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(20));
 		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
 
-		 Person testPerson = new Person();
-		 testPerson.setFirstName(testMedicalRecord.getFirstName());
-		 testPerson.setLastName(testMedicalRecord.getLastName());
+		Person testPerson = new Person();
+		testPerson.setFirstName(testMedicalRecord.getFirstName());
+		testPerson.setLastName(testMedicalRecord.getLastName());
 
-		 
 		// Act + Assert
 		assertThat(medicalRecordRepositoryUnderTest.isChild(testPerson)).isFalse();
 	}
@@ -240,8 +224,7 @@ public class MedicalRecordRepositoryTest {
 		Person testPerson = new Person();
 		assertThat(medicalRecordRepositoryUnderTest.isChild(testPerson)).isFalse();
 	}
-	
-	
+
 	@Test
 	public void updateMedicalRecordExceptionTest() {
 		// Arrange
@@ -272,7 +255,7 @@ public class MedicalRecordRepositoryTest {
 	@Test
 	public void deleteMedicalRecordByNameExceptionTest() {
 		assertThrows(MedicalRecordNotFoundException.class,
-				() -> medicalRecordRepositoryUnderTest.deleteMedicalRecordByName(testFirstName, testLastName));
+				() -> medicalRecordRepositoryUnderTest.deleteMedicalRecordByName(TestConstants.firstName, TestConstants.lastName));
 	}
 
 	// Utils
@@ -287,19 +270,11 @@ public class MedicalRecordRepositoryTest {
 
 	private MedicalRecord buildMedicalRecord(String modifier) {
 		MedicalRecord medicalRecord = new MedicalRecord();
-		medicalRecord.setFirstName(testFirstName + modifier);
-		medicalRecord.setLastName(testLastName + modifier);
-		medicalRecord.setBirthdate(Utils.StringToDate(testBirthdate));
-		medicalRecord.setMedications(buildStringList(testMedication + modifier));
-		medicalRecord.setAllergies(buildStringList(testAllergie + modifier));
+		medicalRecord.setFirstName(TestConstants.firstName + modifier);
+		medicalRecord.setLastName(TestConstants.lastName + modifier);
+		medicalRecord.setBirthdate(TestConstants.birthdate);
+		medicalRecord.setMedications(TestConstants.medications);
+		medicalRecord.setAllergies(TestConstants.allergies);
 		return medicalRecord;
-	}
-
-	private List<String> buildStringList(String baseString) {
-		List<String> listString = new ArrayList<>();
-		for (int i = 0; i < 20; i++) {
-			listString.add(baseString + Integer.toString(i));
-		}
-		return listString;
 	}
 }

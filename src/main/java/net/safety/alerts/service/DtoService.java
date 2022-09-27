@@ -44,7 +44,7 @@ public class DtoService {
 		}
 		return personDto;
 	}
-	
+
 	public PersonDto buildPersonDto(Person person, MedicalRecord medicalRecord, PersonField[] fields) {
 		PersonDto personDto = buildPersonDto(person, fields);
 		for (PersonField field : fields) {
