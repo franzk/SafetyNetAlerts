@@ -10,6 +10,7 @@ public class TestConstants {
 	public static final String lastName = "Young";
 	public static final String address = "666, Highway to hell";
 	public static final String city = "Sydney";
+	public static final String zip = "12345";
 	public static final String phone = "012456789";
 	public static final String email = "a@b.com";
 	
