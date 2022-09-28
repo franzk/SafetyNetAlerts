@@ -5,13 +5,13 @@ import java.util.List;
 
 import net.safety.alerts.model.Person;
 
-public class BuildPersonTestData {
+public class PersonTestData {
 
-	public Person getPerson() {
-		return getPerson(TestConstants.firstName, TestConstants.lastName, TestConstants.address, TestConstants.city);
+	public static Person buildPerson() {
+		return buildPerson(TestConstants.firstName, TestConstants.lastName, TestConstants.address, TestConstants.city);
 	}
 
-	public Person getPerson(String firstName, String lastName, String address, String city) {
+	public static Person buildPerson(String firstName, String lastName, String address, String city) {
 		Person person = new Person();
 		person.setFirstName(firstName);
 		person.setLastName(lastName);
@@ -20,12 +20,12 @@ public class BuildPersonTestData {
 		return person;
 	}
 
-	public List<Person> getPersonList() {
+	public static List<Person> buildPersonList() {
 		List<Person> personList = new ArrayList<>();
-		personList.add(getPerson(TestConstants.firstName, TestConstants.lastName, TestConstants.address,
+		personList.add(buildPerson(TestConstants.firstName, TestConstants.lastName, TestConstants.address,
 				TestConstants.city));
 		for (int i = 1; i < 20; i++) {
-			personList.add(getPerson(TestConstants.firstName + Integer.toString(i),
+			personList.add(buildPerson(TestConstants.firstName + Integer.toString(i),
 					TestConstants.lastName + Integer.toString(i), TestConstants.address + Integer.toString(i),
 					TestConstants.city + Integer.toString(i)));
 		}

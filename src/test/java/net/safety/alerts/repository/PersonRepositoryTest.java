@@ -14,14 +14,13 @@ import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
-import net.safety.alerts.utils.BuildPersonTestData;
+import net.safety.alerts.utils.PersonTestData;
 //import net.safety.alerts.utils.TestConstants;
 
 public class PersonRepositoryTest {
 
 	private PersonRepository personRepositoryUnderTest = new PersonRepository();
 
-	BuildPersonTestData populatePersonRepository = new BuildPersonTestData();
 
 	@BeforeEach
 	public void reset() {
@@ -31,7 +30,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void setListPersonsAndGetPersonByNameTest() {
 		// Arrange
-		List<Person> personList = populatePersonRepository.getPersonList();
+		List<Person> personList = PersonTestData .buildPersonList();
 		Person testPerson = personList.get(0);
 
 		// Act
@@ -52,7 +51,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void addPersonTest() {
 		// Arrange
-		Person testPerson = populatePersonRepository.getPerson();
+		Person testPerson = PersonTestData.buildPerson();
 
 		// Act
 		personRepositoryUnderTest.addPerson(testPerson);
@@ -71,7 +70,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void getPersonByNameTest() {
 		// Arrange
-		List<Person> personList = populatePersonRepository.getPersonList();
+		List<Person> personList = PersonTestData.buildPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
 		
 		Person testPerson = personList.get(5);
@@ -95,7 +94,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void getPersonsByAddressesTest() {
 		// Arrange
-		List<Person> personList = populatePersonRepository.getPersonList();
+		List<Person> personList = PersonTestData.buildPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
 
 		List<String> addresses = new ArrayList<>();
@@ -115,7 +114,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void getEmailsByCityTest() {
 		// Arrange
-		List<Person> personList = populatePersonRepository.getPersonList();
+		List<Person> personList = PersonTestData.buildPersonList();
 		Person testPerson = personList.get(5);
 		personList.get(6).setCity(testPerson.getCity());
 
@@ -155,10 +154,10 @@ public class PersonRepositoryTest {
 	@Test
 	public void updatePersonTest() {
 		// Arrange
-		Person testPerson = populatePersonRepository.getPerson();
+		Person testPerson = PersonTestData.buildPerson();
 		personRepositoryUnderTest.addPerson(testPerson);
 
-		Person testPersonUpdated = populatePersonRepository.getPerson();
+		Person testPersonUpdated = PersonTestData.buildPerson();
 		testPersonUpdated.setAddress("updated address");
 
 		// Act
@@ -184,7 +183,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void getPersonsByAddressTest() {
 		// Arrange
-		List<Person> personList = populatePersonRepository.getPersonList();
+		List<Person> personList = PersonTestData.buildPersonList();
 		String testAdress = personList.get(0).getAddress();
 		personList.get(1).setAddress(testAdress);
 
@@ -207,7 +206,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void deletePersonTest() {
 		// Arrange
-		List<Person> personList = populatePersonRepository.getPersonList();
+		List<Person> personList = PersonTestData.buildPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
 		
 		Person personToDelete = personList.get(5);
@@ -229,7 +228,7 @@ public class PersonRepositoryTest {
 	public void deleteByNameTest() {
 
 		// Arrange
-		List<Person> personList = populatePersonRepository.getPersonList();
+		List<Person> personList = PersonTestData.buildPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
 		
 		Person personToDelete = personList.get(5);
@@ -250,11 +249,11 @@ public class PersonRepositoryTest {
 	@Test
 	public void updatePersonExceptionTest() {
 		// Arrange
-		Person testPerson = populatePersonRepository.getPerson();
+		Person testPerson = PersonTestData.buildPerson();
 		testPerson.setFirstName("wrong FirstName");
 		personRepositoryUnderTest.addPerson(testPerson);
 
-		Person testPersonUpdated = populatePersonRepository.getPerson();
+		Person testPersonUpdated = PersonTestData.buildPerson();
 		testPersonUpdated.setAddress("updated address");
 
 		// Act + Assert
@@ -265,10 +264,10 @@ public class PersonRepositoryTest {
 	@Test
 	public void deletePersonExceptionTest() {
 		// Arrange
-		List<Person> personList = populatePersonRepository.getPersonList();
+		List<Person> personList = PersonTestData.buildPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
 
-		Person personToDelete = populatePersonRepository.getPerson("wrong first name", "wrong last name",
+		Person personToDelete = PersonTestData.buildPerson("wrong first name", "wrong last name",
 				"wrong address", "wrong city");
 
 		// Act + Assert
@@ -278,7 +277,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void deleteByNameExceptionTest() {
 		// Arrange
-		List<Person> personList = populatePersonRepository.getPersonList();
+		List<Person> personList = PersonTestData.buildPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
 
 		// Act + Assert

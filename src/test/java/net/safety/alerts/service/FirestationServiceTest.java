@@ -14,15 +14,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.model.Firestation;
 import net.safety.alerts.repository.FirestationRepository;
-import net.safety.alerts.utils.BuildFirestationTestData;
+import net.safety.alerts.utils.FirestationTestData;
 
 public class FirestationServiceTest {
 
 	private FirestationService firestationServiceUnderTest = new FirestationService();
 
 	private FirestationRepository firestationRepository;
-
-	private BuildFirestationTestData fireStationTestData = new BuildFirestationTestData();
 
 	@BeforeEach
 	private void reset() {
@@ -33,7 +31,7 @@ public class FirestationServiceTest {
 	@Test
 	public void addAndGetByAddressTest() {
 		// Arrange
-		Firestation testFirestation = fireStationTestData.getFirestation();
+		Firestation testFirestation = FirestationTestData.buildFirestation();
 
 		// Act
 		firestationServiceUnderTest.add(testFirestation);
@@ -160,7 +158,7 @@ public class FirestationServiceTest {
 	}
 
 	private Firestation populateRepositoryAndReturnTestFirestation() {
-		List<Firestation> listFirestation = fireStationTestData.getFirestationList();
+		List<Firestation> listFirestation = FirestationTestData.buildFirestationList();
 		for (Firestation f : listFirestation) {
 			firestationServiceUnderTest.add(f);
 		}

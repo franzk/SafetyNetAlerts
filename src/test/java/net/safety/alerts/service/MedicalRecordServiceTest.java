@@ -14,7 +14,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.repository.MedicalRecordRepository;
-import net.safety.alerts.utils.BuildMedicalRecordTestData;
+import net.safety.alerts.utils.MedicalRecordTestData;
 import net.safety.alerts.utils.TestConstants;
 
 @Component
@@ -23,8 +23,6 @@ public class MedicalRecordServiceTest {
 	private MedicalRecordService medicalRecordServiceUnderTest = new MedicalRecordService();
 
 	private MedicalRecordRepository medicalRecordRepository;
-
-	private BuildMedicalRecordTestData medicalRecordTestData = new BuildMedicalRecordTestData();
 
 	@BeforeEach
 	public void reset() {
@@ -35,7 +33,7 @@ public class MedicalRecordServiceTest {
 	@Test
 	public void addAndGetMedicalRecordByNameTest() {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.getMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 
 		// Act
 		medicalRecordServiceUnderTest.add(testMedicalRecord);
@@ -55,10 +53,10 @@ public class MedicalRecordServiceTest {
 	@Test
 	public void updateTest() {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.getMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		medicalRecordServiceUnderTest.add(testMedicalRecord);
 
-		MedicalRecord updatedMedicalRecord = medicalRecordTestData.getMedicalRecord();
+		MedicalRecord updatedMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		updatedMedicalRecord.setBirthdate(TestConstants.birthdate.plusYears(42));
 
 		// Act
@@ -82,7 +80,7 @@ public class MedicalRecordServiceTest {
 	@Test
 	public void deleteByNameTest() {
 		// Arrange
-		List<MedicalRecord> listMedicalRecords = medicalRecordTestData.getMedicalRecordList();
+		List<MedicalRecord> listMedicalRecords = MedicalRecordTestData.buildMedicalRecordList();
 		for (MedicalRecord m : listMedicalRecords) {
 			medicalRecordServiceUnderTest.add(m);
 		}

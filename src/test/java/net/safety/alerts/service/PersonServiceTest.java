@@ -14,15 +14,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.PersonRepository;
-import net.safety.alerts.utils.BuildPersonTestData;
+import net.safety.alerts.utils.PersonTestData;
 
 public class PersonServiceTest {
 
 	private PersonService personServiceUnderTest = new PersonService();
 
 	private PersonRepository personRepository;
-
-	private BuildPersonTestData personTestData = new BuildPersonTestData();
 
 	@BeforeEach
 	public void reset() {
@@ -33,7 +31,7 @@ public class PersonServiceTest {
 	@Test
 	public void addAndGetByNameTest() {
 		// Arrange
-		Person testPerson = personTestData.getPerson();
+		Person testPerson = PersonTestData.buildPerson();
 
 		// Act
 		personServiceUnderTest.add(testPerson);
@@ -88,10 +86,10 @@ public class PersonServiceTest {
 	@Test
 	public void updateTest() {
 		// Arrange
-		Person testPerson = personTestData.getPerson();
+		Person testPerson = PersonTestData.buildPerson();
 		personRepository.addPerson(testPerson);
 
-		Person testPersonUpdated = personTestData.getPerson();
+		Person testPersonUpdated = PersonTestData.buildPerson();
 		testPersonUpdated.setCity("updated City");
 		testPersonUpdated.setZip("updated Zip");
 
@@ -132,7 +130,7 @@ public class PersonServiceTest {
 	}
 
 	private Person populateRepositoryAndReturnTestPerson() {
-		List<Person> listPerson = personTestData.getPersonList();
+		List<Person> listPerson = PersonTestData.buildPersonList();
 		for (Person p : listPerson) {
 			personServiceUnderTest.add(p);
 		}

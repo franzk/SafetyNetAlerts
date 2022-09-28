@@ -5,13 +5,13 @@ import java.util.List;
 
 import net.safety.alerts.model.MedicalRecord;
 
-public class BuildMedicalRecordTestData {
+public class MedicalRecordTestData {
 
-	public MedicalRecord getMedicalRecord() {
-		return getMedicalRecord(0);
+	public static MedicalRecord buildMedicalRecord() {
+		return buildMedicalRecord(0);
 	}
 
-	public MedicalRecord getMedicalRecord(Integer modifer) {
+	public static MedicalRecord buildMedicalRecord(Integer modifer) {
 		MedicalRecord m = new MedicalRecord();
 
 		m.setFirstName(TestConstants.firstName + Integer.toString(modifer));
@@ -31,10 +31,10 @@ public class BuildMedicalRecordTestData {
 		return m;
 	}
 	
-	public List<MedicalRecord> getMedicalRecordList() {
+	public static List<MedicalRecord> buildMedicalRecordList() {
 		List<MedicalRecord> listMedicalRecords = new ArrayList<>();
 		for (int i = 0; i < 24; i++) {
-			listMedicalRecords.add(getMedicalRecord(i));
+			listMedicalRecords.add(buildMedicalRecord(i));
 		}
 		return listMedicalRecords;
 	}

@@ -27,9 +27,9 @@ import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.FirestationRepository;
 import net.safety.alerts.repository.MedicalRecordRepository;
 import net.safety.alerts.repository.PersonRepository;
-import net.safety.alerts.utils.BuildFirestationTestData;
-import net.safety.alerts.utils.BuildMedicalRecordTestData;
-import net.safety.alerts.utils.BuildPersonTestData;
+import net.safety.alerts.utils.FirestationTestData;
+import net.safety.alerts.utils.MedicalRecordTestData;
+import net.safety.alerts.utils.PersonTestData;
 
 public class UrlServiceTest {
 
@@ -43,9 +43,7 @@ public class UrlServiceTest {
 
 	private DtoService dtoService;
 
-	private BuildPersonTestData personTestData = new BuildPersonTestData();
-	private BuildFirestationTestData firestationTestData = new BuildFirestationTestData();
-	private BuildMedicalRecordTestData medicalRecordTestData = new BuildMedicalRecordTestData();
+	private MedicalRecordTestData medicalRecordTestData = new MedicalRecordTestData();
 
 	@BeforeEach
 	public void reset() {
@@ -66,14 +64,14 @@ public class UrlServiceTest {
 	@Test
 	public void urlFirestationCoverageTest() {
 		// Arrange
-		Firestation testFirestation = firestationTestData.getFirestation();
+		Firestation testFirestation = FirestationTestData.buildFirestation();
 		urlServiceUnderTest.firestationRepository.addFirestation(testFirestation);
 
-		Person testPerson = personTestData.getPerson();
+		Person testPerson = PersonTestData.buildPerson();
 		testPerson.setAddress(testFirestation.getAddress());
 		urlServiceUnderTest.personRepository.addPerson(testPerson);
 
-		MedicalRecord testMedicalRecord = medicalRecordTestData.getMedicalRecord();
+		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
 		testMedicalRecord.setFirstName(testPerson.getFirstName());
 		testMedicalRecord.setLastName(testPerson.getLastName());
 		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(20));
@@ -100,9 +98,9 @@ public class UrlServiceTest {
 	@Test
 	public void urlChildAlertTest() {
 		// Arrange
-		Person child = personTestData.getPerson();
+		Person child = PersonTestData.buildPerson();
 		personRepository.addPerson(child);
-		MedicalRecord childMedicalRecord = medicalRecordTestData.getMedicalRecord();
+		MedicalRecord childMedicalRecord = medicalRecordTestData.buildMedicalRecord();
 		childMedicalRecord.setFirstName(child.getFirstName());
 		childMedicalRecord.setLastName(child.getLastName());
 		childMedicalRecord.setBirthdate(LocalDate.now().minusYears(3));
@@ -110,15 +108,15 @@ public class UrlServiceTest {
 
 		String testAddress = child.getAddress();
 
-		Person adult = personTestData.getPerson("firstName", child.getLastName(), testAddress, "city");
+		Person adult = PersonTestData.buildPerson("firstName", child.getLastName(), testAddress, "city");
 		personRepository.addPerson(adult);
-		MedicalRecord adultMedicalRecord = medicalRecordTestData.getMedicalRecord();
+		MedicalRecord adultMedicalRecord = medicalRecordTestData.buildMedicalRecord();
 		adultMedicalRecord.setFirstName(adult.getFirstName());
 		adultMedicalRecord.setLastName(adult.getLastName());
 		adultMedicalRecord.setBirthdate(LocalDate.now().minusYears(40));
 		medicalRecordRepository.addMedicalRecord(adultMedicalRecord);
 
-		Person personWithoutMedicalRecord = personTestData.getPerson("person witout medical record",
+		Person personWithoutMedicalRecord = PersonTestData.buildPerson("person witout medical record",
 				child.getLastName(), testAddress, "");
 		personRepository.addPerson(personWithoutMedicalRecord);
 
@@ -143,16 +141,16 @@ public class UrlServiceTest {
 	@Test
 	public void urlFireTest() {
 		// Arrange
-		Firestation testFirestation = firestationTestData.getFirestation();
+		Firestation testFirestation = FirestationTestData.buildFirestation();
 		firestationRepository.addFirestation(testFirestation);
 
 		String testAddress = testFirestation.getAddress();
 
-		Person person1 = personTestData.getPerson();
+		Person person1 = PersonTestData.buildPerson();
 		person1.setAddress(testAddress);
 		personRepository.addPerson(person1);
 
-		Person person2 = personTestData.getPerson("firstName", "lastName", testAddress, "city");
+		Person person2 = PersonTestData.buildPerson("firstName", "lastName", testAddress, "city");
 		personRepository.addPerson(person2);
 
 		// Act
@@ -175,18 +173,18 @@ public class UrlServiceTest {
 	@Test
 	public void urlPhoneAlertTest() {
 		// Arrange
-		Firestation testFirestation = firestationTestData.getFirestation();
+		Firestation testFirestation = FirestationTestData.buildFirestation();
 		firestationRepository.addFirestation(testFirestation);
 
 		Integer testStationNumber = testFirestation.getStation();
 		String testAddress = testFirestation.getAddress();
 
-		Person person1 = personTestData.getPerson();
+		Person person1 = PersonTestData.buildPerson();
 		person1.setAddress(testAddress);
 		person1.setPhone("phone1");
 		personRepository.addPerson(person1);
 
-		Person person2 = personTestData.getPerson("firstName", "lastName", testAddress, "city");
+		Person person2 = PersonTestData.buildPerson("firstName", "lastName", testAddress, "city");
 		person2.setPhone("phone2");
 		personRepository.addPerson(person2);
 
@@ -207,12 +205,12 @@ public class UrlServiceTest {
 	@Test
 	public void urlPersonInfoTest() {
 		// Arrange
-		Person testPerson = personTestData.getPerson();
+		Person testPerson = PersonTestData.buildPerson();
 		personRepository.addPerson(testPerson);
 
 		Integer testAge = 20;
 
-		MedicalRecord testMedicalRecord = medicalRecordTestData.getMedicalRecord();
+		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
 		testMedicalRecord.setFirstName(testPerson.getFirstName());
 		testMedicalRecord.setLastName(testPerson.getLastName());
 		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(testAge));
@@ -239,17 +237,17 @@ public class UrlServiceTest {
 	@Test
 	public void urlCommunityEmailTest() {
 		// Arrange
-		Person person1 = personTestData.getPerson();
+		Person person1 = PersonTestData.buildPerson();
 		person1.setCity("testCity");
 		person1.setEmail("1@aa.com");
 		personRepository.addPerson(person1);
 
-		Person person2 = personTestData.getPerson();
+		Person person2 = PersonTestData.buildPerson();
 		person2.setCity("testCity");
 		person2.setEmail("2@aa.com");
 		personRepository.addPerson(person2);
 
-		Person person3 = personTestData.getPerson();
+		Person person3 = PersonTestData.buildPerson();
 		person3.setCity("testCity");
 		person3.setEmail("3@aa.com");
 		personRepository.addPerson(person3);
@@ -277,26 +275,26 @@ public class UrlServiceTest {
 		firestation1.setAddress("address 1");
 		firestationRepository.addFirestation(firestation1);
 
-		Firestation firestation2 = firestationTestData.getFirestation();
+		Firestation firestation2 = FirestationTestData.buildFirestation();
 		firestation2.setStation(1);
 		firestation2.setAddress("address 2");
 		firestationRepository.addFirestation(firestation2);
 
-		Firestation firestation3 = firestationTestData.getFirestation();
+		Firestation firestation3 = FirestationTestData.buildFirestation();
 		firestation3.setStation(2);
 		firestation3.setAddress("address 3");
 		firestationRepository.addFirestation(firestation3);
 
-		Person inhabitant1 = personTestData.getPerson();
+		Person inhabitant1 = PersonTestData.buildPerson();
 		inhabitant1.setAddress(firestation2.getAddress());
 		personRepository.addPerson(inhabitant1);
-		MedicalRecord medicalRecord1 = medicalRecordTestData.getMedicalRecord();
+		MedicalRecord medicalRecord1 = medicalRecordTestData.buildMedicalRecord();
 		medicalRecord1.setFirstName(inhabitant1.getFirstName());
 		medicalRecord1.setLastName(inhabitant1.getLastName());
 		medicalRecordRepository.addMedicalRecord(medicalRecord1);
 		
 
-		Person inhabitant2 = personTestData.getPerson();
+		Person inhabitant2 = PersonTestData.buildPerson();
 		inhabitant2.setAddress(firestation2.getAddress());
 		personRepository.addPerson(inhabitant2);
 
@@ -323,7 +321,7 @@ public class UrlServiceTest {
 	@Test
 	public void convertPersonToUrlPersonInfoItemDTOExcetpion() {
 		// Arrange
-		Person testPerson = personTestData.getPerson();
+		Person testPerson = PersonTestData.buildPerson();
 		personRepository.addPerson(testPerson);
 
 		// Act

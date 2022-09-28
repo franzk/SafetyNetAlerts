@@ -5,24 +5,24 @@ import java.util.List;
 
 import net.safety.alerts.model.Firestation;
 
-public class BuildFirestationTestData {
+public class FirestationTestData {
 
-	public Firestation getFirestation(String addressModifier, Integer stationNumberModifier) {
+	public static Firestation buildFirestation(String addressModifier, Integer stationNumberModifier) {
 		Firestation f = new Firestation();
 		f.setAddress(TestConstants.address + addressModifier);
 		f.setStation(TestConstants.stationNumber + stationNumberModifier);
 		return f;
 	}
 
-	public Firestation getFirestation() {
-		return getFirestation("", 0);
+	public static Firestation buildFirestation() {
+		return buildFirestation("", 0);
 	}
 
-	public List<Firestation> getFirestationList() {
+	public static List<Firestation> buildFirestationList() {
 		List<Firestation> listFirestations = new ArrayList<>();
 
 		for (int i = 0; i < 24; i++) {
-			listFirestations.add(getFirestation(Integer.toString(i), i));
+			listFirestations.add(buildFirestation(Integer.toString(i), i));
 		}
 		return listFirestations;
 	}
