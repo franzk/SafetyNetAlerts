@@ -14,7 +14,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.PersonRepository;
-import net.safety.alerts.utils.TestConstants;
+import net.safety.alerts.utils.BuildPersonTestData;
 
 public class PersonServiceTest {
 
@@ -22,44 +22,18 @@ public class PersonServiceTest {
 
 	private PersonRepository personRepository;
 
+	private BuildPersonTestData personTestData = new BuildPersonTestData();
+
 	@BeforeEach
 	public void reset() {
 		personRepository = new PersonRepository();
 		ReflectionTestUtils.setField(personServiceUnderTest, "personRepository", personRepository);
 	}
 
-	private Person buildPerson() {
-		return buildPerson(0);
-	}
-
-	private Person buildPerson(Integer modifier) {
-		Person p = new Person();
-		p.setFirstName(TestConstants.firstName + Integer.toString(modifier));
-		p.setLastName(TestConstants.lastName + Integer.toString(modifier));
-		p.setAddress(TestConstants.address + Integer.toString(modifier));
-		p.setCity(TestConstants.city + Integer.toString(modifier));
-		p.setZip(TestConstants.zip + Integer.toString(modifier));
-		p.setPhone(TestConstants.phone + Integer.toString(modifier));
-		return p;
-	}
-
-	private Person populatePersonRepository(Integer testPersonIndex) {
-		Person testPerson = new Person();
-		for (int i = 0; i < 24; i++) {
-			Person p = buildPerson(i);
-			personRepository.addPerson(p);
-			if (i == testPersonIndex) {
-				testPerson = p;
-			}
-		}
-		return testPerson;
-	}
-
 	@Test
 	public void addAndGetByNameTest() {
 		// Arrange
-		Person testPerson = buildPerson();
-		personRepository.addPerson(testPerson);
+		Person testPerson = personTestData.getPerson();
 
 		// Act
 		personServiceUnderTest.add(testPerson);
@@ -78,8 +52,8 @@ public class PersonServiceTest {
 	@Test
 	public void getPersonsWithSameNameTest() {
 		// Arrange
-		Person testPerson = populatePersonRepository(5);
-		personRepository.addPerson(testPerson);
+		Person testPerson = populateRepositoryAndReturnTestPerson();
+		personServiceUnderTest.add(testPerson);
 
 		// Act
 		List<Person> result = new ArrayList<>();
@@ -97,7 +71,7 @@ public class PersonServiceTest {
 	@Test
 	public void getPersonByNameTest() {
 		// Arrange
-		Person testPerson = populatePersonRepository(5);
+		Person testPerson = populateRepositoryAndReturnTestPerson();
 
 		// Act
 		Person result = new Person();
@@ -114,10 +88,10 @@ public class PersonServiceTest {
 	@Test
 	public void updateTest() {
 		// Arrange
-		Person testPerson = buildPerson();
+		Person testPerson = personTestData.getPerson();
 		personRepository.addPerson(testPerson);
 
-		Person testPersonUpdated = buildPerson();
+		Person testPersonUpdated = personTestData.getPerson();
 		testPersonUpdated.setCity("updated City");
 		testPersonUpdated.setZip("updated Zip");
 
@@ -143,7 +117,7 @@ public class PersonServiceTest {
 	@Test
 	public void deleteTest() {
 		// Arrange
-		Person testPerson = populatePersonRepository(5);
+		Person testPerson = populateRepositoryAndReturnTestPerson();
 
 		// Act
 		try {
@@ -156,4 +130,14 @@ public class PersonServiceTest {
 		assertThrows(PersonNotFoundException.class,
 				() -> personServiceUnderTest.getPersonByName(testPerson.getFirstName(), testPerson.getLastName()));
 	}
+
+	private Person populateRepositoryAndReturnTestPerson() {
+		List<Person> listPerson = personTestData.getPersonList();
+		for (Person p : listPerson) {
+			personServiceUnderTest.add(p);
+		}
+		Person testPerson = listPerson.get(5);
+		return testPerson;
+	}
+
 }

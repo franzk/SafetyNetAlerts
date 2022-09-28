@@ -14,50 +14,34 @@ import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
-import net.safety.alerts.utils.TestConstants;
+import net.safety.alerts.utils.BuildPersonTestData;
+//import net.safety.alerts.utils.TestConstants;
 
 public class PersonRepositoryTest {
 
 	private PersonRepository personRepositoryUnderTest = new PersonRepository();
+
+	BuildPersonTestData populatePersonRepository = new BuildPersonTestData();
 
 	@BeforeEach
 	public void reset() {
 		personRepositoryUnderTest.setListPersons(new ArrayList<Person>());
 	}
 
-	public Person buildPerson(String firstName, String lastName, String address, String city) {
-		Person person = new Person();
-		person.setFirstName(firstName);
-		person.setLastName(lastName);
-		person.setAddress(address);
-		person.setCity(city);
-		return person;
-	}
-
-	public List<Person> buildPersonList(String firstName, String lastName, String address, String city) {
-		List<Person> personList = new ArrayList<>();
-		personList.add(buildPerson(firstName, lastName, address, city));
-		for (int i = 1; i < 20; i++) {
-			personList.add(buildPerson(firstName + Integer.toString(i), lastName + Integer.toString(i),
-					address + Integer.toString(i), city + Integer.toString(i)));
-		}
-		return personList;
-	}
-
 	@Test
 	public void setListPersonsAndGetPersonByNameTest() {
 		// Arrange
-		List<Person> personList = buildPersonList(TestConstants.firstName, TestConstants.lastName,
-				TestConstants.address, TestConstants.city);
+		List<Person> personList = populatePersonRepository.getPersonList();
+		Person testPerson = personList.get(0);
 
 		// Act
 		personRepositoryUnderTest.setListPersons(personList);
 
 		try {
-			Person p = personRepositoryUnderTest.getPersonByName(TestConstants.firstName, TestConstants.lastName);
+			Person p = personRepositoryUnderTest.getPersonByName(testPerson.getFirstName(), testPerson.getLastName());
 
 			// Assert
-			assertThat(p.getAddress()).isEqualTo(TestConstants.address);
+			assertThat(p.getAddress()).isEqualTo(testPerson.getAddress());
 
 		} catch (PersonNotFoundException e) {
 			fail("setListPersonsAndGetPersonByNameTest threw an exception");
@@ -68,28 +52,28 @@ public class PersonRepositoryTest {
 	@Test
 	public void addPersonTest() {
 		// Arrange
-		Person person = buildPerson(TestConstants.firstName, TestConstants.lastName, TestConstants.address,
-				TestConstants.city);
+		Person testPerson = populatePersonRepository.getPerson();
 
 		// Act
-		personRepositoryUnderTest.addPerson(person);
-		try {
-			Person p = personRepositoryUnderTest.getPersonByName(TestConstants.firstName, TestConstants.lastName);
+		personRepositoryUnderTest.addPerson(testPerson);
 
-			// Assert
-			assertThat(p.getAddress()).isEqualTo(TestConstants.address);
+		Person result = new Person();
+		try {
+			result = personRepositoryUnderTest.getPersonByName(testPerson.getFirstName(), testPerson.getLastName());
 		} catch (PersonNotFoundException e) {
 			fail("addPersonTest threw an exception");
 		}
 
+		// Assert
+		assertThat(result.getAddress()).isEqualTo(testPerson.getAddress());
 	}
 
 	@Test
 	public void getPersonByNameTest() {
 		// Arrange
-		List<Person> personList = buildPersonList(TestConstants.firstName, TestConstants.lastName,
-				TestConstants.address, TestConstants.city);
+		List<Person> personList = populatePersonRepository.getPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
+		
 		Person testPerson = personList.get(5);
 		personList.add(testPerson);
 
@@ -111,8 +95,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void getPersonsByAddressesTest() {
 		// Arrange
-		List<Person> personList = buildPersonList(TestConstants.firstName, TestConstants.lastName,
-				TestConstants.address, TestConstants.city);
+		List<Person> personList = populatePersonRepository.getPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
 
 		List<String> addresses = new ArrayList<>();
@@ -132,8 +115,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void getEmailsByCityTest() {
 		// Arrange
-		List<Person> personList = buildPersonList(TestConstants.firstName, TestConstants.lastName,
-				TestConstants.address, TestConstants.city);
+		List<Person> personList = populatePersonRepository.getPersonList();
 		Person testPerson = personList.get(5);
 		personList.get(6).setCity(testPerson.getCity());
 
@@ -173,47 +155,51 @@ public class PersonRepositoryTest {
 	@Test
 	public void updatePersonTest() {
 		// Arrange
-		Person person1 = buildPerson(TestConstants.firstName, TestConstants.lastName, TestConstants.address + " 1",
-				TestConstants.city);
-		Person person2 = buildPerson(TestConstants.firstName, TestConstants.lastName, TestConstants.address,
-				TestConstants.city);
-		personRepositoryUnderTest.addPerson(person1);
+		Person testPerson = populatePersonRepository.getPerson();
+		personRepositoryUnderTest.addPerson(testPerson);
+
+		Person testPersonUpdated = populatePersonRepository.getPerson();
+		testPersonUpdated.setAddress("updated address");
 
 		// Act
 		try {
-			personRepositoryUnderTest.updatePerson(person2);
+			personRepositoryUnderTest.updatePerson(testPersonUpdated);
 		} catch (PersonNotFoundException e) {
 			fail("updatePersonTest (act) threw an exception !");
 		}
 
 		// Assert
+		Person result = new Person();
 		try {
-			Person p = personRepositoryUnderTest.getPersonByName(TestConstants.firstName, TestConstants.lastName);
-
-			// Assert
-			assertThat(p.getAddress()).isEqualTo(TestConstants.address);
-
+			result = personRepositoryUnderTest.getPersonByName(testPerson.getFirstName(), testPerson.getLastName());
 		} catch (PersonNotFoundException e) {
 			fail("updatePersonTest (assert) threw an exception !");
 		}
+
+		// Assert
+		assertThat(result.getAddress()).isEqualTo(testPersonUpdated.getAddress());
+
 	}
 
 	@Test
 	public void getPersonsByAddressTest() {
 		// Arrange
-		List<Person> personList = buildPersonList(TestConstants.firstName, TestConstants.lastName,
-				TestConstants.address, TestConstants.city);
+		List<Person> personList = populatePersonRepository.getPersonList();
+		String testAdress = personList.get(0).getAddress();
+		personList.get(1).setAddress(testAdress);
+
 		personRepositoryUnderTest.setListPersons(personList);
 
 		// Act
 		List<Person> result = new ArrayList<>();
 		try {
-			result = personRepositoryUnderTest.getPersonsByAddress(TestConstants.address);
+			result = personRepositoryUnderTest.getPersonsByAddress(testAdress);
 		} catch (AddressNotFoundException e) {
 			fail("getPersonsByAddressTest threw an exception !");
 		}
 
 		// Assert
+		assertThat(result.size()).isEqualTo(2);
 		assertThat(result.get(0)).isEqualTo(personList.get(0));
 
 	}
@@ -221,10 +207,11 @@ public class PersonRepositoryTest {
 	@Test
 	public void deletePersonTest() {
 		// Arrange
-		List<Person> personList = buildPersonList(TestConstants.firstName, TestConstants.lastName,
-				TestConstants.address, TestConstants.city);
-		Person personToDelete = personList.get(5);
+		List<Person> personList = populatePersonRepository.getPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
+		
+		Person personToDelete = personList.get(5);
+		
 
 		// Act
 		try {
@@ -242,10 +229,11 @@ public class PersonRepositoryTest {
 	public void deleteByNameTest() {
 
 		// Arrange
-		List<Person> personList = buildPersonList(TestConstants.firstName, TestConstants.lastName,
-				TestConstants.address, TestConstants.city);
-		Person personToDelete = personList.get(5);
+		List<Person> personList = populatePersonRepository.getPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
+		
+		Person personToDelete = personList.get(5);
+		
 
 		// Act
 		try {
@@ -262,24 +250,26 @@ public class PersonRepositoryTest {
 	@Test
 	public void updatePersonExceptionTest() {
 		// Arrange
-		Person person1 = buildPerson(TestConstants.firstName, TestConstants.lastName, TestConstants.address + " 1",
-				TestConstants.city);
-		Person person2 = buildPerson("wrong first name", TestConstants.lastName, TestConstants.address,
-				TestConstants.city);
-		personRepositoryUnderTest.addPerson(person1);
+		Person testPerson = populatePersonRepository.getPerson();
+		testPerson.setFirstName("wrong FirstName");
+		personRepositoryUnderTest.addPerson(testPerson);
+
+		Person testPersonUpdated = populatePersonRepository.getPerson();
+		testPersonUpdated.setAddress("updated address");
 
 		// Act + Assert
-		assertThrows(PersonNotFoundException.class, () -> personRepositoryUnderTest.updatePerson(person2));
+		assertThrows(PersonNotFoundException.class, () -> personRepositoryUnderTest.updatePerson(testPersonUpdated));
 
 	}
 
 	@Test
 	public void deletePersonExceptionTest() {
 		// Arrange
-		List<Person> personList = buildPersonList(TestConstants.firstName, TestConstants.lastName,
-				TestConstants.address, TestConstants.city);
-		Person personToDelete = buildPerson("wrong first name", "wrong last name", "wrong address", TestConstants.city);
+		List<Person> personList = populatePersonRepository.getPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
+
+		Person personToDelete = populatePersonRepository.getPerson("wrong first name", "wrong last name",
+				"wrong address", "wrong city");
 
 		// Act + Assert
 		assertThrows(PersonNotFoundException.class, () -> personRepositoryUnderTest.deletePerson(personToDelete));
@@ -288,8 +278,7 @@ public class PersonRepositoryTest {
 	@Test
 	public void deleteByNameExceptionTest() {
 		// Arrange
-		List<Person> personList = buildPersonList(TestConstants.firstName, TestConstants.lastName,
-				TestConstants.address, TestConstants.city);
+		List<Person> personList = populatePersonRepository.getPersonList();
 		personRepositoryUnderTest.setListPersons(personList);
 
 		// Act + Assert

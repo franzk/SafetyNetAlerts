@@ -19,5 +19,5 @@ public class DtoConstants {
 			PersonField.LAST_NAME, PersonField.ADDRESS, PersonField.PHONE };
 
 	public static PersonField[] UrlPersonInfo = new PersonField[] { PersonField.FIRST_NAME, PersonField.LAST_NAME,
-			PersonField.EMAIL, PersonField.MEDICATIONS, PersonField.ALLERGIES };
+			PersonField.ADDRESS, PersonField.AGE, PersonField.EMAIL, PersonField.MEDICATIONS, PersonField.ALLERGIES };
 }

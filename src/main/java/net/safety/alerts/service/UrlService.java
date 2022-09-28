@@ -55,17 +55,9 @@ public class UrlService {
 				.map(person -> dtoService.buildPersonDto(person, DtoConstants.UrlFirestationCoveragePerson))
 				.collect(Collectors.toList());
 
-		long adultsCount = personsCovered.stream().filter(p -> medicalRecordRepository
-				.isAdult(p)/*
-							 * { try { return (medicalRecordRepository.getPersonAge(p) > 18); } catch
-							 * (MedicalRecordNotFoundException e) { return false; } }
-							 */).count();
+		long adultsCount = personsCovered.stream().filter(p -> medicalRecordRepository.isAdult(p)).count();
 
-		long childrenCount = personsCovered.stream().filter(p -> medicalRecordRepository
-				.isChild(p) /*
-							 * { try { return (medicalRecordRepository.getPersonAge(p) <= 18); } catch
-							 * (MedicalRecordNotFoundException e) { return false; } }
-							 */).count();
+		long childrenCount = personsCovered.stream().filter(p -> medicalRecordRepository.isChild(p)).count();
 
 		UrlFirestationCoverageDto firestationCoverageDto = new UrlFirestationCoverageDto();
 		firestationCoverageDto.setPersons(personsCoveredDto);
@@ -80,11 +72,11 @@ public class UrlService {
 
 		List<Person> personsAtThisAddress = personRepository.getPersonsByAddress(address);
 		List<Person> childrenAtThisAddress = personsAtThisAddress.stream()
-				.filter(p -> medicalRecordRepository.isChild(p)).toList();
+				.filter(p -> medicalRecordRepository.isChild(p)).collect(Collectors.toList());
 
 		List<Person> otherHouseholdMembers = personsAtThisAddress.stream()
 				.filter(p -> childrenAtThisAddress.stream().anyMatch(c -> c.getLastName().equals(p.getLastName())))
-				.filter(p -> medicalRecordRepository.isAdult(p)).collect(Collectors.toList());
+				.filter(p -> !medicalRecordRepository.isChild(p)).collect(Collectors.toList());
 
 		UrlChildAlertDto childAlertDto = new UrlChildAlertDto();
 
@@ -93,7 +85,7 @@ public class UrlService {
 				return dtoService.buildPersonDto(p, medicalRecordRepository.getMedicalRecord(p),
 						DtoConstants.UrlChildAlertChild);
 			} catch (MedicalRecordNotFoundException e) {
-				return dtoService.buildPersonDto(p, DtoConstants.UrlChildAlertChild);
+				return null; // ce cas ne peut pas arriver car les children ont forcément un medical recod
 			}
 		}).collect(Collectors.toList());
 
@@ -129,7 +121,7 @@ public class UrlService {
 		List<Person> persons = personRepository.getPersonsByAddresses(addresses);
 
 		// utiliser Set pour éviter les doublons
-		Set<String> phoneNumbers = persons.stream().map(Person::getPhone).collect(Collectors.toSet());
+		Set<String> phoneNumbers = persons.stream().map(p -> p.getPhone()).collect(Collectors.toSet());
 
 		UrlPhoneAlertDto urlFirestationDto = new UrlPhoneAlertDto();
 		urlFirestationDto.setPhoneNumbers(phoneNumbers);
@@ -169,7 +161,7 @@ public class UrlService {
 
 	}
 
-	public UrlPersonInfoDto getPersonInfoByName(String firstName, String lastName) throws PersonNotFoundException {
+	public UrlPersonInfoDto urlPersonInfo(String firstName, String lastName) throws PersonNotFoundException {
 
 		List<Person> persons = personRepository.getPersonsByName(firstName, lastName);
 

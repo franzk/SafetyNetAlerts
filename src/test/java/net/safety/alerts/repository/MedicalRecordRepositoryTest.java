@@ -18,7 +18,7 @@ import net.safety.alerts.utils.TestConstants;
 
 public class MedicalRecordRepositoryTest {
 
-	private static MedicalRecordRepository medicalRecordRepositoryUnderTest = new MedicalRecordRepository();
+	private MedicalRecordRepository medicalRecordRepositoryUnderTest = new MedicalRecordRepository();
 
 	@BeforeEach
 	private void reset() {
