@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 public class UrlFloodStationsDto {
 
-	List<UrlFloodStationsAddress> addresses = new ArrayList<>();
+	List<UrlFloodStationsAddressDto> addresses = new ArrayList<>();
 		
 }

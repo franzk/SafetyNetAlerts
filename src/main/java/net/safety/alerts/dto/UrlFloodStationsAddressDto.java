@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class UrlFloodStationsAddress {
+public class UrlFloodStationsAddressDto {
 
 	String address;
 	List<PersonDto> inhabitants;

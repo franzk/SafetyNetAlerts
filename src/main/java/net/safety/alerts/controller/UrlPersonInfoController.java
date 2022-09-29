@@ -18,7 +18,7 @@ public class UrlPersonInfoController {
 	private UrlService urlService;
 	
 	@GetMapping("personInfo")
-	public ResponseEntity<UrlPersonInfoDto> urlPersonInfo(@RequestParam String firstName, @RequestParam String lastName) throws PersonNotFoundException {
+	public ResponseEntity<UrlPersonInfoDto> personInfo(@RequestParam String firstName, @RequestParam String lastName) throws PersonNotFoundException {
 		return new ResponseEntity<>(urlService.urlPersonInfo(firstName, lastName), HttpStatus.OK);
 	}
 	

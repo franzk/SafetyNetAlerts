@@ -14,7 +14,7 @@ import net.safety.alerts.dto.UrlChildAlertDto;
 import net.safety.alerts.dto.UrlCommunityEmailDto;
 import net.safety.alerts.dto.UrlFireDto;
 import net.safety.alerts.dto.UrlFirestationCoverageDto;
-import net.safety.alerts.dto.UrlFloodStationsAddress;
+import net.safety.alerts.dto.UrlFloodStationsAddressDto;
 import net.safety.alerts.dto.UrlFloodStationsDto;
 import net.safety.alerts.dto.UrlPersonInfoDto;
 import net.safety.alerts.dto.UrlPhoneAlertDto;
@@ -139,8 +139,8 @@ public class UrlService {
 
 		UrlFloodStationsDto floodDto = new UrlFloodStationsDto();
 
-		List<UrlFloodStationsAddress> addressesDto = addresses.stream().map(a -> {
-			UrlFloodStationsAddress addressDto = new UrlFloodStationsAddress();
+		List<UrlFloodStationsAddressDto> addressesDto = addresses.stream().map(a -> {
+			UrlFloodStationsAddressDto addressDto = new UrlFloodStationsAddressDto();
 			addressDto.setAddress(a);
 			List<Person> inhabitants = new ArrayList<>();
 			try {
