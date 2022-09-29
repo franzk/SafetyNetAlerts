@@ -1,5 +1,6 @@
 package net.safety.alerts.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -56,15 +57,17 @@ public class EndpointFirestationControllerTestIT {
 
 		String requestJson = mapper.writeValueAsString(testFirestation);
 
-		// Act + Assert
+		// Act
 		String expectedBody = mapper.writeValueAsString(testFirestation);
 		mockMvc.perform(post("/firestation").contentType(APPLICATION_JSON_UTF8).content(requestJson))
 				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().string(expectedBody));
 
+		// Assert
+		assertThat(firestationRepository.getFirestationsByAddress(testFirestation.getAddress()).get(0)).isEqualTo(testFirestation);
 	}
 
 	@Test
-	public void getFirestationByAddress() throws Exception {
+	public void testGetFirestationByAddress() throws Exception {
 		// Arrange
 		List<Firestation> testListFirestation = new ArrayList<>();
 		String testAddress = TestConstants.address;
@@ -83,7 +86,7 @@ public class EndpointFirestationControllerTestIT {
 	}
 
 	@Test
-	public void getFirestationByStationNumber() throws Exception {
+	public void testGetFirestationByStationNumber() throws Exception {
 		// Arrange
 		List<Firestation> testListFirestation = new ArrayList<>();
 		Integer testStationNumber = TestConstants.stationNumber;
@@ -102,7 +105,7 @@ public class EndpointFirestationControllerTestIT {
 	}
 
 	@Test
-	public void updateFirestationTest() throws Exception {
+	public void testPutFirestation() throws Exception {
 		// Arrange
 		Firestation testFirestation = FirestationTestData.buildFirestation();
 		firestationRepository.addFirestation(testFirestation);
@@ -121,7 +124,7 @@ public class EndpointFirestationControllerTestIT {
 	}
 
 	@Test
-	public void deleteFirestationByAddress() throws Exception {
+	public void testDeleteFirestation() throws Exception {
 		// Arrange
 		String testAddress = TestConstants.address;
 		Firestation f1 = FirestationTestData.buildFirestation(testAddress, TestConstants.stationNumber);
@@ -139,7 +142,7 @@ public class EndpointFirestationControllerTestIT {
 	}
 
 	@Test
-	public void deleteFirestationByStationNumber() throws Exception {
+	public void testDeleteFirestationByStationNumber() throws Exception {
 		// Arrange
 		Integer testStationNumber = TestConstants.stationNumber;
 		Firestation f1 = FirestationTestData.buildFirestation(TestConstants.address, testStationNumber);

@@ -39,7 +39,7 @@ public class EndpointMedicalRecordControllerTest {
 		when(medicalRecordService.add(any())).thenReturn(testMedicalRecord);
 		
 		// Act
-		ResponseEntity<MedicalRecord> result = controllerUnderTest.addMedicalRecord(testMedicalRecord);
+		ResponseEntity<MedicalRecord> result = controllerUnderTest.addMedicalRecord(null);
 	
 		// Assert
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

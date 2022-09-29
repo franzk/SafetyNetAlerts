@@ -17,7 +17,7 @@ import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.service.MedicalRecordService;
 
 @RestController
-@RequestMapping
+@RequestMapping("medicalRecord")
 public class EndpointMedicalRecordController {
 
 	@Autowired
@@ -32,7 +32,7 @@ public class EndpointMedicalRecordController {
 	// read
 	@GetMapping("")
 	public ResponseEntity<MedicalRecord> getMedicalRecord(@RequestParam String firstName, @RequestParam String lastName)
-			throws MedicalRecordNotFoundException {		
+			throws MedicalRecordNotFoundException {
 		return new ResponseEntity<>(medicalRecordService.getMedicalRecordByName(firstName, lastName), HttpStatus.OK);
 	}
 
