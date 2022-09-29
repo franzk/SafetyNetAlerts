@@ -43,8 +43,6 @@ public class UrlServiceTest {
 
 	private DtoService dtoService;
 
-	private MedicalRecordTestData medicalRecordTestData = new MedicalRecordTestData();
-
 	@BeforeEach
 	public void reset() {
 
@@ -71,7 +69,7 @@ public class UrlServiceTest {
 		testPerson.setAddress(testFirestation.getAddress());
 		urlServiceUnderTest.personRepository.addPerson(testPerson);
 
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		testMedicalRecord.setFirstName(testPerson.getFirstName());
 		testMedicalRecord.setLastName(testPerson.getLastName());
 		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(20));
@@ -100,7 +98,7 @@ public class UrlServiceTest {
 		// Arrange
 		Person child = PersonTestData.buildPerson();
 		personRepository.addPerson(child);
-		MedicalRecord childMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord childMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		childMedicalRecord.setFirstName(child.getFirstName());
 		childMedicalRecord.setLastName(child.getLastName());
 		childMedicalRecord.setBirthdate(LocalDate.now().minusYears(3));
@@ -110,7 +108,7 @@ public class UrlServiceTest {
 
 		Person adult = PersonTestData.buildPerson("firstName", child.getLastName(), testAddress, "city");
 		personRepository.addPerson(adult);
-		MedicalRecord adultMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord adultMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		adultMedicalRecord.setFirstName(adult.getFirstName());
 		adultMedicalRecord.setLastName(adult.getLastName());
 		adultMedicalRecord.setBirthdate(LocalDate.now().minusYears(40));
@@ -210,7 +208,7 @@ public class UrlServiceTest {
 
 		Integer testAge = 20;
 
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		testMedicalRecord.setFirstName(testPerson.getFirstName());
 		testMedicalRecord.setLastName(testPerson.getLastName());
 		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(testAge));
@@ -288,11 +286,10 @@ public class UrlServiceTest {
 		Person inhabitant1 = PersonTestData.buildPerson();
 		inhabitant1.setAddress(firestation2.getAddress());
 		personRepository.addPerson(inhabitant1);
-		MedicalRecord medicalRecord1 = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord medicalRecord1 = MedicalRecordTestData.buildMedicalRecord();
 		medicalRecord1.setFirstName(inhabitant1.getFirstName());
 		medicalRecord1.setLastName(inhabitant1.getLastName());
 		medicalRecordRepository.addMedicalRecord(medicalRecord1);
-		
 
 		Person inhabitant2 = PersonTestData.buildPerson();
 		inhabitant2.setAddress(firestation2.getAddress());
@@ -331,17 +328,16 @@ public class UrlServiceTest {
 		} catch (PersonNotFoundException e) {
 			fail("convertPersonToUrlPersonInfoItemDTOExcetpion");
 		}
-		
+
 		// Assert
 		assertThat(result.getPersons().size()).isEqualTo(1);
 		assertThat(result.getPersons().get(0).getAge()).isNull();
-	
+
 	}
-	
+
 	@Test
 	public void convertPersonToUrlFireDtoTest() {
-		
+
 	}
-	
-	
+
 }

@@ -1,6 +1,5 @@
 package net.safety.alerts.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,7 @@ public class FirestationService {
 
 	// read
 	public List<Firestation> getByAddress(String address) throws FirestationNotFoundException {
-		List<Firestation> firestations = new ArrayList<>();
-		firestations.add(firestationRepository.getFirestationByAddress(address));
-		return firestations;
+		return firestationRepository.getFirestationsByAddress(address);
 	}
 
 	public List<Firestation> getByStationNumber(Integer stationNumber) throws FirestationNotFoundException {

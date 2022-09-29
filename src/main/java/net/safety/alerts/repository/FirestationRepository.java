@@ -47,8 +47,10 @@ public class FirestationRepository {
 	}
 
 	public void deleteByAddress(String address) throws FirestationNotFoundException {
-		Firestation firestation = this.getFirestationByAddress(address);
-		this.deleteFirestation(firestation);
+		List<Firestation> firestations = this.getFirestationsByAddress(address);
+		for (Firestation f : firestations) {
+			this.deleteFirestation(f);
+		}
 	}
 
 	public void deleteByStationNumber(Integer stationNumber) throws FirestationNotFoundException {
@@ -64,18 +66,19 @@ public class FirestationRepository {
 				.collect(Collectors.toList());
 		if (firestations.size() <= 0) {
 			throw new FirestationNotFoundException();
-		} else
+		} else {
 			return firestations;
+		}
 	}
 
-	public Firestation getFirestationByAddress(String address) throws FirestationNotFoundException {
-		Optional<Firestation> firestation = listFirestations.stream().filter(f -> f.getAddress().equals(address))
-				.findFirst();
+	public List<Firestation> getFirestationsByAddress(String address) throws FirestationNotFoundException {
+		List<Firestation> firestations = listFirestations.stream().filter(f -> f.getAddress().equals(address))
+				.collect(Collectors.toList());
 
-		if (firestation.isPresent()) {
-			return firestation.get();
-		} else {
+		if (firestations.size() <= 0) {
 			throw new FirestationNotFoundException();
+		} else {
+			return firestations;
 		}
 	}
 

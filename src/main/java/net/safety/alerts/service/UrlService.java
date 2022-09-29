@@ -146,7 +146,7 @@ public class UrlService {
 			try {
 				inhabitants = personRepository.getPersonsByAddress(a);
 			} catch (AddressNotFoundException e) {
-				e.printStackTrace();
+				// nobody is living at this address. 
 			}
 			List<PersonDto> personsDto = inhabitants.stream().map(p -> this.convertPersonToUrlFireDto(p))
 					.collect(Collectors.toList());

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.model.Firestation;
+import net.safety.alerts.utils.FirestationTestData;
 import net.safety.alerts.utils.TestConstants;
 
 public class FirestationRepositoryTest {
@@ -33,15 +34,15 @@ public class FirestationRepositoryTest {
 	@Test
 	public void addFirestationAndGetFirestationAddressTest() {
 		// Arrange
-		Firestation firestation = buildFirestation(TestConstants.address, TestConstants.stationNumber);
+		Firestation testFirestation = FirestationTestData.buildFirestation();
 
 		// Act
-		firestationRepositoryUnderTest.addFirestation(firestation);
+		firestationRepositoryUnderTest.addFirestation(testFirestation);
 
 		// Assert
 		try {
-			assertThat(firestationRepositoryUnderTest.getFirestationAddresses(TestConstants.stationNumber).get(0))
-					.isEqualTo(TestConstants.address);
+			assertThat(firestationRepositoryUnderTest.getFirestationAddresses(testFirestation.getStation()).get(0))
+					.isEqualTo(testFirestation.getAddress());
 		} catch (FirestationNotFoundException e) {
 			fail("addFirestation Test failed : getFirestationAdress threw an exception !");
 		}
@@ -140,7 +141,7 @@ public class FirestationRepositoryTest {
 
 		// Assert
 		assertThrows(FirestationNotFoundException.class,
-				() -> firestationRepositoryUnderTest.getFirestationByAddress(TestConstants.address));
+				() -> firestationRepositoryUnderTest.getFirestationsByAddress(TestConstants.address));
 
 	}
 
@@ -172,7 +173,7 @@ public class FirestationRepositoryTest {
 
 		// Assert
 		assertThrows(FirestationNotFoundException.class,
-				() -> firestationRepositoryUnderTest.getFirestationByAddress(TestConstants.address));
+				() -> firestationRepositoryUnderTest.getFirestationsByAddress(TestConstants.address));
 
 	}
 
@@ -191,7 +192,7 @@ public class FirestationRepositoryTest {
 
 		// Assert
 		assertThrows(FirestationNotFoundException.class,
-				() -> firestationRepositoryUnderTest.getFirestationByAddress(TestConstants.address));
+				() -> firestationRepositoryUnderTest.getFirestationsByAddress(TestConstants.address));
 
 	}
 
