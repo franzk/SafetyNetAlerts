@@ -12,7 +12,7 @@ import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.UrlService;
 
 @RestController
-public class UrlFirestationCoverage {
+public class UrlFirestationCoverageController {
 
 	@Autowired
 	private UrlService urlService;
