@@ -1,5 +1,6 @@
 package net.safety.alerts.utils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,10 +8,26 @@ import net.safety.alerts.model.MedicalRecord;
 
 public class MedicalRecordTestData {
 
+	
 	public static MedicalRecord buildMedicalRecord() {
 		return buildMedicalRecord(0);
 	}
 
+	public static MedicalRecord buildChildMedicalRecord(String firstName, String lastName) {
+		MedicalRecord m = buildMedicalRecord(0);
+		m.setFirstName(firstName);
+		m.setLastName(lastName);
+		m.setBirthdate(LocalDate.now().minusYears(3));
+		return m;
+	}
+
+	public static MedicalRecord buildAdultMedicalRecord(String firstName, String lastName) {
+		MedicalRecord m = buildMedicalRecord(0);
+		m.setBirthdate(LocalDate.now().minusYears(40));
+		return m;
+	}
+	
+	
 	public static MedicalRecord buildMedicalRecord(Integer modifer) {
 		MedicalRecord m = new MedicalRecord();
 

@@ -23,12 +23,19 @@ import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
+import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.FirestationRepository;
 import net.safety.alerts.repository.MedicalRecordRepository;
 import net.safety.alerts.repository.PersonRepository;
 import net.safety.alerts.utils.DtoConstants;
 
+/**
+ * description
+ * 
+ * @author FranzKa
+ *
+ */
 @Service
 public class UrlService {
 
@@ -41,18 +48,20 @@ public class UrlService {
 	@Autowired
 	MedicalRecordRepository medicalRecordRepository;
 
-	@Autowired
-	DtoService dtoService;
-
+	/**
+	 * description
+	 * 
+	 * @param stationNumber
+	 * @return
+	 * @throws FirestationNotFoundException
+	 */
 	public UrlFirestationCoverageDto urlFirestationCoverage(@RequestParam Integer stationNumber)
 			throws FirestationNotFoundException {
-
-		DtoService dtoService = new DtoService();
 
 		List<String> addresses = firestationRepository.getFirestationAddresses(stationNumber);
 		List<Person> personsCovered = personRepository.getPersonsByAddresses(addresses);
 		List<PersonDto> personsCoveredDto = personsCovered.stream()
-				.map(person -> dtoService.buildPersonDto(person, DtoConstants.UrlFirestationCoveragePerson))
+				.map(person -> DtoService.buildPersonDto(person, DtoConstants.UrlFirestationCoveragePerson))
 				.collect(Collectors.toList());
 
 		long adultsCount = personsCovered.stream().filter(p -> medicalRecordRepository.isAdult(p)).count();
@@ -82,15 +91,15 @@ public class UrlService {
 
 		List<PersonDto> childrenDto = childrenAtThisAddress.stream().map(p -> {
 			try {
-				return dtoService.buildPersonDto(p, medicalRecordRepository.getMedicalRecord(p),
-						DtoConstants.UrlChildAlertChild);
+				MedicalRecord m = medicalRecordRepository.getMedicalRecord(p);
+				return DtoService.buildPersonDto(p, m, DtoConstants.UrlChildAlertChild);
 			} catch (MedicalRecordNotFoundException e) {
 				return null; // ce cas ne peut pas arriver car les children ont forcément un medical recod
 			}
 		}).collect(Collectors.toList());
 
 		List<PersonDto> otherHouseholdMembersDto = otherHouseholdMembers.stream()
-				.map(p -> dtoService.buildPersonDto(p, DtoConstants.UrlChildAlertAdult)).collect(Collectors.toList());
+				.map(p -> DtoService.buildPersonDto(p, DtoConstants.UrlChildAlertAdult)).collect(Collectors.toList());
 
 		childAlertDto.setChildren(childrenDto);
 		childAlertDto.setOtherHouseHoldMembers(otherHouseholdMembersDto);
@@ -146,7 +155,7 @@ public class UrlService {
 			try {
 				inhabitants = personRepository.getPersonsByAddress(a);
 			} catch (AddressNotFoundException e) {
-				// nobody is living at this address. 
+				// nobody is living at this address.
 			}
 			List<PersonDto> personsDto = inhabitants.stream().map(p -> this.convertPersonToUrlFireDto(p))
 					.collect(Collectors.toList());
@@ -183,19 +192,19 @@ public class UrlService {
 	// utils
 	private PersonDto convertPersonToUrlPersonInfoItemDTO(Person person) {
 		try {
-			return dtoService.buildPersonDto(person, medicalRecordRepository.getMedicalRecord(person),
+			return DtoService.buildPersonDto(person, medicalRecordRepository.getMedicalRecord(person),
 					DtoConstants.UrlPersonInfo);
 		} catch (MedicalRecordNotFoundException e) {
-			return dtoService.buildPersonDto(person, DtoConstants.UrlPersonInfo);
+			return DtoService.buildPersonDto(person, DtoConstants.UrlPersonInfo);
 		}
 	}
 
 	private PersonDto convertPersonToUrlFireDto(Person person) {
 		try {
-			return dtoService.buildPersonDto(person, medicalRecordRepository.getMedicalRecord(person),
+			return DtoService.buildPersonDto(person, medicalRecordRepository.getMedicalRecord(person),
 					DtoConstants.UrlFirePerson);
 		} catch (MedicalRecordNotFoundException e) {
-			return dtoService.buildPersonDto(person, DtoConstants.UrlFirePerson);
+			return DtoService.buildPersonDto(person, DtoConstants.UrlFirePerson);
 		}
 	}
 

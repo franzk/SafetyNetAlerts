@@ -1,14 +1,19 @@
 package net.safety.alerts.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import net.safety.alerts.dto.UrlChildAlertDto;
 import net.safety.alerts.dto.UrlCommunityEmailDto;
@@ -20,324 +25,241 @@ import net.safety.alerts.dto.UrlPhoneAlertDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
+import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
-import net.safety.alerts.model.Firestation;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.FirestationRepository;
 import net.safety.alerts.repository.MedicalRecordRepository;
 import net.safety.alerts.repository.PersonRepository;
-import net.safety.alerts.utils.FirestationTestData;
 import net.safety.alerts.utils.MedicalRecordTestData;
 import net.safety.alerts.utils.PersonTestData;
 
+@ExtendWith(MockitoExtension.class)
 public class UrlServiceTest {
 
+	@InjectMocks
 	private UrlService urlServiceUnderTest = new UrlService();
 
+	@Mock
 	private PersonRepository personRepository;
 
+	@Mock
 	private FirestationRepository firestationRepository;
 
+	@Mock
 	private MedicalRecordRepository medicalRecordRepository;
 
-	private DtoService dtoService;
-
-	@BeforeEach
-	public void reset() {
-
-		personRepository = new PersonRepository();
-		ReflectionTestUtils.setField(urlServiceUnderTest, "personRepository", personRepository);
-
-		firestationRepository = new FirestationRepository();
-		ReflectionTestUtils.setField(urlServiceUnderTest, "firestationRepository", firestationRepository);
-
-		medicalRecordRepository = new MedicalRecordRepository();
-		ReflectionTestUtils.setField(urlServiceUnderTest, "medicalRecordRepository", medicalRecordRepository);
-
-		dtoService = new DtoService();
-		ReflectionTestUtils.setField(urlServiceUnderTest, "dtoService", dtoService);
-	}
-
 	@Test
-	public void urlFirestationCoverageTest() {
+	public void urlFirestationCoverageTest() throws FirestationNotFoundException {
+
 		// Arrange
-		Firestation testFirestation = FirestationTestData.buildFirestation();
-		urlServiceUnderTest.firestationRepository.addFirestation(testFirestation);
+		Person p1 = PersonTestData.buildPerson();
+		Person p2 = PersonTestData.buildPerson();
+		Person p3 = PersonTestData.buildPerson();
+		List<Person> persons = List.of(p1, p2, p3);
 
-		Person testPerson = PersonTestData.buildPerson();
-		testPerson.setAddress(testFirestation.getAddress());
-		urlServiceUnderTest.personRepository.addPerson(testPerson);
-
-		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
-		testMedicalRecord.setFirstName(testPerson.getFirstName());
-		testMedicalRecord.setLastName(testPerson.getLastName());
-		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(20));
-		urlServiceUnderTest.medicalRecordRepository.addMedicalRecord(testMedicalRecord);
-
-		Integer testStationNumber = testFirestation.getStation();
+		when(firestationRepository.getFirestationAddresses(any())).thenReturn(new ArrayList<>());
+		when(personRepository.getPersonsByAddresses(any())).thenReturn(persons);
+		when(medicalRecordRepository.isAdult(any())).thenReturn(true, false, false); // 1 adult, 1 child, 1 unknown
+		when(medicalRecordRepository.isChild(any())).thenReturn(false, true, false);
 
 		// Act
-		UrlFirestationCoverageDto result = new UrlFirestationCoverageDto();
-		try {
-			result = urlServiceUnderTest.urlFirestationCoverage(testStationNumber);
-		} catch (FirestationNotFoundException e) {
-			fail("urlFirestationCoverageTest threw an exception");
-		}
+		UrlFirestationCoverageDto result = urlServiceUnderTest.urlFirestationCoverage(0);
 
-		// Arrange
+		// Assert
 		assertThat(result.getAdultsCount()).isEqualTo(1);
-		assertThat(result.getChildrenCount()).isEqualTo(0);
-		assertThat(result.getPersons().size()).isEqualTo(1);
-		assertThat(result.getPersons().get(0).getFirstName()).isEqualTo(testPerson.getFirstName());
-		assertThat(result.getPersons().get(0).getLastName()).isEqualTo(testPerson.getLastName());
+		assertThat(result.getChildrenCount()).isEqualTo(1);
+		assertThat(result.getPersons().size()).isEqualTo(3);
+		assertThat(result.getPersons().get(0).getFirstName()).isEqualTo(p1.getFirstName());
+		assertThat(result.getPersons().get(0).getLastName()).isEqualTo(p1.getLastName());
 	}
 
 	@Test
-	public void urlChildAlertTest() {
+	public void urlChildAlertTest() throws AddressNotFoundException, MedicalRecordNotFoundException {
 		// Arrange
-		Person child = PersonTestData.buildPerson();
-		personRepository.addPerson(child);
-		MedicalRecord childMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
-		childMedicalRecord.setFirstName(child.getFirstName());
-		childMedicalRecord.setLastName(child.getLastName());
-		childMedicalRecord.setBirthdate(LocalDate.now().minusYears(3));
-		medicalRecordRepository.addMedicalRecord(childMedicalRecord);
+		Person child = PersonTestData.buildPerson("child", "name", "address", "");
+		Person adult1 = PersonTestData.buildPerson("adult1", "name", "address", "");
+		Person adult2 = PersonTestData.buildPerson("adult2", "name", "address", "");
+		Person adult3 = PersonTestData.buildPerson("adult3", "othername", "other address", "");
+		List<Person> persons = List.of(child, adult1, adult2, adult3);
+		MedicalRecord childMedicalRecord = MedicalRecordTestData.buildChildMedicalRecord(child.getFirstName(),
+				child.getLastName());
 
-		String testAddress = child.getAddress();
-
-		Person adult = PersonTestData.buildPerson("firstName", child.getLastName(), testAddress, "city");
-		personRepository.addPerson(adult);
-		MedicalRecord adultMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
-		adultMedicalRecord.setFirstName(adult.getFirstName());
-		adultMedicalRecord.setLastName(adult.getLastName());
-		adultMedicalRecord.setBirthdate(LocalDate.now().minusYears(40));
-		medicalRecordRepository.addMedicalRecord(adultMedicalRecord);
-
-		Person personWithoutMedicalRecord = PersonTestData.buildPerson("person witout medical record",
-				child.getLastName(), testAddress, "");
-		personRepository.addPerson(personWithoutMedicalRecord);
+		when(personRepository.getPersonsByAddress(any())).thenReturn(persons);
+		// 1er stream : 1 child, 3 adult // 2eme stream : 1 child, 2 adults concerned by
+		// this address
+		when(medicalRecordRepository.isChild(any())).thenReturn(true, false, false, false, true, false, false);
+		when(medicalRecordRepository.getMedicalRecord(any())).thenReturn(childMedicalRecord);
 
 		// Act
-		UrlChildAlertDto result = new UrlChildAlertDto();
-		try {
-			result = urlServiceUnderTest.urlChildAlert(testAddress);
-		} catch (AddressNotFoundException e) {
-			fail("urlChildAlertTest threw an exception");
-		}
+		UrlChildAlertDto result = urlServiceUnderTest.urlChildAlert("");
 
-		// Arrange
+		// Assert
 		assertThat(result.getChildren().size()).isEqualTo(1);
 		assertThat(result.getChildren().get(0).getFirstName()).isEqualTo(child.getFirstName());
 		assertThat(result.getChildren().get(0).getLastName()).isEqualTo(child.getLastName());
 		assertThat(result.getOtherHouseHoldMembers().size()).isEqualTo(2);
-		assertThat(result.getOtherHouseHoldMembers().get(0).getFirstName()).isEqualTo(adult.getFirstName());
-		assertThat(result.getOtherHouseHoldMembers().get(0).getLastName()).isEqualTo(adult.getLastName());
+		assertThat(result.getOtherHouseHoldMembers().get(0).getFirstName()).isEqualTo(adult1.getFirstName());
+		assertThat(result.getOtherHouseHoldMembers().get(0).getLastName()).isEqualTo(adult1.getLastName());
 
 	}
 
 	@Test
-	public void urlFireTest() {
+	public void urlFireTest()
+			throws FirestationNotFoundException, AddressNotFoundException, MedicalRecordNotFoundException {
 		// Arrange
-		Firestation testFirestation = FirestationTestData.buildFirestation();
-		firestationRepository.addFirestation(testFirestation);
+		Integer testStationNumber = 24;
 
-		String testAddress = testFirestation.getAddress();
+		Person p1 = PersonTestData.buildPerson();
+		Person p2 = PersonTestData.buildPerson();
+		List<Person> persons = List.of(p1, p2);
 
-		Person person1 = PersonTestData.buildPerson();
-		person1.setAddress(testAddress);
-		personRepository.addPerson(person1);
+		MedicalRecord m1 = MedicalRecordTestData.buildChildMedicalRecord(p1.getFirstName(), p2.getLastName());
+		MedicalRecord m2 = MedicalRecordTestData.buildAdultMedicalRecord(p1.getFirstName(), p2.getLastName());
 
-		Person person2 = PersonTestData.buildPerson("firstName", "lastName", testAddress, "city");
-		personRepository.addPerson(person2);
+		when(firestationRepository.getFirestationNumber(anyString())).thenReturn(testStationNumber);
+		when(personRepository.getPersonsByAddress(any())).thenReturn(persons);
+		when(medicalRecordRepository.getMedicalRecord(any())).thenReturn(m1, m2);
 
 		// Act
-		UrlFireDto result = new UrlFireDto();
-		try {
-			result = urlServiceUnderTest.urlFire(testAddress);
-		} catch (Exception e) {
-			fail("urlFireTest threw an exception");
-		}
+		UrlFireDto result = urlServiceUnderTest.urlFire("");
 
 		// Assert
-		assertThat(result.getFirestationNumber()).isEqualTo(testFirestation.getStation());
+		assertThat(result.getFirestationNumber()).isEqualTo(testStationNumber);
 		assertThat(result.getPersons().size()).isEqualTo(2);
-		assertThat(result.getPersons().get(0).getFirstName()).isEqualTo(person1.getFirstName());
-		assertThat(result.getPersons().get(0).getLastName()).isEqualTo(person1.getLastName());
-		assertThat(result.getPersons().get(1).getFirstName()).isEqualTo(person2.getFirstName());
-		assertThat(result.getPersons().get(1).getLastName()).isEqualTo(person2.getLastName());
+		assertThat(result.getPersons().get(0).getFirstName()).isEqualTo(p1.getFirstName());
+		assertThat(result.getPersons().get(0).getLastName()).isEqualTo(p1.getLastName());
+		assertThat(result.getPersons().get(1).getFirstName()).isEqualTo(p2.getFirstName());
+		assertThat(result.getPersons().get(1).getLastName()).isEqualTo(p2.getLastName());
 	}
 
 	@Test
-	public void urlPhoneAlertTest() {
+	public void urlPhoneAlertTest() throws FirestationNotFoundException {
+
 		// Arrange
-		Firestation testFirestation = FirestationTestData.buildFirestation();
-		firestationRepository.addFirestation(testFirestation);
+		Person p1 = PersonTestData.buildPerson();
+		p1.setPhone("phone1");
+		Person p2 = PersonTestData.buildPerson();
+		p2.setPhone("phone2");
+		Person p3 = PersonTestData.buildPerson();
+		p3.setPhone("phone3");
+		List<Person> persons = List.of(p1, p2, p3);
 
-		Integer testStationNumber = testFirestation.getStation();
-		String testAddress = testFirestation.getAddress();
-
-		Person person1 = PersonTestData.buildPerson();
-		person1.setAddress(testAddress);
-		person1.setPhone("phone1");
-		personRepository.addPerson(person1);
-
-		Person person2 = PersonTestData.buildPerson("firstName", "lastName", testAddress, "city");
-		person2.setPhone("phone2");
-		personRepository.addPerson(person2);
+		when(firestationRepository.getFirestationAddresses(any())).thenReturn(new ArrayList<>());
+		when(personRepository.getPersonsByAddresses(any())).thenReturn(persons);
 
 		// Act
-		UrlPhoneAlertDto result = new UrlPhoneAlertDto();
-		try {
-			result = urlServiceUnderTest.urlPhoneAlert(testStationNumber);
-		} catch (FirestationNotFoundException e) {
-			fail("urlPhoneAlertTest threw an exception");
-		}
+		UrlPhoneAlertDto result = urlServiceUnderTest.urlPhoneAlert(0);
 
 		// Assert
-		assertThat(result.getPhoneNumbers().size()).isEqualTo(2);
-		assertThat(result.getPhoneNumbers().contains(person1.getPhone())).isTrue();
-		assertThat(result.getPhoneNumbers().contains(person2.getPhone())).isTrue();
+		assertThat(result.getPhoneNumbers().size()).isEqualTo(3);
+		assertThat(result.getPhoneNumbers()).contains(p1.getPhone());
+		assertThat(result.getPhoneNumbers()).contains(p2.getPhone());
 	}
 
 	@Test
-	public void urlPersonInfoTest() {
+	public void urlPersonInfoTest() throws PersonNotFoundException, MedicalRecordNotFoundException {
 		// Arrange
-		Person testPerson = PersonTestData.buildPerson();
-		personRepository.addPerson(testPerson);
+		Person p1 = PersonTestData.buildPerson();
+		Person p2 = PersonTestData.buildPerson();
+		p2.setFirstName("p");
+		p2.setLastName("2");
 
 		Integer testAge = 20;
 
 		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
-		testMedicalRecord.setFirstName(testPerson.getFirstName());
-		testMedicalRecord.setLastName(testPerson.getLastName());
+		testMedicalRecord.setFirstName(p1.getFirstName());
+		testMedicalRecord.setLastName(p2.getLastName());
 		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(testAge));
-		medicalRecordRepository.addMedicalRecord(testMedicalRecord);
+
+		when(personRepository.getPersonsByName(any(), any())).thenReturn(List.of(p1, p2));
+		when(medicalRecordRepository.getMedicalRecord(any())).thenReturn(testMedicalRecord);
 
 		// Act
-		UrlPersonInfoDto result = new UrlPersonInfoDto();
-		try {
-			result = urlServiceUnderTest.urlPersonInfo(testPerson.getFirstName(), testPerson.getLastName());
-		} catch (PersonNotFoundException e) {
-			fail("urlPersonInfoTest threw an exception");
-		}
+		UrlPersonInfoDto result = urlServiceUnderTest.urlPersonInfo("", "");
 
 		// Assert
-		assertThat(result.getPersons().get(0).getFirstName()).isEqualTo(testPerson.getFirstName());
-		assertThat(result.getPersons().get(0).getLastName()).isEqualTo(testPerson.getLastName());
-		assertThat(result.getPersons().get(0).getAddress()).isEqualTo(testPerson.getAddress());
-		assertThat(result.getPersons().get(0).getEmail()).isEqualTo(testPerson.getEmail());
+		assertThat(result.getPersons().get(0).getFirstName()).isEqualTo(p1.getFirstName());
+		assertThat(result.getPersons().get(0).getLastName()).isEqualTo(p1.getLastName());
+		assertThat(result.getPersons().get(0).getAddress()).isEqualTo(p1.getAddress());
+		assertThat(result.getPersons().get(0).getEmail()).isEqualTo(p1.getEmail());
 		assertThat(result.getPersons().get(0).getAge()).isEqualTo(testAge);
 		assertThat(result.getPersons().get(0).getAllergies()).isEqualTo(testMedicalRecord.getAllergies());
 		assertThat(result.getPersons().get(0).getMedications()).isEqualTo(testMedicalRecord.getMedications());
 	}
 
 	@Test
-	public void urlCommunityEmailTest() {
+	public void urlCommunityEmailTest() throws CityNotFoundException {
 		// Arrange
-		Person person1 = PersonTestData.buildPerson();
-		person1.setCity("testCity");
-		person1.setEmail("1@aa.com");
-		personRepository.addPerson(person1);
 
-		Person person2 = PersonTestData.buildPerson();
-		person2.setCity("testCity");
-		person2.setEmail("2@aa.com");
-		personRepository.addPerson(person2);
-
-		Person person3 = PersonTestData.buildPerson();
-		person3.setCity("testCity");
-		person3.setEmail("3@aa.com");
-		personRepository.addPerson(person3);
+		when(personRepository.getEmailsByCity(any())).thenReturn(List.of("email1", "email2", "email3"));
 
 		// Act
-		UrlCommunityEmailDto result = new UrlCommunityEmailDto();
-		try {
-			result = urlServiceUnderTest.urlCommunityEmail("testCity");
-		} catch (CityNotFoundException e) {
-			fail("urlCommunityEmailTest threw an exception");
-		}
+		UrlCommunityEmailDto result = urlServiceUnderTest.urlCommunityEmail("testCity");
 
 		// Assert
 		assertThat(result.getEmails().size()).isEqualTo(3);
-		assertThat(result.getEmails().get(0)).isEqualTo(person1.getEmail());
-		assertThat(result.getEmails().get(1)).isEqualTo(person2.getEmail());
-		assertThat(result.getEmails().get(2)).isEqualTo(person3.getEmail());
+		assertThat(result.getEmails().get(0)).isEqualTo("email1");
+		assertThat(result.getEmails().get(1)).isEqualTo("email2");
+		assertThat(result.getEmails().get(2)).isEqualTo("email3");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void urlFloodStationsTest() {
+	public void urlFloodStationsTest()
+			throws FirestationNotFoundException, AddressNotFoundException, MedicalRecordNotFoundException {
 		// Arrange
-		Firestation firestation1 = new Firestation();
-		firestation1.setStation(1);
-		firestation1.setAddress("address 1");
-		firestationRepository.addFirestation(firestation1);
+		List<String> addresses = List.of("a1", "a2");
+		Person p1 = PersonTestData.buildPerson("1", "1", "1", "1");
+		Person p2 = PersonTestData.buildPerson("2", "2", "2", "2");
+		Person p3 = PersonTestData.buildPerson("3", "3", "3", "3");
+		List<Person> personsAdress1 = List.of(p1, p2);
+		List<Person> personsAdress2 = List.of(p3);
 
-		Firestation firestation2 = FirestationTestData.buildFirestation();
-		firestation2.setStation(1);
-		firestation2.setAddress("address 2");
-		firestationRepository.addFirestation(firestation2);
+		MedicalRecord medicalRecord = MedicalRecordTestData.buildMedicalRecord();
 
-		Firestation firestation3 = FirestationTestData.buildFirestation();
-		firestation3.setStation(2);
-		firestation3.setAddress("address 3");
-		firestationRepository.addFirestation(firestation3);
+		when(firestationRepository.getFirestationAddresses(any())).thenReturn(addresses);
+		when(personRepository.getPersonsByAddress(any())).thenReturn(personsAdress1, personsAdress2);
 
-		Person inhabitant1 = PersonTestData.buildPerson();
-		inhabitant1.setAddress(firestation2.getAddress());
-		personRepository.addPerson(inhabitant1);
-		MedicalRecord medicalRecord1 = MedicalRecordTestData.buildMedicalRecord();
-		medicalRecord1.setFirstName(inhabitant1.getFirstName());
-		medicalRecord1.setLastName(inhabitant1.getLastName());
-		medicalRecordRepository.addMedicalRecord(medicalRecord1);
-
-		Person inhabitant2 = PersonTestData.buildPerson();
-		inhabitant2.setAddress(firestation2.getAddress());
-		personRepository.addPerson(inhabitant2);
+		when(medicalRecordRepository.getMedicalRecord(any())).thenReturn(medicalRecord);
 
 		// Act
-		List<Integer> listStationNumber = List.of(new Integer[] { 1, 2 });
-		UrlFloodStationsDto result = new UrlFloodStationsDto();
-		try {
-			result = urlServiceUnderTest.urlFloodStations(listStationNumber);
-		} catch (FirestationNotFoundException e) {
-			fail("urlFloodStationsTest");
-		}
+		UrlFloodStationsDto result = urlServiceUnderTest.urlFloodStations(List.of(1));
 
 		// Assert
-		assertThat(result.getAddresses().size()).isEqualTo(3);
-		assertThat(result.getAddresses().get(0).getAddress()).isEqualTo(firestation1.getAddress());
-		assertThat(result.getAddresses().get(2).getInhabitants().size()).isEqualTo(0);
-		assertThat(result.getAddresses().get(1).getInhabitants().size()).isEqualTo(2);
+		assertThat(result.getAddresses().size()).isEqualTo(2);
+
+		assertThat(result.getAddresses().get(0).getAddress()).isEqualTo(addresses.get(0));
+		assertThat(result.getAddresses().get(0).getInhabitants().size()).isEqualTo(2);
+
+		assertThat(result.getAddresses().get(1).getInhabitants().size()).isEqualTo(1);
 		assertThat(result.getAddresses().get(1).getInhabitants().get(0).getFirstName())
-				.isEqualTo(inhabitant1.getFirstName());
+				.isEqualTo(personsAdress2.get(0).getFirstName());
 		assertThat(result.getAddresses().get(1).getInhabitants().get(0).getLastName())
-				.isEqualTo(inhabitant1.getLastName());
+				.isEqualTo(personsAdress2.get(0).getLastName());
 	}
 
 	@Test
-	public void convertPersonToUrlPersonInfoItemDTOExcetpion() {
+	public void convertPersonToUrlPersonInfoItemDTOExcetpion()
+			throws PersonNotFoundException, MedicalRecordNotFoundException {
 		// Arrange
-		Person testPerson = PersonTestData.buildPerson();
-		personRepository.addPerson(testPerson);
+		Person p1 = PersonTestData.buildPerson("1", "1", "1", "1");
+		Person p2 = PersonTestData.buildPerson("2", "2", "2", "2");
+		Person p3 = PersonTestData.buildPerson("3", "3", "3", "3");
+		List<Person> persons = List.of(p1, p2, p3);
+
+		MedicalRecord medicalRecord = MedicalRecordTestData.buildMedicalRecord();
+
+		when(personRepository.getPersonsByName(any(), any())).thenReturn(persons);
+		when(medicalRecordRepository.getMedicalRecord(any())).thenReturn(medicalRecord);
 
 		// Act
-		UrlPersonInfoDto result = new UrlPersonInfoDto();
-		try {
-			result = urlServiceUnderTest.urlPersonInfo(testPerson.getFirstName(), testPerson.getLastName());
-		} catch (PersonNotFoundException e) {
-			fail("convertPersonToUrlPersonInfoItemDTOExcetpion");
-		}
+		UrlPersonInfoDto result = urlServiceUnderTest.urlPersonInfo("", "");
 
 		// Assert
-		assertThat(result.getPersons().size()).isEqualTo(1);
-		assertThat(result.getPersons().get(0).getAge()).isNull();
+		assertThat(result.getPersons().size()).isEqualTo(3);
+		assertThat(result.getPersons().get(0).getFirstName()).isEqualTo(p1.getFirstName());
 
 	}
-
-	@Test
-	public void convertPersonToUrlFireDtoTest() {
-
-	}
-
 }

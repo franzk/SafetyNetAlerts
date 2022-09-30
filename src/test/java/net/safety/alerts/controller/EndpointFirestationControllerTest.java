@@ -2,7 +2,6 @@ package net.safety.alerts.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,11 +9,11 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -23,6 +22,7 @@ import net.safety.alerts.model.Firestation;
 import net.safety.alerts.service.FirestationService;
 import net.safety.alerts.utils.FirestationTestData;
 
+@ExtendWith(MockitoExtension.class)
 public class EndpointFirestationControllerTest {
 
 	@Mock
@@ -30,11 +30,6 @@ public class EndpointFirestationControllerTest {
 
 	@InjectMocks
 	private EndpointFirestationController controllerUnderTest;
-
-	@BeforeEach
-	public void reset() {
-		MockitoAnnotations.openMocks(this);
-	}
 
 	@Test
 	public void addFirestationTest() {
@@ -51,22 +46,15 @@ public class EndpointFirestationControllerTest {
 	}
 
 	@Test
-	public void getFirestationByAddressTest() {
+	public void getFirestationByAddressTest() throws FirestationNotFoundException {
 		// Arrange
 		List<Firestation> listFirestation = FirestationTestData.buildFirestationList();
-		try {
-			when(firestationService.getByAddress(any())).thenReturn(listFirestation);
-		} catch (FirestationNotFoundException e) {
-			fail("getFirestationByAddressTest (arrange) threw an exception");
-		}
+
+		when(firestationService.getByAddress(any())).thenReturn(listFirestation);
 
 		// Act
-		ResponseEntity<List<Firestation>> result = null;
-		try {
-			result = controllerUnderTest.getFirestation(Optional.of("address"), Optional.empty());
-		} catch (FirestationNotFoundException e) {
-			fail("getFirestationByAddressTest (act) threw an exception");
-		}
+		ResponseEntity<List<Firestation>> result = controllerUnderTest.getFirestation(Optional.of("address"),
+				Optional.empty());
 
 		// Assert
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -74,22 +62,14 @@ public class EndpointFirestationControllerTest {
 	}
 
 	@Test
-	public void getFirestationByAStationNumberTest() {
+	public void getFirestationByAStationNumberTest() throws FirestationNotFoundException {
 		// Arrange
 		List<Firestation> listFirestation = FirestationTestData.buildFirestationList();
-		try {
-			when(firestationService.getByStationNumber(any())).thenReturn(listFirestation);
-		} catch (FirestationNotFoundException e) {
-			fail("getFirestationByAStationNumberTest (arrange) threw an exception");
-		}
+
+		when(firestationService.getByStationNumber(any())).thenReturn(listFirestation);
 
 		// Act
-		ResponseEntity<List<Firestation>> result = null;
-		try {
-			result = controllerUnderTest.getFirestation(Optional.empty(), Optional.of(1));
-		} catch (FirestationNotFoundException e) {
-			fail("getFirestationByAStationNumberTest (act) threw an exception");
-		}
+		ResponseEntity<List<Firestation>> result = controllerUnderTest.getFirestation(Optional.empty(), Optional.of(1));
 
 		// Assert
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -103,22 +83,14 @@ public class EndpointFirestationControllerTest {
 	}
 
 	@Test
-	public void updateFirestationTest() {
+	public void updateFirestationTest() throws FirestationNotFoundException {
 		// Arrange
 		Firestation testFirestation = FirestationTestData.buildFirestation();
-		try {
-			when(firestationService.update(any())).thenReturn(testFirestation);
-		} catch (FirestationNotFoundException e) {
-			fail("updateFirestationTest (arrange) threw an exception");
-		}
+
+		when(firestationService.update(any())).thenReturn(testFirestation);
 
 		// Act
-		ResponseEntity<Firestation> result = null;
-		try {
-			result = controllerUnderTest.updateFirestation(testFirestation);
-		} catch (FirestationNotFoundException e) {
-			fail("updateFirestationTest (act) threw an exception");
-		}
+		ResponseEntity<Firestation> result = controllerUnderTest.updateFirestation(testFirestation);
 
 		// Assert
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -126,41 +98,30 @@ public class EndpointFirestationControllerTest {
 	}
 
 	@Test
-	public void deleteFirestationByAddressTest() {
+	public void deleteFirestationByAddressTest() throws FirestationNotFoundException {
 		// Arrange
 		Firestation testFirestation = FirestationTestData.buildFirestation();
 
 		// Act
-		try {
-			controllerUnderTest.deleteFirestations(Optional.of(testFirestation.getAddress()), Optional.empty());
-		} catch (FirestationNotFoundException e1) {
-			fail("deleteFirestationByAddressTest (act) threw an exception");
-		}
 
-		try {
-			verify(firestationService).deleteByAddress(testFirestation.getAddress());
-		} catch (FirestationNotFoundException e) {
-			fail("deleteFirestationByAddressTest (assert) threw an exception");
-		}
+		controllerUnderTest.deleteFirestations(Optional.of(testFirestation.getAddress()), Optional.empty());
+
+		// Assert
+		verify(firestationService).deleteByAddress(testFirestation.getAddress());
+
 	}
 
 	@Test
-	public void deleteFirestationByStationNumberTest() {
+	public void deleteFirestationByStationNumberTest() throws FirestationNotFoundException {
 		// Arrange
 		Firestation testFirestation = FirestationTestData.buildFirestation();
 
 		// Act
-		try {
-			controllerUnderTest.deleteFirestations(Optional.empty(), Optional.of(testFirestation.getStation()));
-		} catch (FirestationNotFoundException e1) {
-			fail("deleteFirestationByStationNumberTest (act) threw an exception");
-		}
+		controllerUnderTest.deleteFirestations(Optional.empty(), Optional.of(testFirestation.getStation()));
 
-		try {
-			verify(firestationService).deleteByStationNumber(testFirestation.getStation());
-		} catch (FirestationNotFoundException e) {
-			fail("deleteFirestationByStationNumberTest (assert) threw an exception");
-		}
+		// Assert
+		verify(firestationService).deleteByStationNumber(testFirestation.getStation());
+
 	}
 
 	@Test

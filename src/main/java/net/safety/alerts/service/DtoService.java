@@ -12,7 +12,7 @@ import net.safety.alerts.utils.Utils;
 public class DtoService {
 
 	// construction d'un DTO Person
-	public PersonDto buildPersonDto(Person person, PersonField[] fields) {
+	public static PersonDto buildPersonDto(Person person, PersonField[] fields) {
 		PersonDto personDto = new PersonDto();
 		for (PersonField field : fields) {
 			switch (field) {
@@ -45,7 +45,7 @@ public class DtoService {
 		return personDto;
 	}
 
-	public PersonDto buildPersonDto(Person person, MedicalRecord medicalRecord, PersonField[] fields) {
+	public static PersonDto buildPersonDto(Person person, MedicalRecord medicalRecord, PersonField[] fields) {
 		PersonDto personDto = buildPersonDto(person, fields);
 		for (PersonField field : fields) {
 			switch (field) {

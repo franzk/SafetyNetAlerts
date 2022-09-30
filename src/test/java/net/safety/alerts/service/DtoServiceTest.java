@@ -15,7 +15,7 @@ import net.safety.alerts.utils.TestConstants;
 
 public class DtoServiceTest {
 
-	private DtoService dtoServiceUnderTest = new DtoService();;
+	//private DtoService dtoServiceUnderTest = new DtoService();;
 
 	private PersonField[] testFields = new PersonField[] { PersonField.FIRST_NAME, PersonField.LAST_NAME,
 			PersonField.ADDRESS, PersonField.CITY, PersonField.ZIP, PersonField.PHONE, PersonField.EMAIL };
@@ -43,7 +43,7 @@ public class DtoServiceTest {
 		Person testPerson = buildPerson();
 
 		// Act
-		PersonDto personDto = dtoServiceUnderTest.buildPersonDto(testPerson, testFields);
+		PersonDto personDto = DtoService.buildPersonDto(testPerson, testFields);
 
 		// Assert
 		assertThat(personDto.getFirstName()).isEqualTo(testPerson.getFirstName());
@@ -62,7 +62,7 @@ public class DtoServiceTest {
 		Person testPerson = buildPerson();
 
 		// Act
-		PersonDto personDto = dtoServiceUnderTest.buildPersonDto(testPerson, testPartialFields);
+		PersonDto personDto = DtoService.buildPersonDto(testPerson, testPartialFields);
 
 		// Assert
 		assertThat(personDto.getFirstName()).isEqualTo(testPerson.getFirstName());
@@ -92,7 +92,7 @@ public class DtoServiceTest {
 		medicalRecord.setMedications(medications);
 
 		// Act
-		PersonDto personDto = dtoServiceUnderTest.buildPersonDto(testPerson, medicalRecord, testFieldsWithMedicalRecord);
+		PersonDto personDto = DtoService.buildPersonDto(testPerson, medicalRecord, testFieldsWithMedicalRecord);
 
 		// Assert
 		assertThat(personDto.getFirstName()).isEqualTo(testPerson.getFirstName());

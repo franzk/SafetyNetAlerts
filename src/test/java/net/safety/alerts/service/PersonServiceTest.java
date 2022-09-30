@@ -18,14 +18,17 @@ import net.safety.alerts.utils.PersonTestData;
 
 public class PersonServiceTest {
 
+	//@InjectMocks
 	private PersonService personServiceUnderTest = new PersonService();
 
+	//@Mock
 	private PersonRepository personRepository;
 
 	@BeforeEach
 	public void reset() {
 		personRepository = new PersonRepository();
 		ReflectionTestUtils.setField(personServiceUnderTest, "personRepository", personRepository);
+		//MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
