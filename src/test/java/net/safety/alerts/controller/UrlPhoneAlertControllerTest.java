@@ -1,18 +1,17 @@
 package net.safety.alerts.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,6 +19,7 @@ import net.safety.alerts.dto.UrlPhoneAlertDto;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.UrlService;
 
+@ExtendWith(MockitoExtension.class)
 public class UrlPhoneAlertControllerTest {
 
 	@Mock
@@ -28,13 +28,8 @@ public class UrlPhoneAlertControllerTest {
 	@InjectMocks
 	private UrlPhoneAlertController controllerUnderTest;
 
-	@BeforeEach
-	public void reset() {
-		MockitoAnnotations.openMocks(this);
-	}
-
 	@Test
-	public void phoneAlertTest() {
+	public void phoneAlertTest() throws FirestationNotFoundException {
 		// Arrange
 		UrlPhoneAlertDto dto = new UrlPhoneAlertDto();
 		Set<String> phoneNumbers = new HashSet<>();
@@ -43,20 +38,10 @@ public class UrlPhoneAlertControllerTest {
 
 		dto.setPhoneNumbers(phoneNumbers);
 
-		try {
-			when(urlService.urlPhoneAlert(anyInt())).thenReturn(dto);
-		} catch (FirestationNotFoundException e) {
-			fail("phoneAlertTest (arrange)  threw an exception");
-		}
+		when(urlService.urlPhoneAlert(anyInt())).thenReturn(dto);
 
 		// Act
-		ResponseEntity<UrlPhoneAlertDto> result = null;
-
-		try {
-			result = controllerUnderTest.phoneAlert(42);
-		} catch (FirestationNotFoundException e) {
-			fail("phoneAlertTest (arrange)  threw an exception");
-		}
+		ResponseEntity<UrlPhoneAlertDto> result = controllerUnderTest.phoneAlert(42);
 
 		// Assert
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

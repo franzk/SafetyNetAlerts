@@ -11,11 +11,9 @@ import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.utils.DtoConstants.PersonField;
-import net.safety.alerts.utils.TestConstants;
+import net.safety.alerts.utils.PersonTestData;
 
 public class DtoServiceTest {
-
-	//private DtoService dtoServiceUnderTest = new DtoService();;
 
 	private PersonField[] testFields = new PersonField[] { PersonField.FIRST_NAME, PersonField.LAST_NAME,
 			PersonField.ADDRESS, PersonField.CITY, PersonField.ZIP, PersonField.PHONE, PersonField.EMAIL };
@@ -26,21 +24,10 @@ public class DtoServiceTest {
 	private PersonField[] testFieldsWithMedicalRecord = new PersonField[] { PersonField.FIRST_NAME,
 			PersonField.LAST_NAME, PersonField.AGE, PersonField.MEDICATIONS, PersonField.ALLERGIES };
 
-	private Person buildPerson() {
-		Person person = new Person();
-		person.setFirstName(TestConstants.firstName);
-		person.setLastName(TestConstants.lastName);
-		person.setAddress(TestConstants.address);
-		person.setCity(TestConstants.city);
-		person.setPhone(TestConstants.phone);
-		person.setEmail(TestConstants.email);
-		return person;
-	}
-
 	@Test
 	public void buildPersonDtoTest() {
 		// Arrange
-		Person testPerson = buildPerson();
+		Person testPerson = PersonTestData.buildPerson();
 
 		// Act
 		PersonDto personDto = DtoService.buildPersonDto(testPerson, testFields);
@@ -59,7 +46,7 @@ public class DtoServiceTest {
 	@Test
 	public void buildPartialPersonDtoTest() {
 		// Arrange
-		Person testPerson = buildPerson();
+		Person testPerson = PersonTestData.buildPerson();
 
 		// Act
 		PersonDto personDto = DtoService.buildPersonDto(testPerson, testPartialFields);
@@ -78,7 +65,7 @@ public class DtoServiceTest {
 	@Test
 	public void buildPersonDtoWithMedicalRecordTest() {
 		// Arrange
-		Person testPerson = buildPerson();
+		Person testPerson = PersonTestData.buildPerson();
 
 		LocalDate birthdate = LocalDate.now().minusYears(18);
 		List<String> allergies = List.of(new String[] { "Pollen", "Arachides" });

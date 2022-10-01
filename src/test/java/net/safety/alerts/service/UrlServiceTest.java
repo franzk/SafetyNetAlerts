@@ -54,15 +54,25 @@ public class UrlServiceTest {
 	public void urlFirestationCoverageTest() throws FirestationNotFoundException {
 
 		// Arrange
-		Person p1 = PersonTestData.buildPerson();
-		Person p2 = PersonTestData.buildPerson();
-		Person p3 = PersonTestData.buildPerson();
+		Person p1 = PersonTestData.buildPerson("person", "one", "child", "");
+		Person p2 = PersonTestData.buildPerson("person", "two", "adult", "");
+		Person p3 = PersonTestData.buildPerson("person", "three", "unknown", "");
 		List<Person> persons = List.of(p1, p2, p3);
 
 		when(firestationRepository.getFirestationAddresses(any())).thenReturn(new ArrayList<>());
 		when(personRepository.getPersonsByAddresses(any())).thenReturn(persons);
-		when(medicalRecordRepository.isAdult(any())).thenReturn(true, false, false); // 1 adult, 1 child, 1 unknown
-		when(medicalRecordRepository.isChild(any())).thenReturn(false, true, false);
+
+		// child
+		when(medicalRecordRepository.isAdult(persons.get(0))).thenReturn(true);
+		when(medicalRecordRepository.isChild(persons.get(0))).thenReturn(false);
+
+		// adult
+		when(medicalRecordRepository.isAdult(persons.get(1))).thenReturn(false);
+		when(medicalRecordRepository.isChild(persons.get(1))).thenReturn(true);
+
+		// unknown
+		when(medicalRecordRepository.isAdult(persons.get(2))).thenReturn(false);
+		when(medicalRecordRepository.isChild(persons.get(2))).thenReturn(false);
 
 		// Act
 		UrlFirestationCoverageDto result = urlServiceUnderTest.urlFirestationCoverage(0);
@@ -87,10 +97,13 @@ public class UrlServiceTest {
 				child.getLastName());
 
 		when(personRepository.getPersonsByAddress(any())).thenReturn(persons);
-		// 1er stream : 1 child, 3 adult // 2eme stream : 1 child, 2 adults concerned by
-		// this address
-		when(medicalRecordRepository.isChild(any())).thenReturn(true, false, false, false, true, false, false);
-		when(medicalRecordRepository.getMedicalRecord(any())).thenReturn(childMedicalRecord);
+
+		when(medicalRecordRepository.isChild(child)).thenReturn(true);
+		when(medicalRecordRepository.isChild(adult1)).thenReturn(false);
+		when(medicalRecordRepository.isChild(adult2)).thenReturn(false);
+		when(medicalRecordRepository.isChild(adult3)).thenReturn(false);
+
+		when(medicalRecordRepository.getMedicalRecord(child)).thenReturn(childMedicalRecord);
 
 		// Act
 		UrlChildAlertDto result = urlServiceUnderTest.urlChildAlert("");
@@ -120,7 +133,9 @@ public class UrlServiceTest {
 
 		when(firestationRepository.getFirestationNumber(anyString())).thenReturn(testStationNumber);
 		when(personRepository.getPersonsByAddress(any())).thenReturn(persons);
-		when(medicalRecordRepository.getMedicalRecord(any())).thenReturn(m1, m2);
+
+		when(medicalRecordRepository.getMedicalRecord(persons.get(0))).thenReturn(m1);
+		when(medicalRecordRepository.getMedicalRecord(persons.get(1))).thenReturn(m2);
 
 		// Act
 		UrlFireDto result = urlServiceUnderTest.urlFire("");
@@ -205,7 +220,6 @@ public class UrlServiceTest {
 		assertThat(result.getEmails().get(2)).isEqualTo("email3");
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void urlFloodStationsTest()
 			throws FirestationNotFoundException, AddressNotFoundException, MedicalRecordNotFoundException {
@@ -214,13 +228,15 @@ public class UrlServiceTest {
 		Person p1 = PersonTestData.buildPerson("1", "1", "1", "1");
 		Person p2 = PersonTestData.buildPerson("2", "2", "2", "2");
 		Person p3 = PersonTestData.buildPerson("3", "3", "3", "3");
-		List<Person> personsAdress1 = List.of(p1, p2);
-		List<Person> personsAdress2 = List.of(p3);
+		List<Person> personsAtAdress1 = List.of(p1, p2);
+		List<Person> personsAtAdress2 = List.of(p3);
 
 		MedicalRecord medicalRecord = MedicalRecordTestData.buildMedicalRecord();
 
 		when(firestationRepository.getFirestationAddresses(any())).thenReturn(addresses);
-		when(personRepository.getPersonsByAddress(any())).thenReturn(personsAdress1, personsAdress2);
+
+		when(personRepository.getPersonsByAddress(addresses.get(0))).thenReturn(personsAtAdress1);
+		when(personRepository.getPersonsByAddress(addresses.get(1))).thenReturn(personsAtAdress2);
 
 		when(medicalRecordRepository.getMedicalRecord(any())).thenReturn(medicalRecord);
 
@@ -235,9 +251,9 @@ public class UrlServiceTest {
 
 		assertThat(result.getAddresses().get(1).getInhabitants().size()).isEqualTo(1);
 		assertThat(result.getAddresses().get(1).getInhabitants().get(0).getFirstName())
-				.isEqualTo(personsAdress2.get(0).getFirstName());
+				.isEqualTo(personsAtAdress2.get(0).getFirstName());
 		assertThat(result.getAddresses().get(1).getInhabitants().get(0).getLastName())
-				.isEqualTo(personsAdress2.get(0).getLastName());
+				.isEqualTo(personsAtAdress2.get(0).getLastName());
 	}
 
 	@Test

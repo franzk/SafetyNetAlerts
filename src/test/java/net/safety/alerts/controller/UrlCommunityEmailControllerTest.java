@@ -1,18 +1,17 @@
 package net.safety.alerts.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,6 +19,7 @@ import net.safety.alerts.dto.UrlCommunityEmailDto;
 import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.service.UrlService;
 
+@ExtendWith(MockitoExtension.class)
 public class UrlCommunityEmailControllerTest {
 
 	@Mock
@@ -28,13 +28,8 @@ public class UrlCommunityEmailControllerTest {
 	@InjectMocks
 	private UrlCommunityEmailController controllerUnderTest;
 
-	@BeforeEach
-	public void reset() {
-		MockitoAnnotations.openMocks(this);
-	}
-
 	@Test
-	public void communityEmailTest() {
+	public void communityEmailTest() throws CityNotFoundException {
 		// Arrange
 		UrlCommunityEmailDto dto = new UrlCommunityEmailDto();
 		List<String> emails = new ArrayList<>();
@@ -42,19 +37,10 @@ public class UrlCommunityEmailControllerTest {
 		emails.add("email 2");
 		dto.setEmails(emails);
 
-		try {
-			when(urlService.urlCommunityEmail(anyString())).thenReturn(dto);
-		} catch (CityNotFoundException e) {
-			fail("communityEmailTest (arrange) threw an exception");
-		}
+		when(urlService.urlCommunityEmail(anyString())).thenReturn(dto);
 
 		// Act
-		ResponseEntity<UrlCommunityEmailDto> result = null;
-		try {
-			result = controllerUnderTest.communityEmail("city");
-		} catch (CityNotFoundException e) {
-			fail("communityEmailTest (act) threw an exception");
-		}
+		ResponseEntity<UrlCommunityEmailDto> result = controllerUnderTest.communityEmail("city");
 
 		// Assert
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

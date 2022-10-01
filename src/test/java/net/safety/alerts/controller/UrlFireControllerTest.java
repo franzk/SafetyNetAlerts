@@ -1,18 +1,17 @@
 package net.safety.alerts.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -22,6 +21,7 @@ import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.UrlService;
 
+@ExtendWith(MockitoExtension.class)
 public class UrlFireControllerTest {
 
 	@Mock
@@ -30,13 +30,8 @@ public class UrlFireControllerTest {
 	@InjectMocks
 	private UrlFireController controllerUnderTest;
 
-	@BeforeEach
-	public void reset() {
-		MockitoAnnotations.openMocks(this);
-	}
-
 	@Test
-	public void fireTest() {
+	public void fireTest() throws FirestationNotFoundException, AddressNotFoundException {
 		// Arrange
 		UrlFireDto dto = new UrlFireDto();
 		List<PersonDto> persons = new ArrayList<>();
@@ -46,24 +41,12 @@ public class UrlFireControllerTest {
 		persons.add(person);
 		dto.setPersons(persons);
 		dto.setFirestationNumber(42);
-		
-		try {
-			when(urlService.urlFire(anyString())).thenReturn(dto);
-		} catch (FirestationNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (AddressNotFoundException e) {
-			fail("fireTest (arrange) threw an exception");
-		}
-		
+
+		when(urlService.urlFire(anyString())).thenReturn(dto);
+
 		// Act
-		ResponseEntity<UrlFireDto> result = null;
-		try {
-			result = controllerUnderTest.fire("address");
-		} catch (Exception e) {
-			fail("fireTest (act) threw an exception");
-		}
-		
+		ResponseEntity<UrlFireDto> result = controllerUnderTest.fire("address");
+
 		// Assert
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(result.getBody()).isEqualTo(dto);

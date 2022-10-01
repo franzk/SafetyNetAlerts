@@ -1,17 +1,16 @@
 package net.safety.alerts.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,6 +19,7 @@ import net.safety.alerts.model.Person;
 import net.safety.alerts.service.PersonService;
 import net.safety.alerts.utils.PersonTestData;
 
+@ExtendWith(MockitoExtension.class)
 public class EndpointPersonControllerTest {
 
 	@Mock
@@ -27,11 +27,6 @@ public class EndpointPersonControllerTest {
 
 	@InjectMocks
 	private EndpointPersonController controllerUnderTest;
-
-	@BeforeEach
-	public void reset() {
-		MockitoAnnotations.openMocks(this);
-	}
 
 	@Test
 	public void addPersonTest() {
@@ -48,22 +43,15 @@ public class EndpointPersonControllerTest {
 	}
 
 	@Test
-	public void getPersonByNameTest() {
+	public void getPersonByNameTest() throws PersonNotFoundException {
 		// Arrange
 		Person testPerson = PersonTestData.buildPerson();
-		try {
-			when(personService.getPersonByName(anyString(), anyString())).thenReturn(testPerson);
-		} catch (PersonNotFoundException e) {
-			fail("getPersonByNameTest (arrange) threw an exception");
-		}
+
+		when(personService.getPersonByName(anyString(), anyString())).thenReturn(testPerson);
 
 		// Act
-		ResponseEntity<Person> result = null;
-		try {
-			result = controllerUnderTest.getPersonByName(testPerson.getFirstName(), testPerson.getLastName());
-		} catch (PersonNotFoundException e) {
-			fail("getPersonByNameTest (act) threw an exception");
-		}
+		ResponseEntity<Person> result = controllerUnderTest.getPersonByName(testPerson.getFirstName(),
+				testPerson.getLastName());
 
 		// Assert
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -71,47 +59,30 @@ public class EndpointPersonControllerTest {
 	}
 
 	@Test
-	public void updatePersonTest() {
+	public void updatePersonTest() throws PersonNotFoundException {
 		// Arrange
 		Person testPerson = PersonTestData.buildPerson();
-		try {
-			when(personService.update(any())).thenReturn(testPerson);
-		} catch (PersonNotFoundException e1) {
-			fail("updatePersonTest (arrange) threw an exception");
-		}
-		
+		when(personService.update(any())).thenReturn(testPerson);
+
 		// Act
-		ResponseEntity<Person> result = null;
-		try {
-			result = controllerUnderTest.updatePerson(testPerson);
-		} catch (PersonNotFoundException e) {
-			fail("updatePersonTest (act) threw an exception");
-		}
-		
+		ResponseEntity<Person> result = controllerUnderTest.updatePerson(testPerson);
+
 		// Assert
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(result.getBody()).isEqualTo(testPerson);				
+		assertThat(result.getBody()).isEqualTo(testPerson);
 	}
 
 	@Test
-	public void deletePersonTest() {
+	public void deletePersonTest() throws PersonNotFoundException {
 		// Arrange
 		Person testPerson = PersonTestData.buildPerson();
 
 		// Act
-		try {
-			controllerUnderTest.deletePerson(testPerson.getFirstName(), testPerson.getLastName());
-		} catch (PersonNotFoundException e) {
-			fail("deletePersonTest (act) threw an exception");
-		}
-		
+		controllerUnderTest.deletePerson(testPerson.getFirstName(), testPerson.getLastName());
+
 		// Assert
-		try {
-			verify(personService).delete(testPerson.getFirstName(), testPerson.getLastName());
-		} catch (PersonNotFoundException e) {
-			fail("deletePersonTest (assert) threw an exception");
-		}
-		
+		verify(personService).delete(testPerson.getFirstName(), testPerson.getLastName());
+
 	}
-	
+
 }

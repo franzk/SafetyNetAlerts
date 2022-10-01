@@ -64,7 +64,9 @@ public class UrlService {
 				.map(person -> DtoService.buildPersonDto(person, DtoConstants.UrlFirestationCoveragePerson))
 				.collect(Collectors.toList());
 
-		long adultsCount = personsCovered.stream().filter(p -> medicalRecordRepository.isAdult(p)).count();
+		long adultsCount = personsCovered.stream().filter(p -> 
+		medicalRecordRepository.isAdult(p)
+		).count();
 
 		long childrenCount = personsCovered.stream().filter(p -> medicalRecordRepository.isChild(p)).count();
 

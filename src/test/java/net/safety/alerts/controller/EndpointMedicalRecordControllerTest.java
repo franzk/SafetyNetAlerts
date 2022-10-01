@@ -6,11 +6,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -19,97 +19,70 @@ import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.service.MedicalRecordService;
 import net.safety.alerts.utils.MedicalRecordTestData;
 
+@ExtendWith(MockitoExtension.class)
 public class EndpointMedicalRecordControllerTest {
 
 	@Mock
 	private MedicalRecordService medicalRecordService;
-	
+
 	@InjectMocks
 	private EndpointMedicalRecordController controllerUnderTest;
-	
-	@BeforeEach
-	public void reset() {
-		MockitoAnnotations.openMocks(this);
-	}
-	
+
 	@Test
 	public void addMedicalRecordTest() {
 		// Arrange
 		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		when(medicalRecordService.add(any())).thenReturn(testMedicalRecord);
-		
+
 		// Act
 		ResponseEntity<MedicalRecord> result = controllerUnderTest.addMedicalRecord(null);
-	
+
 		// Assert
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(result.getBody()).isEqualTo(testMedicalRecord);
 	}
-	
+
 	@Test
-	public void getMedicalRecordTest() {
+	public void getMedicalRecordTest() throws MedicalRecordNotFoundException {
 		// Arrange
 		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
-		try {
-			when(medicalRecordService.getMedicalRecordByName(any(), any())).thenReturn(testMedicalRecord);
-		} catch (MedicalRecordNotFoundException e) {
-			fail("getMedicalRecordTest (arrange) threw an exception");
-		}
-		
+
+		when(medicalRecordService.getMedicalRecordByName(any(), any())).thenReturn(testMedicalRecord);
+
 		// Act
-		ResponseEntity<MedicalRecord> result = null;
-		try {
-			result = controllerUnderTest.getMedicalRecord(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName());
-		} catch (MedicalRecordNotFoundException e) {
-			fail("getMedicalRecordTest (act) threw an exception");
-		}
-		
+		ResponseEntity<MedicalRecord> result = controllerUnderTest.getMedicalRecord(testMedicalRecord.getFirstName(),
+				testMedicalRecord.getLastName());
+
 		// Arrange
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(result.getBody()).isEqualTo(testMedicalRecord);
 	}
-	
+
 	@Test
-	public void updateMedicalRecordTest() {
+	public void updateMedicalRecordTest() throws MedicalRecordNotFoundException {
 		// Arrange
 		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
-		try {
-			when(medicalRecordService.update(any())).thenReturn(testMedicalRecord);
-		} catch (MedicalRecordNotFoundException e) {
-			fail("updateMedicalRecordTest (arrange) threw an exception");
-		}
-		
+		when(medicalRecordService.update(any())).thenReturn(testMedicalRecord);
+
 		// Act
 		ResponseEntity<MedicalRecord> result = null;
-		try {
-			result = controllerUnderTest.updateMedicalRecord(testMedicalRecord);
-		} catch (MedicalRecordNotFoundException e) {
-			fail("updateMedicalRecordTest (act) threw an exception");
-		}
-		
+		result = controllerUnderTest.updateMedicalRecord(testMedicalRecord);
+
 		// Arrange
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(result.getBody()).isEqualTo(testMedicalRecord);
 	}
-	
+
 	@Test
-	public void deleteMedicalRecordTest() {
+	public void deleteMedicalRecordTest() throws MedicalRecordNotFoundException {
 		// Arrange
 		MedicalRecord medicalRecord = MedicalRecordTestData.buildMedicalRecord();
-		
+
 		// Act
-		try {
-			controllerUnderTest.deleteMedicalRecord(medicalRecord.getFirstName(), medicalRecord.getLastName());
-		} catch (MedicalRecordNotFoundException e) {
-			fail("deleteMedicalRecordTest (act) threw an exception");
-		}
-		
+		controllerUnderTest.deleteMedicalRecord(medicalRecord.getFirstName(), medicalRecord.getLastName());
+
 		// Assert
-		try {
-			verify(medicalRecordService).deleteByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
-		} catch (MedicalRecordNotFoundException e) {
-			fail("deleteMedicalRecordTest (assert) threw an exception");
-		}
+		verify(medicalRecordService).deleteByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
 	}
-	
+
 }

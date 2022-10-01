@@ -1,169 +1,125 @@
 package net.safety.alerts.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.model.Firestation;
 import net.safety.alerts.repository.FirestationRepository;
 import net.safety.alerts.utils.FirestationTestData;
 
+@ExtendWith(MockitoExtension.class)
 public class FirestationServiceTest {
 
-	private FirestationService firestationServiceUnderTest = new FirestationService();
+	@InjectMocks
+	private FirestationService firestationServiceUnderTest; 
 
+	@Mock
 	private FirestationRepository firestationRepository;
 
-	@BeforeEach
-	private void reset() {
-		firestationRepository = new FirestationRepository();
-		ReflectionTestUtils.setField(firestationServiceUnderTest, "firestationRepository", firestationRepository);
+	@Test
+	public void addTest() {
+		// Arrange
+		Firestation f = FirestationTestData.buildFirestation();
+		when(firestationRepository.addFirestation(any())).thenReturn(f);
+
+		// Act
+		Firestation result = firestationServiceUnderTest.add(f);
+
+		// Assert
+		assertThat(result).isEqualTo(f);
+		verify(firestationRepository).addFirestation(f);
 	}
 
 	@Test
-	public void addAndGetByAddressTest() {
+	public void getByAddressTest() throws FirestationNotFoundException {
+		// Arrange
+		List<Firestation> firestations = FirestationTestData.buildFirestationList();
+
+		when(firestationRepository.getFirestationsByAddress(any())).thenReturn(firestations);
+
+		// Act
+		List<Firestation> result = firestationServiceUnderTest.getByAddress("");
+
+		// Assert
+		assertThat(result).isEqualTo(firestations);
+	}
+
+	@Test
+	public void getByStationNumberTest() throws FirestationNotFoundException {
+		// Arrange
+		List<Firestation> firestations = FirestationTestData.buildFirestationList();
+
+		when(firestationRepository.getFirestationsByStationNumber(any())).thenReturn(firestations);
+
+		// Act
+		List<Firestation> result = firestationServiceUnderTest.getByStationNumber(42);
+
+		// Assert
+		assertThat(result).isEqualTo(firestations);
+	}
+
+	@Test
+	public void updateTest() throws FirestationNotFoundException {
+		// Arrange
+		Firestation testFirestation = FirestationTestData.buildFirestation();
+		Firestation testFirestationUpdated = FirestationTestData.buildFirestation();
+		testFirestationUpdated.setAddress("address updated");
+		
+		when(firestationRepository.updateFirestation(any())).thenReturn(testFirestationUpdated);
+
+		// Act
+		Firestation result = firestationServiceUnderTest.update(testFirestation);
+
+		// Assert
+		assertThat(result).isEqualTo(testFirestationUpdated);
+	}
+
+	@Test
+	public void deleteTest() throws FirestationNotFoundException {
 		// Arrange
 		Firestation testFirestation = FirestationTestData.buildFirestation();
 
 		// Act
-		firestationServiceUnderTest.add(testFirestation);
-		List<Firestation> result = new ArrayList<>();
-		try {
-			result = firestationServiceUnderTest.getByAddress(testFirestation.getAddress());
-		} catch (FirestationNotFoundException e) {
-			fail("addAndGetByAddressTest threw an exception");
-		}
+		firestationServiceUnderTest.delete(testFirestation);
 
 		// Assert
-		assertThat(result.get(0)).isEqualTo(testFirestation);
+		verify(firestationRepository).deleteFirestation(testFirestation);
+
 	}
 
 	@Test
-	public void getByAddressTest() {
+	public void deleteByAdddessTest() throws FirestationNotFoundException {
 		// Arrange
-		Firestation testFirestation = populateRepositoryAndReturnTestFirestation();
+		Firestation testFirestation = FirestationTestData.buildFirestation();
 
 		// Act
-		List<Firestation> result = new ArrayList<>();
-		try {
-			result = firestationServiceUnderTest.getByAddress(testFirestation.getAddress());
-		} catch (FirestationNotFoundException e) {
-			fail("getByAddressTest threw an exception");
-		}
+		firestationServiceUnderTest.deleteByAddress(testFirestation.getAddress());
 
 		// Assert
-		assertThat(result.get(0)).isEqualTo(testFirestation);
+		verify(firestationRepository).deleteByAddress(testFirestation.getAddress());
+
 	}
 
 	@Test
-	public void getByStationNumberTest() {
+	public void deleteByStationNumberTest() throws FirestationNotFoundException {
 		// Arrange
-		Firestation testFirestation = populateRepositoryAndReturnTestFirestation();
+		Firestation testFirestation = FirestationTestData.buildFirestation();
 
 		// Act
-		List<Firestation> result = new ArrayList<>();
-		try {
-			result = firestationServiceUnderTest.getByStationNumber(testFirestation.getStation());
-		} catch (FirestationNotFoundException e) {
-			fail("getByAddressTest threw an exception");
-		}
+		firestationServiceUnderTest.deleteByStationNumber(testFirestation.getStation());
 
 		// Assert
-		assertThat(result.get(0)).isEqualTo(testFirestation);
+		verify(firestationRepository).deleteByStationNumber(testFirestation.getStation());
 	}
-
-	@Test
-	public void updateTest() {
-		// Arrange
-		Firestation testFirestation = populateRepositoryAndReturnTestFirestation();
-
-		Integer oldStationNumber = testFirestation.getStation();
-		testFirestation.setStation(666);
-
-		// Act
-		try {
-			firestationServiceUnderTest.update(testFirestation);
-		} catch (FirestationNotFoundException e) {
-			fail("updateTest (act) threw an exception");
-		}
-
-		// Assert
-		Firestation result = new Firestation();
-		try {
-			result = firestationServiceUnderTest.getByAddress(testFirestation.getAddress()).get(0);
-		} catch (FirestationNotFoundException e) {
-			fail("updateTest (assert) threw an exception");
-		}
-		assertThat(result.getStation()).isNotEqualTo(oldStationNumber);
-	}
-
-	@Test
-	public void deleteTest() {
-		// Arrange
-		Firestation testFirestation = populateRepositoryAndReturnTestFirestation();
-
-		// Act
-		try {
-			firestationServiceUnderTest.delete(testFirestation);
-		} catch (FirestationNotFoundException e) {
-			fail("deleteTest threw an exception");
-		}
-
-		assertThrows(FirestationNotFoundException.class,
-				() -> firestationServiceUnderTest.getByAddress(testFirestation.getAddress()));
-
-	}
-
-	@Test
-	public void deleteByAdddessTest() {
-		// Arrange
-		Firestation testFirestation = populateRepositoryAndReturnTestFirestation();
-
-		// Act
-		try {
-			firestationServiceUnderTest.deleteByAddress(testFirestation.getAddress());
-		} catch (FirestationNotFoundException e) {
-			fail("deleteByAdddessTest threw an exception");
-		}
-
-		assertThrows(FirestationNotFoundException.class,
-				() -> firestationServiceUnderTest.getByAddress(testFirestation.getAddress()));
-
-	}
-
-	@Test
-	public void deleteByStationNumberTest() {
-		// Arrange
-		Firestation testFirestation = populateRepositoryAndReturnTestFirestation();
-
-		// Act
-		try {
-			firestationServiceUnderTest.deleteByStationNumber(testFirestation.getStation());
-		} catch (FirestationNotFoundException e) {
-			fail("deleteByAdddessTest threw an exception");
-		}
-
-		// Assert
-		assertThrows(FirestationNotFoundException.class,
-				() -> firestationServiceUnderTest.getByAddress(testFirestation.getAddress()));
-
-	}
-
-	private Firestation populateRepositoryAndReturnTestFirestation() {
-		List<Firestation> listFirestation = FirestationTestData.buildFirestationList();
-		for (Firestation f : listFirestation) {
-			firestationServiceUnderTest.add(f);
-		}
-		Firestation testFirestation = listFirestation.get(5);
-		return testFirestation;
-	}
-
 }

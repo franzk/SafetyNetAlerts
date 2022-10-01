@@ -1,101 +1,88 @@
 package net.safety.alerts.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.time.LocalDate;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.stereotype.Component;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.repository.MedicalRecordRepository;
 import net.safety.alerts.utils.MedicalRecordTestData;
-import net.safety.alerts.utils.TestConstants;
 
-@Component
+@ExtendWith(MockitoExtension.class)
 public class MedicalRecordServiceTest {
 
-	private MedicalRecordService medicalRecordServiceUnderTest = new MedicalRecordService();
+	@InjectMocks
+	private MedicalRecordService medicalRecordServiceUnderTest;
 
+	@Mock
 	private MedicalRecordRepository medicalRecordRepository;
 
-	@BeforeEach
-	public void reset() {
-		medicalRecordRepository = new MedicalRecordRepository();
-		ReflectionTestUtils.setField(medicalRecordServiceUnderTest, "medicalRecordRepository", medicalRecordRepository);
-	}
-
 	@Test
-	public void addAndGetMedicalRecordByNameTest() {
+	public void addTest() {
 		// Arrange
 		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 
-		// Act
-		medicalRecordServiceUnderTest.add(testMedicalRecord);
+		when(medicalRecordRepository.addMedicalRecord(any())).thenReturn(testMedicalRecord);
 
-		MedicalRecord result = new MedicalRecord();
-		try {
-			result = medicalRecordServiceUnderTest.getMedicalRecordByName(testMedicalRecord.getFirstName(),
-					testMedicalRecord.getLastName());
-		} catch (MedicalRecordNotFoundException e) {
-			fail("addAndGetMedicalRecordByNameTest threw an exception");
-		}
+		// Act
+		MedicalRecord result = medicalRecordServiceUnderTest.add(testMedicalRecord);
+
+		// Assert
+		assertThat(result).isEqualTo(testMedicalRecord);
+		verify(medicalRecordRepository).addMedicalRecord(testMedicalRecord);
+	}
+
+	@Test
+	public void getMedicalRecordByNameTest() throws MedicalRecordNotFoundException {
+		// Arrange
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
+
+		when(medicalRecordRepository.getMedicalRecordByName(any(), any())).thenReturn(testMedicalRecord);
+
+		// Act
+		MedicalRecord result = medicalRecordServiceUnderTest.getMedicalRecordByName(testMedicalRecord.getFirstName(),
+				testMedicalRecord.getLastName());
 
 		// Assert
 		assertThat(result).isEqualTo(testMedicalRecord);
 	}
 
 	@Test
-	public void updateTest() {
+	public void updateTest() throws MedicalRecordNotFoundException {
 		// Arrange
 		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
-		medicalRecordServiceUnderTest.add(testMedicalRecord);
+		MedicalRecord testMedicalRecordUpdated = MedicalRecordTestData.buildMedicalRecord();
+		testMedicalRecordUpdated.setBirthdate(LocalDate.now());
 
-		MedicalRecord updatedMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
-		updatedMedicalRecord.setBirthdate(TestConstants.birthdate.plusYears(42));
+		when(medicalRecordRepository.updateMedicalRecord(any())).thenReturn(testMedicalRecordUpdated);
 
 		// Act
-		MedicalRecord result = new MedicalRecord();
-		try {
-			medicalRecordServiceUnderTest.update(updatedMedicalRecord);
-		} catch (MedicalRecordNotFoundException e) {
-			fail("updateTest (act) threw an exception");
-		}
+		MedicalRecord result = medicalRecordServiceUnderTest.update(testMedicalRecord);
 
 		// Assert
-		try {
-			result = medicalRecordServiceUnderTest.getMedicalRecordByName(testMedicalRecord.getFirstName(),
-					testMedicalRecord.getLastName());
-		} catch (MedicalRecordNotFoundException e) {
-			fail("updateTest (assert) threw an exception");
-		}
-		assertThat(result).isEqualTo(updatedMedicalRecord);
+		assertThat(result).isEqualTo(testMedicalRecordUpdated);
 	}
 
 	@Test
-	public void deleteByNameTest() {
+	public void deleteByNameTest() throws MedicalRecordNotFoundException {
 		// Arrange
-		List<MedicalRecord> listMedicalRecords = MedicalRecordTestData.buildMedicalRecordList();
-		for (MedicalRecord m : listMedicalRecords) {
-			medicalRecordServiceUnderTest.add(m);
-		}
-		MedicalRecord testMedicalRecord = listMedicalRecords.get(5);
-		
+		String firstName = "firstName";
+		String lastName = "lastName";
+
 		// Act
-		try {
-			medicalRecordServiceUnderTest.deleteByName(testMedicalRecord.getFirstName(),
-					testMedicalRecord.getLastName());
-		} catch (MedicalRecordNotFoundException e) {
-			fail("deleteByNameTest threw an exception");
-		}
+		medicalRecordServiceUnderTest.deleteByName(firstName, lastName);
 
 		// Assert
-		assertThrows(MedicalRecordNotFoundException.class, () -> medicalRecordServiceUnderTest
-				.getMedicalRecordByName(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName()));
+		verify(medicalRecordRepository).deleteMedicalRecordByName(firstName, lastName);
 	}
 }
