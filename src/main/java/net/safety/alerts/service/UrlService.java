@@ -96,7 +96,7 @@ public class UrlService {
 				MedicalRecord m = medicalRecordRepository.getMedicalRecord(p);
 				return DtoService.buildPersonDto(p, m, DtoConstants.UrlChildAlertChild);
 			} catch (MedicalRecordNotFoundException e) {
-				return null; // ce cas ne peut pas arriver car les children ont forcément un medical recod
+				return DtoService.buildPersonDto(p, DtoConstants.UrlChildAlertChild); // ce cas ne peut pas arriver car les children ont forcément un medical recod
 			}
 		}).collect(Collectors.toList());
 

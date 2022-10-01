@@ -256,8 +256,9 @@ public class UrlServiceTest {
 				.isEqualTo(personsAtAdress2.get(0).getLastName());
 	}
 
+
 	@Test
-	public void convertPersonToUrlPersonInfoItemDTOExcetpion()
+	public void convertPersonToUrlPersonInfoItemDTOException()
 			throws PersonNotFoundException, MedicalRecordNotFoundException {
 		// Arrange
 		Person p1 = PersonTestData.buildPerson("1", "1", "1", "1");
@@ -265,17 +266,55 @@ public class UrlServiceTest {
 		Person p3 = PersonTestData.buildPerson("3", "3", "3", "3");
 		List<Person> persons = List.of(p1, p2, p3);
 
-		MedicalRecord medicalRecord = MedicalRecordTestData.buildMedicalRecord();
-
 		when(personRepository.getPersonsByName(any(), any())).thenReturn(persons);
-		when(medicalRecordRepository.getMedicalRecord(any())).thenReturn(medicalRecord);
+		when(medicalRecordRepository.getMedicalRecord(any())).thenThrow(new MedicalRecordNotFoundException());
 
 		// Act
 		UrlPersonInfoDto result = urlServiceUnderTest.urlPersonInfo("", "");
 
 		// Assert
-		assertThat(result.getPersons().size()).isEqualTo(3);
-		assertThat(result.getPersons().get(0).getFirstName()).isEqualTo(p1.getFirstName());
+		assertThat(result.getPersons().get(0).getMedications()).isNull();
+	}
+
+	@Test
+	public void convertPersonToUrlFireDtoException()
+			throws FirestationNotFoundException, AddressNotFoundException, MedicalRecordNotFoundException {
+		// Arrange
+		Person p1 = PersonTestData.buildPerson();
+		List<Person> persons = List.of(p1);
+
+		when(firestationRepository.getFirestationNumber(anyString())).thenReturn(24);
+		when(personRepository.getPersonsByAddress(any())).thenReturn(persons);
+
+		when(medicalRecordRepository.getMedicalRecord(any())).thenThrow(new MedicalRecordNotFoundException());
+
+		// Act
+		UrlFireDto result = urlServiceUnderTest.urlFire("");
+
+		// Assert
+		assertThat(result.getPersons().get(0).getAge()).isNull();
 
 	}
+
+	@Test
+	public void urlChildAlertMedicalRecordNotFoundExceptionTest() throws AddressNotFoundException, MedicalRecordNotFoundException {
+		// Arrange
+		Person child = PersonTestData.buildPerson("child", "name", "address", "");
+		List<Person> persons = List.of(child);
+
+		when(personRepository.getPersonsByAddress(any())).thenReturn(persons);
+
+		when(medicalRecordRepository.isChild(any())).thenReturn(true);
+
+		when(medicalRecordRepository.getMedicalRecord(any())).thenThrow(new MedicalRecordNotFoundException());
+
+		// Act
+		UrlChildAlertDto result = urlServiceUnderTest.urlChildAlert("");
+
+		// Assert
+		assertThat(result.getChildren().size()).isEqualTo(1);
+		assertThat(result.getChildren().get(0).getAge()).isNull();
+	}
+
+	
 }
