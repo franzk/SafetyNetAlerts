@@ -1,5 +1,7 @@
 package net.safety.alerts.repository;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,8 +11,13 @@ import org.springframework.stereotype.Repository;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
-import net.safety.alerts.utils.Utils;
 
+/**
+ * Contains MedicalRecord Data, CRUD and advanced filter methods
+ * 
+ * @author FranzKa
+ *
+ */
 @Repository
 public class MedicalRecordRepository {
 
@@ -28,12 +35,13 @@ public class MedicalRecordRepository {
 	}
 
 	// read
-	
+
 	public MedicalRecord getMedicalRecordByName(String firstName, String lastName)
 			throws MedicalRecordNotFoundException {
 
-		Optional<MedicalRecord> medicalRecord = listMedicalRecords.stream().filter(m -> m.getFirstName().equals(firstName))
-				.filter(m -> m.getLastName().equals(lastName)).findFirst();
+		Optional<MedicalRecord> medicalRecord = listMedicalRecords.stream()
+				.filter(m -> m.getFirstName().equals(firstName)).filter(m -> m.getLastName().equals(lastName))
+				.findFirst();
 
 		if (medicalRecord.isPresent()) {
 			return medicalRecord.get();
@@ -46,7 +54,6 @@ public class MedicalRecordRepository {
 		return this.getMedicalRecordByName(person.getFirstName(), person.getLastName());
 	}
 
-	
 	// update
 	public MedicalRecord updateMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
 
@@ -83,18 +90,18 @@ public class MedicalRecordRepository {
 				.filter(m -> m.getLastName().equals(person.getLastName())).findFirst();
 
 		if (personMedicalRecord.isPresent()) {
-			return Utils.calculateAge(personMedicalRecord.get().getBirthdate());
+			return calculateAge(personMedicalRecord.get().getBirthdate());
 		} else {
 			throw new MedicalRecordNotFoundException();
 		}
 	}
-	
+
 	public boolean isAdult(Person person) {
 		try {
 			return (this.getPersonAge(person) > 18);
 		} catch (MedicalRecordNotFoundException e) {
 			return false;
-		} 
+		}
 	}
 
 	public boolean isChild(Person person) {
@@ -102,7 +109,12 @@ public class MedicalRecordRepository {
 			return (this.getPersonAge(person) <= 18);
 		} catch (MedicalRecordNotFoundException e) {
 			return false;
-		} 
+		}
+	}
+
+	public int calculateAge(LocalDate birthdate) {
+		Period duration = Period.between(birthdate, LocalDate.now());
+		return duration.getYears();
 	}
 
 }

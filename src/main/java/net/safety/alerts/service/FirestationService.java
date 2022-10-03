@@ -9,6 +9,12 @@ import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.model.Firestation;
 import net.safety.alerts.repository.FirestationRepository;
 
+/**
+ * Service that provides CRUD and advanced filter methods for Firestation
+ * 
+ * @author FranzKa
+ *
+ */
 @Service
 public class FirestationService {
 

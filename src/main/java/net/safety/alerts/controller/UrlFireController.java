@@ -13,7 +13,7 @@ import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.UrlService;
 
 /**
- * Handle "/UrlFireController" URL
+ * Handle "/fire" URL
  * 
  * @author FranzKa
  *

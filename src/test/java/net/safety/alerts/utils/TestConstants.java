@@ -16,7 +16,7 @@ public class TestConstants {
 	
 	public static final Integer stationNumber = 42;
 
-	public static final LocalDate birthdate = Utils.StringToDate("12/14/2021");
+	public static final LocalDate birthdate = LocalDate.of(2021, 12, 14);
 	public static final List<String> medications = List.of(new String[] {"Doliprane", "Vogalene"});
 	public static final List<String> allergies = List.of(new String[] {"Pollen", "Arachides"});
 	

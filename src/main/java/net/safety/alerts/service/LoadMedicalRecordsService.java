@@ -1,5 +1,7 @@
 package net.safety.alerts.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,17 +13,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.repository.MedicalRecordRepository;
 import net.safety.alerts.utils.JsonFileConstants;
-import net.safety.alerts.utils.Utils;
 
+/**
+ * Import Json data into MedicalRecord Repository
+ * 
+ * @author FranzKa
+ *
+ */
 @Service
 public class LoadMedicalRecordsService {
 
 	@Autowired
 	private MedicalRecordRepository medicalRecordRepository;
-
+	
 	/**
-	 * Importe les medicalRecords dans medicalRecordRepository à partir du path
-	 * "medicalRecords" du fichier Json
+	 * Import Json data into MedicalRecord Repository
+	 * @param medicalrecordsNode 
 	 */
 	public void loadMedicalRecords(JsonNode medicalrecordsNode) {
 
@@ -31,7 +38,7 @@ public class LoadMedicalRecordsService {
 			medicalRecord.setLastName(medicalRecordNode.path(JsonFileConstants.medicalrecord_lastName).asText());
 
 			medicalRecord.setBirthdate(
-					Utils.StringToDate(medicalRecordNode.path(JsonFileConstants.medicalrecord_birthdate).asText()));
+					this.stringToDate(medicalRecordNode.path(JsonFileConstants.medicalrecord_birthdate).asText()));
 
 			// medications
 			List<String> medications = new ArrayList<>();
@@ -53,4 +60,10 @@ public class LoadMedicalRecordsService {
 		}
 
 	}
+	
+	public LocalDate stringToDate(String strDate) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		return LocalDate.parse(strDate, formatter);
+	}
+	
 }

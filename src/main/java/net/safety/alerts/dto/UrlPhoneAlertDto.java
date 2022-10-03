@@ -4,6 +4,12 @@ import java.util.Set;
 
 import lombok.Data;
 
+/**
+ * Provide the results of URL "/phoneAlert" 
+ * 
+ * @author FranzKa
+ *
+ */
 @Data
 public class UrlPhoneAlertDto {
 

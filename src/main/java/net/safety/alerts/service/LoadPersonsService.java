@@ -9,6 +9,12 @@ import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.PersonRepository;
 import net.safety.alerts.utils.JsonFileConstants;
 
+/**
+ * Import Json data into Person Repository
+ * 
+ * @author FranzKa
+ *
+ */
 @Service
 public class LoadPersonsService {
 
@@ -16,8 +22,9 @@ public class LoadPersonsService {
 	private PersonRepository personRepository;
 	
 	/**
-	 * Importe les persons dans personRepository à partir du path "persons" du
-	 * fichier Json
+	 * Import Json data into Person Repository
+	 * 
+	 * @param personsNode
 	 */
 	public void loadPersons(JsonNode personsNode) {
 

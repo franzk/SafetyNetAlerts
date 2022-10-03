@@ -12,6 +12,12 @@ import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 
+/**
+ * Contains Person Data, CRUD and advanced filter methods
+ * 
+ * @author FranzKa
+ *
+ */
 @Repository
 public class PersonRepository {
 

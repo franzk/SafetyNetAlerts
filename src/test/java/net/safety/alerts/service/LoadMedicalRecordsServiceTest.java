@@ -26,23 +26,23 @@ public class LoadMedicalRecordsServiceTest {
 
 	@InjectMocks
 	private LoadMedicalRecordsService serviceUnderTest;
-	
+
 	@Mock
 	private MedicalRecordRepository medicalRecordRepository;
-	
+
 	@Test
 	public void loadMedicalRecordsTest() throws JsonProcessingException {
-		
+
 		List<MedicalRecord> medicalRecords = MedicalRecordTestData.buildMedicalRecordList();
-		
+
 		ObjectMapper mapper = new ObjectMapper();
-		mapper.registerModule(new JavaTimeModule());		
-		
+		mapper.registerModule(new JavaTimeModule());
+
 		JsonNode medicalRecordsNode = mapper.valueToTree(medicalRecords);
-		
+
 		serviceUnderTest.loadMedicalRecords(medicalRecordsNode);
-		
+
 		verify(medicalRecordRepository, times(medicalRecords.size())).addMedicalRecord(any());
 	}
-	
+
 }

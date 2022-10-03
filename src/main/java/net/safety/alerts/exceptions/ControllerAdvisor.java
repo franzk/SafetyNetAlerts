@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+/**
+ * Handle Exceptions to convert them in http response
+ * 
+ * @author FranzKa
+ *
+ */
 @ControllerAdvice
 public class ControllerAdvisor extends ResponseEntityExceptionHandler {
 

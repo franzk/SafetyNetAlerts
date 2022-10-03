@@ -10,6 +10,12 @@ import org.springframework.stereotype.Repository;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.model.Firestation;
 
+/**
+ * Contains Firestation Data, CRUD and advanced filter methods
+ * 
+ * @author FranzKa
+ *
+ */
 @Repository
 public class FirestationRepository {
 

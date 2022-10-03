@@ -9,6 +9,12 @@ import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.PersonRepository;
 
+/**
+ * Service that provides CRUD and advanced filter methods for Person
+ * 
+ * @author FranzKa
+ *
+ */
 @Service
 public class PersonService {
 

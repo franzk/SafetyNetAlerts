@@ -20,11 +20,19 @@ import net.safety.alerts.utils.JsonFileConstants;
 
 /**
  * 
- * Cette classe lit le fichier Json dont l'URL (dataUrl) est contenu dans
- * application.propoerties Elle injecte ensuite les données dans les
- * repositories. L'éxecution s'opère en postconstruct.
+ * Import data from a Json File to Repositories.
  * 
- * @author FranzKa
+ * <pre>
+ * Use 3 services : 
+ * 
+ * - {@link LoadPersonsService}
+ * - {@link LoadFirestationsService}
+ * - {@link LoadMedicalRecordsService}
+ * 
+ * </pre>
+ * 
+ * * @author FranzKa
+ * 
  */
 
 @Component
@@ -43,8 +51,7 @@ public class DataInitializer {
 	private String dataUrl;
 
 	/**
-	 * Importe le fichier Json trouvé à l'URL dataUrl trouvée dans
-	 * application.propoerties
+	 * Import the JsonFile found at the URL stored in application.properties
 	 * 
 	 * @throws MalformedURLException
 	 * @throws IOException

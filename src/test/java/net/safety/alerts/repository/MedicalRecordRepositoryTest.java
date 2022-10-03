@@ -3,6 +3,8 @@ package net.safety.alerts.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,15 +12,20 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.utils.TestConstants;
 
+@ExtendWith(MockitoExtension.class)
 public class MedicalRecordRepositoryTest {
 
-	private MedicalRecordRepository medicalRecordRepositoryUnderTest = new MedicalRecordRepository();
+	@InjectMocks
+	private MedicalRecordRepository medicalRecordRepositoryUnderTest;
 
 	@BeforeEach
 	private void reset() {
@@ -134,38 +141,22 @@ public class MedicalRecordRepositoryTest {
 				.getMedicalRecordByName(testMedicalRecord.getFirstName(), testMedicalRecord.getLastName()));
 	}
 
-	/*
-	 * @Test public void getPersonAgeTest() { // Arrange MedicalRecord
-	 * testMedicalRecord = buildMedicalRecord("");
-	 * medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
-	 * 
-	 * Person testPerson = new Person();
-	 * testPerson.setFirstName(testMedicalRecord.getFirstName());
-	 * testPerson.setLastName(testMedicalRecord.getLastName());
-	 * 
-	 * // Act int age = 0; try { age =
-	 * medicalRecordRepositoryUnderTest.getPersonAge(testPerson); } catch
-	 * (MedicalRecordNotFoundException e) {
-	 * fail("getPersonAgeTest threw an exception !"); }
-	 * 
-	 * // Assert
-	 * assertThat(age).isEqualTo(Utils.calculateAge(testMedicalRecord.getBirthdate()
-	 * )); }
-	 */
-
 	@Test
 	public void isAdultTest() {
 		// Arrange
 		MedicalRecord testMedicalRecord = buildMedicalRecord("");
-		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(20));
+		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(40));
 		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
 
 		Person testPerson = new Person();
 		testPerson.setFirstName(testMedicalRecord.getFirstName());
 		testPerson.setLastName(testMedicalRecord.getLastName());
 
-		// Act + Assert
-		assertThat(medicalRecordRepositoryUnderTest.isAdult(testPerson)).isTrue();
+		// Act
+		boolean isAdult = medicalRecordRepositoryUnderTest.isAdult(testPerson);
+
+		// Assert
+		assertThat(isAdult).isTrue();
 	}
 
 	@Test
@@ -179,8 +170,11 @@ public class MedicalRecordRepositoryTest {
 		testPerson.setFirstName(testMedicalRecord.getFirstName());
 		testPerson.setLastName(testMedicalRecord.getLastName());
 
-		// Act + Assert
-		assertThat(medicalRecordRepositoryUnderTest.isAdult(testPerson)).isFalse();
+		// Act
+		boolean isAdult = medicalRecordRepositoryUnderTest.isAdult(testPerson);
+
+		// Assert
+		assertThat(isAdult).isFalse();
 	}
 
 	@Test
@@ -200,23 +194,29 @@ public class MedicalRecordRepositoryTest {
 		testPerson.setFirstName(testMedicalRecord.getFirstName());
 		testPerson.setLastName(testMedicalRecord.getLastName());
 
+		// Act
+		boolean isChild = medicalRecordRepositoryUnderTest.isChild(testPerson);
+
 		// Act + Assert
-		assertThat(medicalRecordRepositoryUnderTest.isChild(testPerson)).isTrue();
+		assertThat(isChild).isTrue();
 	}
 
 	@Test
 	public void isChildFailTest() {
 		// Arrange
 		MedicalRecord testMedicalRecord = buildMedicalRecord("");
-		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(20));
+		testMedicalRecord.setBirthdate(LocalDate.now().minusYears(40));
 		medicalRecordRepositoryUnderTest.addMedicalRecord(testMedicalRecord);
 
 		Person testPerson = new Person();
 		testPerson.setFirstName(testMedicalRecord.getFirstName());
 		testPerson.setLastName(testMedicalRecord.getLastName());
 
+		// Act
+		boolean isChild = medicalRecordRepositoryUnderTest.isChild(testPerson);
+
 		// Act + Assert
-		assertThat(medicalRecordRepositoryUnderTest.isChild(testPerson)).isFalse();
+		assertThat(isChild).isFalse();
 	}
 
 	@Test
@@ -254,8 +254,8 @@ public class MedicalRecordRepositoryTest {
 
 	@Test
 	public void deleteMedicalRecordByNameExceptionTest() {
-		assertThrows(MedicalRecordNotFoundException.class,
-				() -> medicalRecordRepositoryUnderTest.deleteMedicalRecordByName(TestConstants.firstName, TestConstants.lastName));
+		assertThrows(MedicalRecordNotFoundException.class, () -> medicalRecordRepositoryUnderTest
+				.deleteMedicalRecordByName(TestConstants.firstName, TestConstants.lastName));
 	}
 
 	// Utils

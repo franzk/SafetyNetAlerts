@@ -8,6 +8,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
+/**
+ * 
+ * MedicalRecord Model
+ * 
+ * @author FranzKa
+ *
+ */
 @Data
 public class MedicalRecord {
 

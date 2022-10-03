@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import net.safety.alerts.dto.UrlChildAlertDto;
@@ -49,6 +50,9 @@ public class UrlServiceTest {
 
 	@Mock
 	private MedicalRecordRepository medicalRecordRepository;
+
+	@Spy
+	private DtoService dtoService;
 
 	@Test
 	public void urlFirestationCoverageTest() throws FirestationNotFoundException {
@@ -256,7 +260,6 @@ public class UrlServiceTest {
 				.isEqualTo(personsAtAdress2.get(0).getLastName());
 	}
 
-
 	@Test
 	public void convertPersonToUrlPersonInfoItemDTOException()
 			throws PersonNotFoundException, MedicalRecordNotFoundException {
@@ -297,7 +300,8 @@ public class UrlServiceTest {
 	}
 
 	@Test
-	public void urlChildAlertMedicalRecordNotFoundExceptionTest() throws AddressNotFoundException, MedicalRecordNotFoundException {
+	public void urlChildAlertMedicalRecordNotFoundExceptionTest()
+			throws AddressNotFoundException, MedicalRecordNotFoundException {
 		// Arrange
 		Person child = PersonTestData.buildPerson("child", "name", "address", "");
 		List<Person> persons = List.of(child);
@@ -316,5 +320,4 @@ public class UrlServiceTest {
 		assertThat(result.getChildren().get(0).getAge()).isNull();
 	}
 
-	
 }

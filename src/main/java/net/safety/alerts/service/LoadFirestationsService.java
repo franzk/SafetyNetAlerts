@@ -9,6 +9,12 @@ import net.safety.alerts.model.Firestation;
 import net.safety.alerts.repository.FirestationRepository;
 import net.safety.alerts.utils.JsonFileConstants;
 
+/**
+ * Import Json data into Firestation Repository
+ * 
+ * @author FranzKa
+ *
+ */
 @Service
 public class LoadFirestationsService {
 
@@ -16,8 +22,9 @@ public class LoadFirestationsService {
 	private FirestationRepository firestationRepository;
 
 	/**
-	 * Importe les firestations dans firestationRepository à partir du path
-	 * "firestations" du fichier Json
+	 * Import Json data into Firestation Repository
+	 * 
+	 * @param firestationsNode
 	 */
 	public void loadFirestations(JsonNode firestationsNode) {
 

@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import net.safety.alerts.model.MedicalRecord;
 
+@Service
 public class MedicalRecordTestData {
-
 	
 	public static MedicalRecord buildMedicalRecord() {
 		return buildMedicalRecord(0);

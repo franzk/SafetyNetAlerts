@@ -7,6 +7,12 @@ import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.repository.MedicalRecordRepository;
 
+/**
+ * Service that provides CRUD and advanced filter methods for MedicalRecord
+ * 
+ * @author FranzKa
+ *
+ */
 @Service
 public class MedicalRecordService {
 

@@ -6,6 +6,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.model.MedicalRecord;
@@ -13,7 +17,11 @@ import net.safety.alerts.model.Person;
 import net.safety.alerts.utils.DtoConstants.PersonField;
 import net.safety.alerts.utils.PersonTestData;
 
+@ExtendWith(MockitoExtension.class)
 public class DtoServiceTest {
+	
+	@InjectMocks
+	private DtoService serviceUnderTest;
 
 	private PersonField[] testFields = new PersonField[] { PersonField.FIRST_NAME, PersonField.LAST_NAME,
 			PersonField.ADDRESS, PersonField.CITY, PersonField.ZIP, PersonField.PHONE, PersonField.EMAIL };
@@ -30,7 +38,7 @@ public class DtoServiceTest {
 		Person testPerson = PersonTestData.buildPerson();
 
 		// Act
-		PersonDto personDto = DtoService.buildPersonDto(testPerson, testFields);
+		PersonDto personDto = serviceUnderTest.buildPersonDto(testPerson, testFields);
 
 		// Assert
 		assertThat(personDto.getFirstName()).isEqualTo(testPerson.getFirstName());
@@ -49,7 +57,7 @@ public class DtoServiceTest {
 		Person testPerson = PersonTestData.buildPerson();
 
 		// Act
-		PersonDto personDto = DtoService.buildPersonDto(testPerson, testPartialFields);
+		PersonDto personDto = serviceUnderTest.buildPersonDto(testPerson, testPartialFields);
 
 		// Assert
 		assertThat(personDto.getFirstName()).isEqualTo(testPerson.getFirstName());
@@ -79,7 +87,7 @@ public class DtoServiceTest {
 		medicalRecord.setMedications(medications);
 
 		// Act
-		PersonDto personDto = DtoService.buildPersonDto(testPerson, medicalRecord, testFieldsWithMedicalRecord);
+		PersonDto personDto = serviceUnderTest.buildPersonDto(testPerson, medicalRecord, testFieldsWithMedicalRecord);
 
 		// Assert
 		assertThat(personDto.getFirstName()).isEqualTo(testPerson.getFirstName());

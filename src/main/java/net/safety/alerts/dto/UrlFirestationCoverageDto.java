@@ -4,6 +4,12 @@ import java.util.List;
 
 import lombok.Data;
 
+/**
+ * Provide the results of URL "/firestationCoverage" 
+ * 
+ * @author FranzKa
+ *
+ */
 @Data
 public class UrlFirestationCoverageDto {
 

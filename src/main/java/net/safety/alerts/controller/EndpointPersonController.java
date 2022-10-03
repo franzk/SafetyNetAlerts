@@ -17,7 +17,7 @@ import net.safety.alerts.model.Person;
 import net.safety.alerts.service.PersonService;
 
 /**
- * Handle endpoints of URL "/persons". Cover all CRUD methods.
+ * Handle endpoints of URL "/person". Cover all CRUD methods.
  * 
  * @author FranzKa
  *

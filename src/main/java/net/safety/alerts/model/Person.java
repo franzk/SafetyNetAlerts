@@ -2,6 +2,12 @@ package net.safety.alerts.model;
 
 import lombok.Data;
 
+/**
+ * Person Model
+ * 
+ * @author FranzKa
+ *
+ */
 @Data
 public class Person {
 	

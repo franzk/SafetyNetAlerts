@@ -1,18 +1,32 @@
 package net.safety.alerts.service;
 
+import java.time.LocalDate;
+import java.time.Period;
+
 import org.springframework.stereotype.Service;
 
 import net.safety.alerts.dto.PersonDto;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.utils.DtoConstants.PersonField;
-import net.safety.alerts.utils.Utils;
 
+/**
+ * Convert a Person in a DTO object. Used to create Json ouput files.
+ * 
+ * @author FranzKa
+ *
+ */
 @Service
 public class DtoService {
 
-	// construction d'un DTO Person
-	public static PersonDto buildPersonDto(Person person, PersonField[] fields) {
+	/**
+	 * Convert a {@link Person} in a DTO object
+	 * 
+	 * @param person : Person to convert
+	 * @param fields : attributes that should appear in output Json File
+	 * @return {@link PersonDto}
+	 */
+	public PersonDto buildPersonDto(Person person, PersonField[] fields) {
 		PersonDto personDto = new PersonDto();
 		for (PersonField field : fields) {
 			switch (field) {
@@ -45,12 +59,22 @@ public class DtoService {
 		return personDto;
 	}
 
-	public static PersonDto buildPersonDto(Person person, MedicalRecord medicalRecord, PersonField[] fields) {
+	/**
+	 * Convert a {@link Person} in a DTO object with {@link MedicalRecord} related
+	 * data
+	 * 
+	 * @param person        : Person to convert
+	 * @param medicalRecord : the MedicalRecord from this Person
+	 * @param fields        : attributes that should appear in output Json File
+	 * @return {@link PersonDto}
+	 */
+	public PersonDto buildPersonDto(Person person, MedicalRecord medicalRecord, PersonField[] fields) {
 		PersonDto personDto = buildPersonDto(person, fields);
 		for (PersonField field : fields) {
 			switch (field) {
 			case AGE:
-				personDto.setAge(Utils.calculateAge(medicalRecord.getBirthdate()));
+				int age = Period.between(medicalRecord.getBirthdate(), LocalDate.now()).getYears();
+				personDto.setAge(age);
 				break;
 			case MEDICATIONS:
 				personDto.setMedications(medicalRecord.getMedications());

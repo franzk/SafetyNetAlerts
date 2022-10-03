@@ -1,5 +1,11 @@
 package net.safety.alerts.utils;
 
+/**
+ * Fields names in Json input file
+ * 
+ * @author FranzKa
+ *
+ */
 public class JsonFileConstants {
 	
 	public static final String persons = "persons";

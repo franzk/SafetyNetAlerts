@@ -29,7 +29,7 @@ public class UrlFloodStationsController {
 	 * GET method of URL "flood/stations"
 	 * 
 	 * @param stations
-	 * @return ResponseEntity with {@link UrlFloodStationsDto} and Htpp Status OK
+	 * @return ResponseEntity with {@link UrlFloodStationsDto} and Http Status OK
 	 * @throws FirestationNotFoundException
 	 */
 	@GetMapping("flood/stations")
