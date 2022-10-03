@@ -16,39 +16,69 @@ import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.service.PersonService;
 
+/**
+ * Handle endpoints of URL "/persons". Cover all CRUD methods.
+ * 
+ * @author FranzKa
+ *
+ */
 @RestController
 @RequestMapping("/person")
 public class EndpointPersonController {
-	
+
 	@Autowired
 	private PersonService personService;
-	
-	// create
+
+	/**
+	 * POST method of URL "/person"
+	 * 
+	 * @param person
+	 * @return ResponseEntity with Person creted and Http Status OK
+	 */
 	@PostMapping("")
-	public ResponseEntity<Person> addPerson(@RequestBody Person p) {
-		return new ResponseEntity<>(personService.add(p), HttpStatus.OK);
+	public ResponseEntity<Person> addPerson(@RequestBody Person person) {
+		return new ResponseEntity<>(personService.add(person), HttpStatus.OK);
 	}
-	
-	// read
+
+	/**
+	 * GET method of URL "/person"
+	 * 
+	 * @param firstName
+	 * @param lastName
+	 * @return ResponseEntity with Person result and Http Status OK
+	 * @throws PersonNotFoundException
+	 */
 	@GetMapping("")
-	public ResponseEntity<Person> getPersonByName(@RequestParam String firstName, @RequestParam String lastName) throws PersonNotFoundException {
+	public ResponseEntity<Person> getPersonByName(@RequestParam String firstName, @RequestParam String lastName)
+			throws PersonNotFoundException {
 		return new ResponseEntity<>(personService.getPersonByName(firstName, lastName), HttpStatus.OK);
 	}
-	
-	
-	// update
+
+	/**
+	 * UPDATE method of URL "/person"
+	 * 
+	 * @param person
+	 * @return ResponseEntity with updated Person and Http Status OK
+	 * @throws PersonNotFoundException
+	 */
 	@PutMapping("")
-	public ResponseEntity<Person> updatePerson(@RequestBody Person p) throws PersonNotFoundException {
-		return new ResponseEntity<>(personService.update(p), HttpStatus.OK);
+	public ResponseEntity<Person> updatePerson(@RequestBody Person person) throws PersonNotFoundException {
+		return new ResponseEntity<>(personService.update(person), HttpStatus.OK);
 	}
-		
-	// delete
+
+	/**
+	 * DELETE method of URL "/person"
+	 * 
+	 * @param firstName
+	 * @param lastName
+	 * @return ResponseEntity with success message and Http Status OK
+	 * @throws PersonNotFoundException
+	 */
 	@DeleteMapping("")
-	public ResponseEntity<String> deletePerson(@RequestParam String firstName, @RequestParam String lastName) throws PersonNotFoundException {
+	public ResponseEntity<String> deletePerson(@RequestParam String firstName, @RequestParam String lastName)
+			throws PersonNotFoundException {
 		personService.delete(firstName, lastName);
 		return ResponseEntity.status(HttpStatus.OK).body("The Person has been succesfully deleted");
 	}
-	
 
-	
 }

@@ -19,6 +19,12 @@ import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.model.Firestation;
 import net.safety.alerts.service.FirestationService;
 
+/**
+ * Handle endpoints of URL "/firestation". Cover all CRUD methods.
+ * 
+ * @author FranzKa
+ *
+ */
 @RestController
 @RequestMapping("firestation")
 public class EndpointFirestationController {
@@ -26,36 +32,59 @@ public class EndpointFirestationController {
 	@Autowired
 	private FirestationService firestationService;
 
-	// create
+	/**
+	 * POST method of URL "/firestation" 
+	 * 
+	 * @param firestation
+	 * @return ResponseEntity with Firestation created and Http Status OK
+	 */
 	@PostMapping("")
 	public ResponseEntity<Firestation> addFirestation(@RequestBody Firestation firestation) {
 		return new ResponseEntity<>(firestationService.add(firestation), HttpStatus.OK);
 	}
 
-	// read
+	/**
+	 * GET method of URL "/firestation"
+	 * 
+	 * @param address
+	 * @param stationNumber
+	 * @return ResponseEntity with List of Firestation result and Http Status OK
+	 * @throws FirestationNotFoundException
+	 */
 	@GetMapping("")
 	public ResponseEntity<List<Firestation>> getFirestation(@RequestParam Optional<String> address,
 			@RequestParam Optional<Integer> stationNumber) throws FirestationNotFoundException {
 		if (address.isPresent()) {
 			return new ResponseEntity<>(firestationService.getByAddress(address.get()), HttpStatus.OK);
-		}
-		else if (stationNumber.isPresent()) {
+		} else if (stationNumber.isPresent()) {
 			return new ResponseEntity<>(firestationService.getByStationNumber(stationNumber.get()), HttpStatus.OK);
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException();
 		}
 
 	}
 
-	// update
+	/**
+	 * PUT method of URL "/firestation" 
+	 * 
+	 * @param firestation
+	 * @return ResponseEntity with updated Firestation and Http Status OK
+	 * @throws FirestationNotFoundException
+	 */
 	@PutMapping("")
 	public ResponseEntity<Firestation> updateFirestation(@RequestBody Firestation firestation)
 			throws FirestationNotFoundException {
 		return new ResponseEntity<>(firestationService.update(firestation), HttpStatus.OK);
 	}
 
-	// delete
+	/**
+	 * DELETE method of URL "/firestation"
+	 * 
+	 * @param address
+	 * @param stationNumber
+	 * @return ResponseEntity with a success message and Http Status OK
+	 * @throws FirestationNotFoundException
+	 */
 	@DeleteMapping("")
 	public ResponseEntity<String> deleteFirestations(@RequestParam Optional<String> address,
 			@RequestParam Optional<Integer> stationNumber) throws FirestationNotFoundException {

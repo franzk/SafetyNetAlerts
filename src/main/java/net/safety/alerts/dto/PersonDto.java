@@ -7,6 +7,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.Data;
 
+/**
+ * DTO used to build Json response for Person endpoints. It contains all
+ * possible attributes. If one of this field should not appear in the output
+ * file, just leave it null.
+ * 
+ * @author FranzKa
+ *
+ */
 @Data
 @JsonInclude(Include.NON_NULL)
 public class PersonDto {
@@ -16,13 +24,13 @@ public class PersonDto {
 	String lastName;
 
 	String address;
-	
+
 	String city;
-	
+
 	String zip;
 
 	String phone;
-	
+
 	String email;
 
 	Integer age;

@@ -13,15 +13,29 @@ import net.safety.alerts.dto.UrlFloodStationsDto;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.UrlService;
 
+/**
+ * Handle "/flood/stations" URL
+ * 
+ * @author FranzKa
+ *
+ */
 @RestController
 public class UrlFloodStationsController {
 
 	@Autowired
 	private UrlService urlService;
-	
+
+	/**
+	 * GET method of URL "flood/stations"
+	 * 
+	 * @param stations
+	 * @return ResponseEntity with {@link UrlFloodStationsDto} and Htpp Status OK
+	 * @throws FirestationNotFoundException
+	 */
 	@GetMapping("flood/stations")
-	public ResponseEntity<UrlFloodStationsDto> floodStations(@RequestParam List<Integer> stations) throws FirestationNotFoundException {
+	public ResponseEntity<UrlFloodStationsDto> floodStations(@RequestParam List<Integer> stations)
+			throws FirestationNotFoundException {
 		return new ResponseEntity<>(urlService.urlFloodStations(stations), HttpStatus.OK);
 	}
-	
+
 }

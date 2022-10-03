@@ -10,12 +10,6 @@ public class Utils {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		return LocalDate.parse(strDate, formatter);
 	}
-
-	public static String DateToString(LocalDate date) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-		return date.format(formatter);
-	}
-	
 	
 	public static int calculateAge(LocalDate birthdate) {
 		Period duration = Period.between(birthdate, LocalDate.now());

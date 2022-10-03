@@ -16,6 +16,12 @@ import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.service.MedicalRecordService;
 
+/**
+ * Handle endpoints of URL "/medicalRecord". Cover all CRUD methods.
+ * 
+ * @author FranzKa
+ *
+ */
 @RestController
 @RequestMapping("medicalRecord")
 public class EndpointMedicalRecordController {
@@ -23,27 +29,52 @@ public class EndpointMedicalRecordController {
 	@Autowired
 	MedicalRecordService medicalRecordService;
 
-	// create
+	/**
+	 * POST method of URL "/medicalRecord"
+	 * 
+	 * @param medicalRecord
+	 * @return ResponseEntity with MedicalRecord created and Http Status OK
+	 */
 	@PostMapping
 	public ResponseEntity<MedicalRecord> addMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
 		return new ResponseEntity<>(medicalRecordService.add(medicalRecord), HttpStatus.OK);
 	}
 
-	// read
+	/**
+	 * GET method of URL "/medicalRecord"
+	 * 
+	 * @param firstName
+	 * @param lastName
+	 * @return ResponseEntity with MedicalRecord result and Http Status OK
+	 * @throws MedicalRecordNotFoundException
+	 */
 	@GetMapping("")
 	public ResponseEntity<MedicalRecord> getMedicalRecord(@RequestParam String firstName, @RequestParam String lastName)
 			throws MedicalRecordNotFoundException {
 		return new ResponseEntity<>(medicalRecordService.getMedicalRecordByName(firstName, lastName), HttpStatus.OK);
 	}
 
-	// update
+	/**
+	 * PUT method of URL "/medicalRecord"
+	 * 
+	 * @param medicalRecord
+	 * @return ResponseEntity with updated MedicalRecord and Http Status OK
+	 * @throws MedicalRecordNotFoundException
+	 */
 	@PutMapping("")
 	public ResponseEntity<MedicalRecord> updateMedicalRecord(@RequestBody MedicalRecord medicalRecord)
 			throws MedicalRecordNotFoundException {
 		return new ResponseEntity<>(medicalRecordService.update(medicalRecord), HttpStatus.OK);
 	}
 
-	// delete
+	/**
+	 * DELETE method of URL "/medicalRecord"
+	 * 
+	 * @param firstName
+	 * @param lastName
+	 * @return ResponseEntity with success message and Http Status OK
+	 * @throws MedicalRecordNotFoundException
+	 */
 	@DeleteMapping("")
 	public ResponseEntity<String> deleteMedicalRecord(@RequestParam String firstName, @RequestParam String lastName)
 			throws MedicalRecordNotFoundException {

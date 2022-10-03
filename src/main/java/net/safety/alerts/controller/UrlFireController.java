@@ -12,14 +12,29 @@ import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.UrlService;
 
+/**
+ * Handle "/UrlFireController" URL
+ * 
+ * @author FranzKa
+ *
+ */
 @RestController
 public class UrlFireController {
-	
+
 	@Autowired
 	UrlService urlService;
-	
+
+	/**
+	 * GET method of URL "/fire"
+	 * 
+	 * @param address
+	 * @return ResponseEntity with {@link UrlFireDto} and Http Status OK
+	 * @throws AddressNotFoundException
+	 * @throws FirestationNotFoundException
+	 */
 	@GetMapping("/fire")
-	public ResponseEntity<UrlFireDto> fire(@RequestParam String address) throws AddressNotFoundException, FirestationNotFoundException {
+	public ResponseEntity<UrlFireDto> fire(@RequestParam String address)
+			throws AddressNotFoundException, FirestationNotFoundException {
 		return new ResponseEntity<>(urlService.urlFire(address), HttpStatus.OK);
 	}
 }
