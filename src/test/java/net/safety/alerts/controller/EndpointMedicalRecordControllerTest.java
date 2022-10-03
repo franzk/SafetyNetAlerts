@@ -1,7 +1,6 @@
 package net.safety.alerts.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -28,14 +26,11 @@ public class EndpointMedicalRecordControllerTest {
 
 	@InjectMocks
 	private EndpointMedicalRecordController controllerUnderTest;
-	
-	@Autowired
-	private MedicalRecordTestData medicalRecordTestData;
 
 	@Test
 	public void addMedicalRecordTest() {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		when(medicalRecordService.add(any())).thenReturn(testMedicalRecord);
 
 		// Act
@@ -49,7 +44,7 @@ public class EndpointMedicalRecordControllerTest {
 	@Test
 	public void getMedicalRecordTest() throws MedicalRecordNotFoundException {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 
 		when(medicalRecordService.getMedicalRecordByName(any(), any())).thenReturn(testMedicalRecord);
 
@@ -65,7 +60,7 @@ public class EndpointMedicalRecordControllerTest {
 	@Test
 	public void updateMedicalRecordTest() throws MedicalRecordNotFoundException {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		when(medicalRecordService.update(any())).thenReturn(testMedicalRecord);
 
 		// Act
@@ -80,7 +75,7 @@ public class EndpointMedicalRecordControllerTest {
 	@Test
 	public void deleteMedicalRecordTest() throws MedicalRecordNotFoundException {
 		// Arrange
-		MedicalRecord medicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord medicalRecord = MedicalRecordTestData.buildMedicalRecord();
 
 		// Act
 		controllerUnderTest.deleteMedicalRecord(medicalRecord.getFirstName(), medicalRecord.getLastName());

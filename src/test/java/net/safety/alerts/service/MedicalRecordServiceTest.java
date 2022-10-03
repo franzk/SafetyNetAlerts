@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
@@ -28,12 +27,10 @@ public class MedicalRecordServiceTest {
 	@Mock
 	private MedicalRecordRepository medicalRecordRepository;
 
-	private MedicalRecordTestData medicalRecordTestData = new MedicalRecordTestData();
-
 	@Test
 	public void addTest() {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 
 		when(medicalRecordRepository.addMedicalRecord(any())).thenReturn(testMedicalRecord);
 
@@ -48,7 +45,7 @@ public class MedicalRecordServiceTest {
 	@Test
 	public void getMedicalRecordByNameTest() throws MedicalRecordNotFoundException {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 
 		when(medicalRecordRepository.getMedicalRecordByName(any(), any())).thenReturn(testMedicalRecord);
 
@@ -63,8 +60,8 @@ public class MedicalRecordServiceTest {
 	@Test
 	public void updateTest() throws MedicalRecordNotFoundException {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
-		MedicalRecord testMedicalRecordUpdated = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecordUpdated = MedicalRecordTestData.buildMedicalRecord();
 		testMedicalRecordUpdated.setBirthdate(LocalDate.now());
 
 		when(medicalRecordRepository.updateMedicalRecord(any())).thenReturn(testMedicalRecordUpdated);

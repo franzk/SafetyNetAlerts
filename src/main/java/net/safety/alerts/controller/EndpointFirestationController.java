@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.log4j.Log4j2;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.model.Firestation;
 import net.safety.alerts.service.FirestationService;
@@ -27,19 +28,24 @@ import net.safety.alerts.service.FirestationService;
  */
 @RestController
 @RequestMapping("firestation")
+@Log4j2
 public class EndpointFirestationController {
+
+	// private static final Logger logger =
+	// LogManager.getLogger(AlertsApplication.class);
 
 	@Autowired
 	private FirestationService firestationService;
 
 	/**
-	 * POST method of URL "/firestation" 
+	 * POST method of URL "/firestation"
 	 * 
 	 * @param firestation
 	 * @return ResponseEntity with Firestation created and Http Status OK
 	 */
 	@PostMapping("")
 	public ResponseEntity<Firestation> addFirestation(@RequestBody Firestation firestation) {
+		log.info("POST Request for Firestation Controller.");
 		return new ResponseEntity<>(firestationService.add(firestation), HttpStatus.OK);
 	}
 
@@ -54,6 +60,9 @@ public class EndpointFirestationController {
 	@GetMapping("")
 	public ResponseEntity<List<Firestation>> getFirestation(@RequestParam Optional<String> address,
 			@RequestParam Optional<Integer> stationNumber) throws FirestationNotFoundException {
+
+		log.info("GET \"/firestation\"");
+
 		if (address.isPresent()) {
 			return new ResponseEntity<>(firestationService.getByAddress(address.get()), HttpStatus.OK);
 		} else if (stationNumber.isPresent()) {
@@ -65,7 +74,7 @@ public class EndpointFirestationController {
 	}
 
 	/**
-	 * PUT method of URL "/firestation" 
+	 * PUT method of URL "/firestation"
 	 * 
 	 * @param firestation
 	 * @return ResponseEntity with updated Firestation and Http Status OK
@@ -74,6 +83,7 @@ public class EndpointFirestationController {
 	@PutMapping("")
 	public ResponseEntity<Firestation> updateFirestation(@RequestBody Firestation firestation)
 			throws FirestationNotFoundException {
+		log.info("PUT Request for Firestation Controller.");
 		return new ResponseEntity<>(firestationService.update(firestation), HttpStatus.OK);
 	}
 
@@ -88,6 +98,7 @@ public class EndpointFirestationController {
 	@DeleteMapping("")
 	public ResponseEntity<String> deleteFirestations(@RequestParam Optional<String> address,
 			@RequestParam Optional<Integer> stationNumber) throws FirestationNotFoundException {
+		log.info("DELETE Request for Firestation Controller.");
 		String message = "";
 		if (address.isPresent()) {
 			firestationService.deleteByAddress(address.get());

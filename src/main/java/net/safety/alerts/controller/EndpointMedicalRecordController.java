@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.log4j.Log4j2;
 import net.safety.alerts.exceptions.MedicalRecordNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.service.MedicalRecordService;
@@ -24,6 +25,7 @@ import net.safety.alerts.service.MedicalRecordService;
  */
 @RestController
 @RequestMapping("medicalRecord")
+@Log4j2
 public class EndpointMedicalRecordController {
 
 	@Autowired
@@ -37,6 +39,7 @@ public class EndpointMedicalRecordController {
 	 */
 	@PostMapping
 	public ResponseEntity<MedicalRecord> addMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
+		log.info("POST Request for MedicalRecord Controller.");
 		return new ResponseEntity<>(medicalRecordService.add(medicalRecord), HttpStatus.OK);
 	}
 
@@ -51,6 +54,7 @@ public class EndpointMedicalRecordController {
 	@GetMapping("")
 	public ResponseEntity<MedicalRecord> getMedicalRecord(@RequestParam String firstName, @RequestParam String lastName)
 			throws MedicalRecordNotFoundException {
+		log.info("GET Request for MedicalRecord Controller.");
 		return new ResponseEntity<>(medicalRecordService.getMedicalRecordByName(firstName, lastName), HttpStatus.OK);
 	}
 
@@ -64,6 +68,7 @@ public class EndpointMedicalRecordController {
 	@PutMapping("")
 	public ResponseEntity<MedicalRecord> updateMedicalRecord(@RequestBody MedicalRecord medicalRecord)
 			throws MedicalRecordNotFoundException {
+		log.info("PUT Request for MedicalRecord Controller.");
 		return new ResponseEntity<>(medicalRecordService.update(medicalRecord), HttpStatus.OK);
 	}
 
@@ -78,6 +83,7 @@ public class EndpointMedicalRecordController {
 	@DeleteMapping("")
 	public ResponseEntity<String> deleteMedicalRecord(@RequestParam String firstName, @RequestParam String lastName)
 			throws MedicalRecordNotFoundException {
+		log.info("DELETE Request for MedicalRecord Controller.");
 		medicalRecordService.deleteByName(firstName, lastName);
 		return ResponseEntity.status(HttpStatus.OK).body("The Medical Record has been successfully deleted");
 	}

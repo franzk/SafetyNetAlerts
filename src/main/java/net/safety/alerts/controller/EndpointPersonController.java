@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.log4j.Log4j2;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.service.PersonService;
@@ -24,6 +25,7 @@ import net.safety.alerts.service.PersonService;
  */
 @RestController
 @RequestMapping("/person")
+@Log4j2
 public class EndpointPersonController {
 
 	@Autowired
@@ -37,6 +39,7 @@ public class EndpointPersonController {
 	 */
 	@PostMapping("")
 	public ResponseEntity<Person> addPerson(@RequestBody Person person) {
+		log.info("POST Request for Person Controller.");
 		return new ResponseEntity<>(personService.add(person), HttpStatus.OK);
 	}
 
@@ -51,6 +54,7 @@ public class EndpointPersonController {
 	@GetMapping("")
 	public ResponseEntity<Person> getPersonByName(@RequestParam String firstName, @RequestParam String lastName)
 			throws PersonNotFoundException {
+		log.info("GET Request for Person Controller.");
 		return new ResponseEntity<>(personService.getPersonByName(firstName, lastName), HttpStatus.OK);
 	}
 
@@ -63,6 +67,7 @@ public class EndpointPersonController {
 	 */
 	@PutMapping("")
 	public ResponseEntity<Person> updatePerson(@RequestBody Person person) throws PersonNotFoundException {
+		log.info("PUT Request for Person Controller.");
 		return new ResponseEntity<>(personService.update(person), HttpStatus.OK);
 	}
 
@@ -77,6 +82,7 @@ public class EndpointPersonController {
 	@DeleteMapping("")
 	public ResponseEntity<String> deletePerson(@RequestParam String firstName, @RequestParam String lastName)
 			throws PersonNotFoundException {
+		log.info("DELETE Request for Person Controller.");
 		personService.delete(firstName, lastName);
 		return ResponseEntity.status(HttpStatus.OK).body("The Person has been succesfully deleted");
 	}

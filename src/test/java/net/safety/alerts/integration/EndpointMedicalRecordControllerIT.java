@@ -40,9 +40,6 @@ public class EndpointMedicalRecordControllerIT {
 
 	@Autowired
 	MedicalRecordRepository medicalRecordRepository;
-	
-	@Autowired
-	MedicalRecordTestData medicalRecordTestData;
 
 	private static ObjectMapper mapper = new ObjectMapper();
 
@@ -62,7 +59,7 @@ public class EndpointMedicalRecordControllerIT {
 	@Test
 	public void testPostMedicalRecord() throws Exception {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		String requestJson = mapper.writeValueAsString(testMedicalRecord);
 
 		// Act
@@ -78,7 +75,7 @@ public class EndpointMedicalRecordControllerIT {
 	@Test
 	public void testGetMedicalRecord() throws Exception {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		medicalRecordRepository.addMedicalRecord(testMedicalRecord);
 
 		// Act + Assert
@@ -90,9 +87,9 @@ public class EndpointMedicalRecordControllerIT {
 
 	@Test
 	public void testPutMedicalRecordt() throws Exception {
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		medicalRecordRepository.addMedicalRecord(testMedicalRecord);
-		MedicalRecord updatedMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord updatedMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		updatedMedicalRecord.setBirthdate(LocalDate.now());
 
 		// Act
@@ -109,7 +106,7 @@ public class EndpointMedicalRecordControllerIT {
 	@Test
 	public void testDeleteMedicalRecord() throws Exception {
 		// Arrange
-		MedicalRecord testMedicalRecord = medicalRecordTestData.buildMedicalRecord();
+		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildMedicalRecord();
 		medicalRecordRepository.addMedicalRecord(testMedicalRecord);
 		String testFirstName = testMedicalRecord.getFirstName();
 		String testLastName = testMedicalRecord.getLastName();
