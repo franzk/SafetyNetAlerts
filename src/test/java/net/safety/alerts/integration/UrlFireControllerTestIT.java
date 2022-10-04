@@ -29,16 +29,19 @@ public class UrlFireControllerTestIT {
 
 	@Autowired
 	private MockMvc mockMvc;
-	
+
 	@Autowired
 	PersonRepository personRepository;
-	
+
 	@Autowired
 	FirestationRepository firestationRepository;
-	
+
 	@Autowired
 	UrlService urlService;
-	
+
+	@Autowired
+	ObjectMapper mapper;
+
 	@Test
 	public void testFire() throws Exception {
 		// Arrange
@@ -46,19 +49,18 @@ public class UrlFireControllerTestIT {
 		Integer testStationNumber = 42;
 		Firestation testFirestation = FirestationTestData.buildFirestation(testAddress, testStationNumber);
 		firestationRepository.addFirestation(testFirestation);
-		
+
 		List<Person> persons = PersonTestData.buildPersonList();
 		persons.forEach(p -> p.setAddress(testAddress));
 		personRepository.setListPersons(persons);
-		
+
 		UrlFireDto testDto = urlService.urlFire(testAddress);
-		
-		ObjectMapper mapper = new ObjectMapper();
+
 		String expectedBody = mapper.writeValueAsString(testDto);
-		
+
 		// Act
-		mockMvc.perform(get("/fire").param("address", testAddress)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().string(expectedBody));
+		mockMvc.perform(get("/fire").param("address", testAddress)).andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.content().string(expectedBody));
 	}
-	
-	
+
 }

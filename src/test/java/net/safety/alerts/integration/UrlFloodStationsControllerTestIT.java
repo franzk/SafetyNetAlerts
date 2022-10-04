@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.safety.alerts.dto.UrlFirestationCoverageDto;
+import net.safety.alerts.dto.UrlFloodStationsDto;
 import net.safety.alerts.model.Firestation;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
@@ -28,8 +29,8 @@ import net.safety.alerts.utils.PersonTestData;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class UrlFirestationCoverageControllerTestIT {
-
+public class UrlFloodStationsControllerTestIT {
+	
 	@Autowired
 	private MockMvc mockMvc;
 
@@ -49,32 +50,37 @@ public class UrlFirestationCoverageControllerTestIT {
 	ObjectMapper mapper;
 
 	@Test
-	public void testFirestationCoverage() throws Exception {
+	public void testFloodStations() throws Exception {
 		// Arrange
-		String testAddress = "address";
-		Integer testStationNumber = 42;
-		Firestation testFirestation = FirestationTestData.buildFirestation(testAddress, testStationNumber);
-		firestationRepository.addFirestation(testFirestation);
+		List<Firestation> firestations = FirestationTestData.buildFirestationList();
+		firestationRepository.setListFirestations(firestations);
 
-		Person child = PersonTestData.buildPerson("child", "test", testAddress, "city");
-		Person adult1 = PersonTestData.buildPerson("adult", "one", testAddress, "city");
-		Person adult2 = PersonTestData.buildPerson("adult", "two", testAddress, "city");
-		List<Person> persons = List.of(child, adult1, adult2);
+		List<Person> persons = PersonTestData.buildPersonList();
+		persons.get(0).setAddress(firestations.get(0).getAddress());
+		persons.get(1).setAddress(firestations.get(0).getAddress());
+		persons.get(2).setAddress(firestations.get(1).getAddress());
 		personRepository.setListPersons(persons);
 
-		MedicalRecord childMedicalRecord = MedicalRecordTestData.buildChildMedicalRecord("child", "test");
-		MedicalRecord adult1MedicalRecord = MedicalRecordTestData.buildAdultMedicalRecord("adult", "one");
-		MedicalRecord adult2MedicalRecord = MedicalRecordTestData.buildAdultMedicalRecord("adult", "two");
-		List<MedicalRecord> medicalRecords = List.of(childMedicalRecord, adult1MedicalRecord, adult2MedicalRecord);
+		MedicalRecord medicalRecord1 = MedicalRecordTestData.buildChildMedicalRecord(persons.get(0).getFirstName(),
+				persons.get(0).getLastName());
+		MedicalRecord medicalRecord2 = MedicalRecordTestData.buildAdultMedicalRecord(persons.get(1).getFirstName(),
+				persons.get(1).getLastName());
+		MedicalRecord medicalRecord3 = MedicalRecordTestData.buildAdultMedicalRecord(persons.get(2).getFirstName(),
+				persons.get(2).getLastName());
+		List<MedicalRecord> medicalRecords = List.of(medicalRecord1, medicalRecord2, medicalRecord3);
 		medicalRecordRepository.setListMedicalRecords(medicalRecords);
 
-		UrlFirestationCoverageDto testDto = urlService.urlFirestationCoverage(testStationNumber);
+		List<Integer> stationNumbers = firestations.stream().map(f -> f.getStation()).collect(Collectors.toList());
 
+		UrlFloodStationsDto testDto = urlService.urlFloodStations(stationNumbers);
 		String expectedBody = mapper.writeValueAsString(testDto);
 
 		// Act
-		mockMvc.perform(get("/firestationCoverage").param("stationNumber", Integer.toString(testStationNumber)))
-				.andExpect(status().isOk()).andExpect(MockMvcResultMatchers.content().string(expectedBody));
+		String strStations = firestations.stream().map(f -> Integer.toString(f.getStation()))
+				.collect(Collectors.joining(","));
+		mockMvc.perform(get("/flood/stations").param("stations", strStations)).andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.content().string(expectedBody));
+
 	}
 
 }

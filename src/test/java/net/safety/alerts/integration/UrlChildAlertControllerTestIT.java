@@ -38,6 +38,9 @@ public class UrlChildAlertControllerTestIT {
 
 	@Autowired
 	public MockMvc mockMvc;
+	
+	@Autowired
+	ObjectMapper mapper;
 
 	@Test
 	public void testChildAlert() throws Exception {
@@ -57,7 +60,6 @@ public class UrlChildAlertControllerTestIT {
 
 		UrlChildAlertDto testDto = urlService.urlChildAlert(testAddress);
 
-		ObjectMapper mapper = new ObjectMapper();
 		String expectedBody = mapper.writeValueAsString(testDto);
 
 		// Act + Assert
