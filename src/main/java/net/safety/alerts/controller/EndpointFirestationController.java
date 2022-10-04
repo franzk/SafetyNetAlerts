@@ -21,7 +21,13 @@ import net.safety.alerts.model.Firestation;
 import net.safety.alerts.service.FirestationService;
 
 /**
- * Handle endpoints of URL "/firestation". Cover all CRUD methods.
+ * Endpoint "/firestation" <br>
+ * 
+ * "Cet endpoint permettra d’effectuer les actions suivantes via Post/Put/Delete
+ * avec HTTP :<br>
+ * ● ajout d'un mapping caserne/adresse ;<br>
+ * ● mettre à jour le numéro de la caserne de pompiers d'une adresse ; <br>
+ * ● supprimer le mapping d'une caserne ou d'une adresse. "
  * 
  * @author FranzKa
  *
@@ -45,8 +51,10 @@ public class EndpointFirestationController {
 	 */
 	@PostMapping("")
 	public ResponseEntity<Firestation> addFirestation(@RequestBody Firestation firestation) {
-		log.info("POST Request for Firestation Controller.");
-		return new ResponseEntity<>(firestationService.add(firestation), HttpStatus.OK);
+		log.info("Firestation Controller POST Request start. Param firestation = " + firestation);
+		ResponseEntity<Firestation> result = new ResponseEntity<>(firestationService.add(firestation), HttpStatus.OK);
+		log.info("Firestation Controller POST Request result : " + result);
+		return result;
 	}
 
 	/**
@@ -61,16 +69,17 @@ public class EndpointFirestationController {
 	public ResponseEntity<List<Firestation>> getFirestation(@RequestParam Optional<String> address,
 			@RequestParam Optional<Integer> stationNumber) throws FirestationNotFoundException {
 
-		log.info("GET \"/firestation\"");
-
+		log.info("Firestation Controller GET Request start. Param address = " + address + " / stationNumber = " + stationNumber);
+		ResponseEntity<List<Firestation>> result = null;
 		if (address.isPresent()) {
-			return new ResponseEntity<>(firestationService.getByAddress(address.get()), HttpStatus.OK);
+			result = new ResponseEntity<>(firestationService.getByAddress(address.get()), HttpStatus.OK);
 		} else if (stationNumber.isPresent()) {
-			return new ResponseEntity<>(firestationService.getByStationNumber(stationNumber.get()), HttpStatus.OK);
+			result = new ResponseEntity<>(firestationService.getByStationNumber(stationNumber.get()), HttpStatus.OK);
 		} else {
 			throw new IllegalArgumentException();
 		}
-
+		log.info("Firestation Controller GET Request result : " + result);
+		return result;
 	}
 
 	/**
@@ -83,8 +92,11 @@ public class EndpointFirestationController {
 	@PutMapping("")
 	public ResponseEntity<Firestation> updateFirestation(@RequestBody Firestation firestation)
 			throws FirestationNotFoundException {
-		log.info("PUT Request for Firestation Controller.");
-		return new ResponseEntity<>(firestationService.update(firestation), HttpStatus.OK);
+		log.info("Firestation Controller PUT Request start. Param firestation = " + firestation);
+		ResponseEntity<Firestation> result = new ResponseEntity<>(firestationService.update(firestation),
+				HttpStatus.OK);
+		log.info("Firestation Controller PUT Request result : " + result);
+		return result;
 	}
 
 	/**
@@ -98,7 +110,7 @@ public class EndpointFirestationController {
 	@DeleteMapping("")
 	public ResponseEntity<String> deleteFirestations(@RequestParam Optional<String> address,
 			@RequestParam Optional<Integer> stationNumber) throws FirestationNotFoundException {
-		log.info("DELETE Request for Firestation Controller.");
+		log.info("Firestation Controller DELETE Request start. Param address = " + address + " / stationNumber = " + stationNumber);
 		String message = "";
 		if (address.isPresent()) {
 			firestationService.deleteByAddress(address.get());
@@ -110,7 +122,9 @@ public class EndpointFirestationController {
 			throw new IllegalArgumentException();
 		}
 
-		return ResponseEntity.status(HttpStatus.OK).body(message);
+		ResponseEntity<String> result = ResponseEntity.status(HttpStatus.OK).body(message);
+		log.info("Firestation Controller DELETE Request result : " + result);
+		return result;
 
 	}
 }

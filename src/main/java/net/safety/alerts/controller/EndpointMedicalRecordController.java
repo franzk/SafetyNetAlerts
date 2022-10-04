@@ -18,7 +18,15 @@ import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.service.MedicalRecordService;
 
 /**
- * Handle endpoints of URL "/medicalRecord". Cover all CRUD methods.
+ * Endpoint "/medicalRecord" <br>
+ * 
+ * "Cet endpoint permettra d’effectuer les actions suivantes via Post/Put/Delete
+ * HTTP : <br>
+ * ● ajouter un dossier médical ; <br>
+ * ● mettre à jour un dossier médical existant (comme évoqué précédemment,
+ * supposer que le prénom et le nom de famille ne changent pas) ; <br>
+ * ● supprimer un dossier médical (utilisez une combinaison de prénom et de nom
+ * comme identificateur unique)."
  * 
  * @author FranzKa
  *
@@ -39,8 +47,11 @@ public class EndpointMedicalRecordController {
 	 */
 	@PostMapping
 	public ResponseEntity<MedicalRecord> addMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
-		log.info("POST Request for MedicalRecord Controller.");
-		return new ResponseEntity<>(medicalRecordService.add(medicalRecord), HttpStatus.OK);
+		log.info("MedicalRecord Controller POST Request start. Param medicalRecord = " + medicalRecord);
+		ResponseEntity<MedicalRecord> result = new ResponseEntity<>(medicalRecordService.add(medicalRecord),
+				HttpStatus.OK);
+		log.info("MedicalRecord Controller POST Request result : " + result);
+		return result;
 	}
 
 	/**
@@ -54,8 +65,11 @@ public class EndpointMedicalRecordController {
 	@GetMapping("")
 	public ResponseEntity<MedicalRecord> getMedicalRecord(@RequestParam String firstName, @RequestParam String lastName)
 			throws MedicalRecordNotFoundException {
-		log.info("GET Request for MedicalRecord Controller.");
-		return new ResponseEntity<>(medicalRecordService.getMedicalRecordByName(firstName, lastName), HttpStatus.OK);
+		log.info("MedicalRecord Controller GET Request start. Param firstName = " + firstName + " / lastName = " + lastName);
+		ResponseEntity<MedicalRecord> result = new ResponseEntity<>(
+				medicalRecordService.getMedicalRecordByName(firstName, lastName), HttpStatus.OK);
+		log.info("MedicalRecord Controller GET Request result : " + result);
+		return result;
 	}
 
 	/**
@@ -68,8 +82,11 @@ public class EndpointMedicalRecordController {
 	@PutMapping("")
 	public ResponseEntity<MedicalRecord> updateMedicalRecord(@RequestBody MedicalRecord medicalRecord)
 			throws MedicalRecordNotFoundException {
-		log.info("PUT Request for MedicalRecord Controller.");
-		return new ResponseEntity<>(medicalRecordService.update(medicalRecord), HttpStatus.OK);
+		log.info("MedicalRecord Controller PUT Request start. Param medicalRecord = " + medicalRecord);
+		ResponseEntity<MedicalRecord> result = new ResponseEntity<>(medicalRecordService.update(medicalRecord),
+				HttpStatus.OK);
+		log.info("MedicalRecord Controller PUT Request result : " + result);
+		return result;
 	}
 
 	/**
@@ -83,9 +100,13 @@ public class EndpointMedicalRecordController {
 	@DeleteMapping("")
 	public ResponseEntity<String> deleteMedicalRecord(@RequestParam String firstName, @RequestParam String lastName)
 			throws MedicalRecordNotFoundException {
-		log.info("DELETE Request for MedicalRecord Controller.");
+		log.info("MedicalRecord Controller DELETE Request start. Param firstName  " + firstName + " / lastName = " + lastName);
 		medicalRecordService.deleteByName(firstName, lastName);
-		return ResponseEntity.status(HttpStatus.OK).body("The Medical Record has been successfully deleted");
+		ResponseEntity<String> result = ResponseEntity.status(HttpStatus.OK)
+				.body("The Medical Record has been successfully deleted");
+		log.info("MedicalRecord Controller PUT Request result : " + result);
+		return result;
+
 	}
 
 }

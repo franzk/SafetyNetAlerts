@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.log4j.Log4j2;
 import net.safety.alerts.dto.UrlPersonInfoDto;
 import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.service.UrlService;
@@ -24,6 +25,7 @@ import net.safety.alerts.service.UrlService;
  *
  */
 @RestController
+@Log4j2
 public class UrlPersonInfoController {
 
 	@Autowired
@@ -40,7 +42,11 @@ public class UrlPersonInfoController {
 	@GetMapping("personInfo")
 	public ResponseEntity<UrlPersonInfoDto> personInfo(@RequestParam String firstName, @RequestParam String lastName)
 			throws PersonNotFoundException {
-		return new ResponseEntity<>(urlService.urlPersonInfo(firstName, lastName), HttpStatus.OK);
+		log.info("URL personInfo start. Param firstName = " + firstName + " / lastName = " + lastName);
+		ResponseEntity<UrlPersonInfoDto> result = new ResponseEntity<>(urlService.urlPersonInfo(firstName, lastName),
+				HttpStatus.OK);
+		log.info("URL personInfo result : " + result);
+		return result;
 	}
 
 }

@@ -13,5 +13,4 @@ public class FirestationNotFoundException extends Exception {
 		super("Firestation not found");
 	}
 
-	
 }

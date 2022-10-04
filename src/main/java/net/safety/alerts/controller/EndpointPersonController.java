@@ -18,7 +18,16 @@ import net.safety.alerts.model.Person;
 import net.safety.alerts.service.PersonService;
 
 /**
- * Handle endpoints of URL "/person". Cover all CRUD methods.
+ * Endpoint "/person".<br>
+ * 
+ * "Cet endpoint permettra d’effectuer les actions suivantes via Post/Put/Delete
+ * avec HTTP :<br>
+ * ● ajouter une nouvelle personne ; <br>
+ * ● mettre à jour une personne existante (pour le moment, supposons que le
+ * prénom et le nom de famille ne changent pas, mais que les autres champs
+ * peuvent être modifiés) ;<br>
+ * ● supprimer une personne (utilisez une combinaison de prénom et de nom comme
+ * identificateur unique)"
  * 
  * @author FranzKa
  *
@@ -39,8 +48,10 @@ public class EndpointPersonController {
 	 */
 	@PostMapping("")
 	public ResponseEntity<Person> addPerson(@RequestBody Person person) {
-		log.info("POST Request for Person Controller.");
-		return new ResponseEntity<>(personService.add(person), HttpStatus.OK);
+		log.info("Person Controller POST Request start. Param person = " + person);
+		ResponseEntity<Person> result = new ResponseEntity<>(personService.add(person), HttpStatus.OK);
+		log.info("Person Controller POST Request result : " + result);
+		return result;
 	}
 
 	/**
@@ -54,8 +65,11 @@ public class EndpointPersonController {
 	@GetMapping("")
 	public ResponseEntity<Person> getPersonByName(@RequestParam String firstName, @RequestParam String lastName)
 			throws PersonNotFoundException {
-		log.info("GET Request for Person Controller.");
-		return new ResponseEntity<>(personService.getPersonByName(firstName, lastName), HttpStatus.OK);
+		log.info("Person Controller GET Request start. Param firstName = " + firstName + " / lastName = " + lastName);
+		ResponseEntity<Person> result = new ResponseEntity<>(personService.getPersonByName(firstName, lastName),
+				HttpStatus.OK);
+		log.info("Person Controller GET Request result : " + result);
+		return result;
 	}
 
 	/**
@@ -67,8 +81,10 @@ public class EndpointPersonController {
 	 */
 	@PutMapping("")
 	public ResponseEntity<Person> updatePerson(@RequestBody Person person) throws PersonNotFoundException {
-		log.info("PUT Request for Person Controller.");
-		return new ResponseEntity<>(personService.update(person), HttpStatus.OK);
+		log.info("Person Controller PUT Request start. Param person = " + person);
+		ResponseEntity<Person> result = new ResponseEntity<>(personService.update(person), HttpStatus.OK);
+		log.info("Person Controller PUT Request result : " + result);
+		return result;
 	}
 
 	/**
@@ -82,9 +98,12 @@ public class EndpointPersonController {
 	@DeleteMapping("")
 	public ResponseEntity<String> deletePerson(@RequestParam String firstName, @RequestParam String lastName)
 			throws PersonNotFoundException {
-		log.info("DELETE Request for Person Controller.");
+		log.info("Person Controller DELETE Request start. Param firstName = " + firstName + " / lastName = " + lastName);
 		personService.delete(firstName, lastName);
-		return ResponseEntity.status(HttpStatus.OK).body("The Person has been succesfully deleted");
+		ResponseEntity<String> result = ResponseEntity.status(HttpStatus.OK)
+				.body("The Person has been succesfully deleted");
+		log.info("Person Controller DELETE Request result : " + result);
+		return result;
 	}
 
 }

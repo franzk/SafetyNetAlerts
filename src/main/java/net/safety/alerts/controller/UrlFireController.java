@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.log4j.Log4j2;
 import net.safety.alerts.dto.UrlFireDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.exceptions.FirestationNotFoundException;
@@ -24,6 +25,7 @@ import net.safety.alerts.service.UrlService;
  *
  */
 @RestController
+@Log4j2
 public class UrlFireController {
 
 	@Autowired
@@ -40,6 +42,9 @@ public class UrlFireController {
 	@GetMapping("/fire")
 	public ResponseEntity<UrlFireDto> fire(@RequestParam String address)
 			throws AddressNotFoundException, FirestationNotFoundException {
-		return new ResponseEntity<>(urlService.urlFire(address), HttpStatus.OK);
+		log.info("URL fire start. Param address = " + address);
+		ResponseEntity<UrlFireDto> result = new ResponseEntity<>(urlService.urlFire(address), HttpStatus.OK);
+		log.info("URL fire result : " + result);
+		return result;
 	}
 }

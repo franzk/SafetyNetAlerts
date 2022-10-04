@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.log4j.Log4j2;
 import net.safety.alerts.dto.UrlChildAlertDto;
 import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.service.UrlService;
@@ -23,6 +24,7 @@ import net.safety.alerts.service.UrlService;
  *
  */
 @RestController
+@Log4j2
 public class UrlChildAlertController {
 
 	@Autowired
@@ -37,7 +39,10 @@ public class UrlChildAlertController {
 	 */
 	@GetMapping("childAlert")
 	public ResponseEntity<UrlChildAlertDto> childAlert(@RequestParam String address) throws AddressNotFoundException {
-		return new ResponseEntity<>(urlService.urlChildAlert(address), HttpStatus.OK);
+		log.info("URL childAlert start. Param address = " + address);
+		ResponseEntity<UrlChildAlertDto> result = new ResponseEntity<>(urlService.urlChildAlert(address), HttpStatus.OK);
+		log.info("URL childAlert result : " + result);
+		return result;
 	}
 
 }
