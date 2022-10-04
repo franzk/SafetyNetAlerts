@@ -12,7 +12,11 @@ import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.UrlService;
 
 /**
- * Handle "/phoneAlert" URL
+ * URL "{@code /phoneAlert?firestation=<firestation_number>}" <br><br>
+ * 
+ * "Cette url doit retourner une liste des numéros de téléphone des résidents
+ * desservis par la caserne de pompiers. Nous l'utiliserons pour envoyer des
+ * messages texte d'urgence à des foyers spécifiques"
  * 
  * @author FranzKa
  *

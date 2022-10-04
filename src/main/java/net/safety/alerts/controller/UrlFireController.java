@@ -13,7 +13,12 @@ import net.safety.alerts.exceptions.FirestationNotFoundException;
 import net.safety.alerts.service.UrlService;
 
 /**
- * Handle "/fire" URL
+ * URL "{@code /fire?address=<address>}" <br><br>
+ * 
+ * "Cette url doit retourner la liste des habitants vivant à l’adresse donnée
+ * ainsi que le numéro de la caserne de pompiers la desservant. La liste doit
+ * inclure le nom, le numéro de téléphone, l'âge et les antécédents médicaux
+ * (médicaments, posologie et allergies) de chaque personne. "
  * 
  * @author FranzKa
  *

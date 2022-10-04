@@ -12,7 +12,13 @@ import net.safety.alerts.exceptions.PersonNotFoundException;
 import net.safety.alerts.service.UrlService;
 
 /**
- * Handle "/personInfo" URL
+ * URL "{@code /personInfo?firstName=<firstName>&lastName=<lastName>}" <br>
+ * <br>
+ * 
+ * "Cette url doit retourner le nom, l'adresse, l'âge, l'adresse mail et les
+ * antécédents médicaux (médicaments, posologie, allergies) de chaque habitant.
+ * Si plusieurs personnes portent le même nom, elles doivent toutes apparaître."
+ * 
  * 
  * @author FranzKa
  *

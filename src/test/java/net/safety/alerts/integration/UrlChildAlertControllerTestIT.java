@@ -10,15 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.safety.alerts.controller.UrlChildAlertController;
 import net.safety.alerts.dto.UrlChildAlertDto;
-import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.model.MedicalRecord;
 import net.safety.alerts.model.Person;
 import net.safety.alerts.repository.MedicalRecordRepository;
@@ -30,9 +26,6 @@ import net.safety.alerts.utils.PersonTestData;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UrlChildAlertControllerTestIT {
-
-	@Autowired
-	private UrlChildAlertController controllerUnderTest;
 
 	@Autowired
 	private PersonRepository personRepository;
@@ -47,7 +40,7 @@ public class UrlChildAlertControllerTestIT {
 	public MockMvc mockMvc;
 
 	@Test
-	public void childAlertTest() throws Exception {
+	public void testChildAlert() throws Exception {
 		// Arrange
 		String testAddress = "test Address";
 		Person child = PersonTestData.buildPerson("child", "lastName", testAddress, "city");

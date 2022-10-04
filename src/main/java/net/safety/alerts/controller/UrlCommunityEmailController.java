@@ -12,7 +12,10 @@ import net.safety.alerts.exceptions.CityNotFoundException;
 import net.safety.alerts.service.UrlService;
 
 /**
- * Handle "/communityEmail" URL
+ * URL "{@code /communityEmail?city=<city>}" <br><br>
+ * 
+ * "Cette url doit retourner les adresses mail de tous les habitants de la
+ * ville."
  * 
  * @author FranzKa
  *
@@ -25,13 +28,14 @@ public class UrlCommunityEmailController {
 
 	/**
 	 * Get method of URL "/communityEmail"
+	 * 
 	 * @param city
 	 * @return ResponseEntity with {@link UrlCommunityEmailDto} and Http Status OK
 	 * @throws CityNotFoundException
 	 */
 	@GetMapping("communityEmail")
-	public ResponseEntity<UrlCommunityEmailDto>  communityEmail(@RequestParam String city) throws CityNotFoundException {
+	public ResponseEntity<UrlCommunityEmailDto> communityEmail(@RequestParam String city) throws CityNotFoundException {
 		return new ResponseEntity<>(urlService.urlCommunityEmail(city), HttpStatus.OK);
 	}
-	
+
 }

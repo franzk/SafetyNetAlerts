@@ -12,14 +12,19 @@ import net.safety.alerts.exceptions.AddressNotFoundException;
 import net.safety.alerts.service.UrlService;
 
 /**
- * Handle "/childAlert" URL
+ * URL "{@code /childAlert?address=<address>}" <br><br>
+ * 
+ * "Cette url doit retourner une liste d'enfants (tout individu âgé de 18 ans ou
+ * moins) habitant à cette adresse. La liste doit comprendre le prénom et le nom
+ * de famille de chaque enfant, son âge et une liste des autres membres du
+ * foyer. S'il n'y a pas d'enfant, cette url peut renvoyer une chaîne vide. "
  * 
  * @author FranzKa
  *
  */
 @RestController
 public class UrlChildAlertController {
-	
+
 	@Autowired
 	private UrlService urlService;
 
@@ -34,5 +39,5 @@ public class UrlChildAlertController {
 	public ResponseEntity<UrlChildAlertDto> childAlert(@RequestParam String address) throws AddressNotFoundException {
 		return new ResponseEntity<>(urlService.urlChildAlert(address), HttpStatus.OK);
 	}
-	
+
 }
