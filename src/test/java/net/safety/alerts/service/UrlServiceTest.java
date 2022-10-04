@@ -40,7 +40,7 @@ import net.safety.alerts.utils.PersonTestData;
 public class UrlServiceTest {
 
 	@InjectMocks
-	private UrlService urlServiceUnderTest = new UrlService();
+	private UrlService urlServiceUnderTest;
 
 	@Mock
 	private PersonRepository personRepository;
