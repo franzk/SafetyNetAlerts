@@ -3,6 +3,9 @@ package net.safety.alerts.integration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -40,6 +43,12 @@ public class UrlPersonInfoControllerTestIT {
 	@Autowired
 	ObjectMapper mapper;
 
+	@BeforeEach
+	public void reset() {
+		personRepository.setListPersons(new ArrayList<>());
+		medicalRecordRepository.setListMedicalRecords(new ArrayList<>());
+	}
+
 	@Test
 	public void testPersonInfo() throws Exception {
 		// Arrange
@@ -48,6 +57,7 @@ public class UrlPersonInfoControllerTestIT {
 		String testLastName = testPerson.getLastName();
 		personRepository.addPerson(testPerson);
 
+		medicalRecordRepository.setListMedicalRecords(new ArrayList<>());
 		MedicalRecord testMedicalRecord = MedicalRecordTestData.buildAdultMedicalRecord(testFirstName, testLastName);
 		medicalRecordRepository.addMedicalRecord(testMedicalRecord);
 
