@@ -72,12 +72,11 @@ public class PersonRepository {
 	}
 
 	public List<String> getEmailsByCity(String city) throws CityNotFoundException {
-		List<Person> cityInhabitants = listPersons.stream().filter(p -> city.equals(p.getCity()))
-				.collect(Collectors.toList());
-		if (cityInhabitants.size() <= 0) {
+		List<Person> cityInhabitants = listPersons.stream().filter(p -> city.equals(p.getCity())).toList();
+		if (cityInhabitants.isEmpty()) {
 			throw new CityNotFoundException();
 		}
-		return cityInhabitants.stream().map(p -> p.getEmail()).collect(Collectors.toList());
+		return cityInhabitants.stream().map(Person::getEmail).distinct().toList();
 	}
 
 	// update
