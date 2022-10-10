@@ -1,7 +1,6 @@
 package net.safety.alerts;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.annotation.PostConstruct;
@@ -53,17 +52,15 @@ public class DataInitializer {
 	/**
 	 * Import the JsonFile found at the URL stored in application.properties
 	 * 
-	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
 	@PostConstruct
-	public void importJsonData() throws MalformedURLException, IOException {
+	public void importJsonData() throws IOException {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		JsonNode root = objectMapper.readTree(new URL(dataUrl));
 
-		// loadPersons();
 		loadPersonsService.loadPersons(root.path(JsonFileConstants.persons));
 		loadFirestationsService.loadFirestations(root.path(JsonFileConstants.firestations));
 		loadMedicalRecordsService.loadMedicalRecords(root.path(JsonFileConstants.medicalrecords));

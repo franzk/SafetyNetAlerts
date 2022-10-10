@@ -37,9 +37,6 @@ import net.safety.alerts.service.FirestationService;
 @Log4j2
 public class EndpointFirestationController {
 
-	// private static final Logger logger =
-	// LogManager.getLogger(AlertsApplication.class);
-
 	@Autowired
 	private FirestationService firestationService;
 

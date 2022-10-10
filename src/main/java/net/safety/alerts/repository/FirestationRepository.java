@@ -3,7 +3,6 @@ package net.safety.alerts.repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -68,20 +67,22 @@ public class FirestationRepository {
 
 	// read
 	public List<Firestation> getFirestationsByStationNumber(Integer stationNumber) throws FirestationNotFoundException {
+
 		List<Firestation> firestations = listFirestations.stream().filter(f -> f.getStation().equals(stationNumber))
-				.collect(Collectors.toList());
-		if (firestations.size() <= 0) {
+				.toList();
+
+		if (firestations.isEmpty()) {
 			throw new FirestationNotFoundException();
 		} else {
 			return firestations;
 		}
+
 	}
 
 	public List<Firestation> getFirestationsByAddress(String address) throws FirestationNotFoundException {
-		List<Firestation> firestations = listFirestations.stream().filter(f -> f.getAddress().equals(address))
-				.collect(Collectors.toList());
+		List<Firestation> firestations = listFirestations.stream().filter(f -> f.getAddress().equals(address)).toList();
 
-		if (firestations.size() <= 0) {
+		if (firestations.isEmpty()) {
 			throw new FirestationNotFoundException();
 		} else {
 			return firestations;
@@ -90,7 +91,8 @@ public class FirestationRepository {
 
 	public List<String> getFirestationAddresses(Integer StationNumber) throws FirestationNotFoundException {
 		List<Firestation> firestations = this.getFirestationsByStationNumber(StationNumber);
-		List<String> adresses = firestations.stream().map(f -> f.getAddress()).collect(Collectors.toList());
+
+		List<String> adresses = firestations.stream().map(f -> f.getAddress()).toList();
 		return adresses;
 	}
 
